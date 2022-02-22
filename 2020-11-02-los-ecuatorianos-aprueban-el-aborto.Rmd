@@ -33,7 +33,11 @@ abortion.freq = tibble(levels = c("Nunca se justifica", 2:9, "Siempre se justifi
 Recordemos que 1 significa que el aborto nunca se justifica y 10 significa que siempre se justifica. He decidido dejarlo así del 0 al 10 para que sea vea precisamente qué piensa la mayoría de la muestra sin agrupar opciones. Para casi el 65% de la población en Ecuador el aborto DEFINITIVAMENTE NUNCA SE DEBE JUSTIFICAR. Los que justifican el aborto (digamos los que dijeron de 7 para arriba) son apenas el 6% aproximadamente de la población.
 
 ```{r, echo=FALSE, fig.pos= "h",fig.align='center', out.width='90%'}
+<<<<<<< HEAD
 abortion.freq %>% ggplot(aes(x = reorder(levels, 10:1), y = freq)) + geom_bar(stat = "identity", fill = "blue") + 
+=======
+abortion.freq %>% ggplot(aes(x = reorder(levels, 10:1), y = freq)) + geom_bar(stat = "identity", fill = "red") + 
+>>>>>>> 701fdc666fa502d8c1f53227f08fb31e1fc3b61a
   coord_flip() + geom_text(aes(label= scales::percent(freq, accuracy = 0.1)), hjust=-0.2, size=3, fontface = "italic") + labs(x="", y="", title="Opinión de los ecuatorianos sobre el aborto") +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, 0.7))  + theme(axis.text=element_text(size=10)) + theme(plot.title = element_text(color="black", size=14, face="bold.italic"))
 ```
