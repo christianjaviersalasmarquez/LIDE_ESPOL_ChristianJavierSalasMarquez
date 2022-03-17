@@ -17,5 +17,91 @@ if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.
 ```
 
 
+```{r}
+# Base de datos de personas ----------
+# Le damos un nombre al url
+url <- "https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/raw/main/Base%20EUT%202012.zip"
+# Creamos un directorio temporal
+td <- tempdir()
+# Creamos una carpeta temporal
+tf <- tempfile(tmpdir=td, fileext = ".zip")
+# Descargamos los discap en la carpeta temporal
+download.file(url,tf)
+
+```
+
+
+```{r}
+# Obtenemos el nombre del archivo dentro del archivo zip, lo descomprimimos (unzip), obtenemos el nombre del 
+# parche, y finalmente lo cargamos
+EUT2012.f.name <- unzip(tf, list=TRUE)$Name[1] # El archivo SAV de la EUT 2012 es el primero
+unzip(tf, files=EUT2012.f.name, exdir=td, overwrite=TRUE)
+EUT2012.f.path <- file.path(td, EUT2012.f.name)
+uso_del_tiempo_2012 <- read_sav(EUT2012.f.path)
+```
+
+
+```{r}
+#data_UT2012 <- uso_del_tiempo_2012
+data_UT2012 <- data.frame(uso_del_tiempo_2012)
+```
+
+
+
+```{r}
+uso_del_tiempo_2019 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/201912_multibdd_uso_del_tiempo.sav.csv", header = FALSE)
+```
+
+
+```{r}
+header_true <- function(df) {
+  names(df) <- as.character(unlist(df[1,]))
+  df[-1,]
+}
+
+data_UT2019 <- header_true(uso_del_tiempo_2019)
+
+colnames(data_UT2019)[1] <- 'area'
+```
+
+
+
+
+```{r}
+t_trabajo_mercado_laboral <- data_UT2012 %>%
+  rowwise() %>%
+  mutate(tiempo_trabajo_mercadolaboral = sum(as.numeric(P19A), (as.numeric(P19B)/60),as.numeric(P19C), (as.numeric(P19D)/60), na.rm = TRUE))
+
+```
+
+
+```{r}
+tiempo_trabajo <- t_trabajo_mercado_laboral$tiempo_trabajo_mercadolaboral
+
+ggplot(t_trabajo_mercado_laboral, aes(x =tiempo_trabajo_mercadolaboral )) + geom_histogram()
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
