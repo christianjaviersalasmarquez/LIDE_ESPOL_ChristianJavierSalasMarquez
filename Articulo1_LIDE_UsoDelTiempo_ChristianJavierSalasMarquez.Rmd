@@ -1,0 +1,21 @@
+---
+title: "Uso del tiempo de los ecuatorianos"
+author: "Christian Salas Marquez"
+date: "2022-03-17"
+output: html_notebook
+---
+
+```{r}
+###############################################################
+####                   Descargar los datos                 ####
+###############################################################
+
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+if(!require(haven)) install.packages("haven", repos = "http://cran.us.r-project.org")
+if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
+
+```
+
+
+
+
