@@ -1,0 +1,212 @@
+---
+title: "Uso del tiempo de los ecuatorianos"
+author: "Christian Salas Marquez"
+date: "2022-03-17"
+output: html_notebook
+---
+
+```{r}
+###############################################################
+####                   Descargar los datos                 ####
+###############################################################
+
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+if(!require(haven)) install.packages("haven", repos = "http://cran.us.r-project.org")
+if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
+
+
+```
+
+
+```{r}
+# Base de datos de personas ----------
+# Le damos un nombre al url
+url <- "https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/raw/main/Base%20EUT%202012.zip"
+# Creamos un directorio temporal
+td <- tempdir()
+# Creamos una carpeta temporal
+tf <- tempfile(tmpdir=td, fileext = ".zip")
+# Descargamos los discap en la carpeta temporal
+download.file(url,tf)
+
+```
+
+
+```{r}
+# Obtenemos el nombre del archivo dentro del archivo zip, lo descomprimimos (unzip), obtenemos el nombre del 
+# parche, y finalmente lo cargamos
+EUT2012.f.name <- unzip(tf, list=TRUE)$Name[1] # El archivo SAV de la EUT 2012 es el primero
+unzip(tf, files=EUT2012.f.name, exdir=td, overwrite=TRUE)
+EUT2012.f.path <- file.path(td, EUT2012.f.name)
+uso_del_tiempo_2012 <- read_sav(EUT2012.f.path)
+```
+
+
+```{r}
+#data_UT2012 <- uso_del_tiempo_2012
+data_UT2012 <- data.frame(uso_del_tiempo_2012)
+```
+
+
+
+```{r}
+uso_del_tiempo_2019 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/201912_multibdd_uso_del_tiempo.sav.csv", header = FALSE)
+```
+
+
+```{r}
+personas_2019 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/201912_multibdd_personas.sav.csv", header = FALSE)
+```
+
+
+
+
+
+
+
+
+```{r}
+header_true <- function(df) {
+  names(df) <- as.character(unlist(df[1,]))
+  df[-1,]
+}
+
+```
+
+```{r}
+data_UT2019 <- header_true(uso_del_tiempo_2019)
+
+colnames(data_UT2019)[1] <- 'area'
+```
+
+```{r}
+data_personas2019 <- header_true(personas_2019)
+
+colnames(data_personas2019)[1] <- 'area'
+```
+
+
+
+
+
+
+
+
+```{r}
+t_trabajo_mercado_laboral <- data_UT2012 %>%
+  rowwise() %>%
+  mutate(tiempo_trabajo_mercadolaboral = sum(as.numeric(P19A), (as.numeric(P19B)/60),as.numeric(P19C), (as.numeric(P19D)/60), na.rm = TRUE))
+
+```
+
+
+```{r}
+tiempo_trabajo <- t_trabajo_mercado_laboral$tiempo_trabajo_mercadolaboral
+
+ggplot(t_trabajo_mercado_laboral, aes(x =tiempo_trabajo_mercadolaboral )) + geom_histogram()
+
+```
+
+
+
+
+```{r}
+#Merge de la base de datos de uso del tiempo con la de personas, para conocer información sobre la persona
+
+df_info_personas2019 <- data.frame(id_per = data_personas2019$id_per, s1p2 = data_personas2019$s1p2, s1p3 = data_personas2019$s1p3)
+
+df_analisis_UT2019 <- merge(df_info_personas2019, data_UT2019, by = "id_per")
+
+```
+
+
+
+De los encuestados, ¿Cuántos respondieron que sí participan en los quehaceres del hogar y cuantos no?
+
+
+```{r}
+s51p1_2019 <- data_UT2019$s51p1
+s51p1_2019_factor <- factor(data_UT2019$s51p1)
+levels(s51p1_2019_factor) <- c("Si","No")
+summary(s51p1_2019_factor)
+```
+
+
+
+```{r}
+s51p1_2019 <- df_analisis_UT2019$s51p1
+s51p1_2019_factor <- factor(df_analisis_UT2019$s51p1)
+levels(s51p1_2019_factor) <- c("Si","No")
+
+s1p2_2019_factor <- factor(df_analisis_UT2019$s1p2)
+levels(s1p2_2019_factor) <- c("Hombre","Mujer")
+
+summary(s51p1_2019_factor)
+summary(s1p2_2019_factor)
+
+df_analisis_UT2019$sexo_factor <- s1p2_2019_factor
+
+```
+
+
+```{r}
+# Summarize() con summary()
+# Participa en quehaceres del hogar? Por sexo
+df_hogar_sexo <- df_analisis_UT2019 %>%
+  group_by(sexo_factor, participacion = fct_recode(factor(s51p1), "Si" = "1", "No" = "2" )) %>%
+  summarize(conteo_actividades_hogar = summary(factor(s51p1)))
+
+df_hogar_sexo
+```
+
+```{r}
+# Summarize() con length también funciona igual
+# Participa en quehaceres del hogar? Por sexo
+#df_hogar_sexo <- df_analisis_UT2019 %>%
+#  group_by(sexo_factor,fct_recode(factor(s51p1), "Si" = "1", "No" = "2" )) %>%
+#  summarize(conteo_actividades_hogar = length(factor(s51p1)))
+
+# df_hogar_sexo
+```
+
+```{r}
+# Validacion cantidad de Si o No en s51p1: Success
+
+#summary(fct_recode(factor(data_UT2019$s51p1), "Si" = "1", "No"="2"))[1] ==  df_hogar_sexo$conteo_actividades_hogar[1] + df_hogar_sexo$conteo_actividades_hogar[3]
+
+#summary(fct_recode(factor(data_UT2019$s51p1), "Si" = "1", "No"="2"))[2] == df_hogar_sexo$conteo_actividades_hogar[2] + df_hogar_sexo$conteo_actividades_hogar[4]
+
+
+
+# summary(factor(data_UT2019$s51p1))[1] + summary(factor(data_UT2019$s51p1))[2] # Cantidad de respuesta Si + No 33236
+
+```
+
+
+
+```{r}
+# Validación cantidad de hombres y mujeres en s1p2: Success
+# El conteo en el summarize() funciona tanto con summary() como con length()
+
+#summary(factor(df_analisis_UT2019$s1p2))[1] == df_hogar_sexo$conteo_actividades_hogar[1] + df_hogar_sexo$conteo_actividades_hogar[2]
+
+#summary(factor(df_analisis_UT2019$s1p2))[2] == df_hogar_sexo$conteo_actividades_hogar[3] + df_hogar_sexo$conteo_actividades_hogar[4]
+
+# summary(factor(df_analisis_UT2019$s1p2))[1] + summary(factor(df_analisis_UT2019$s1p2))[2] # Cantidad de Hombres + Mujeres en data_UT2019 33236
+
+
+```
+
+
+
+```{r}
+# ¿Participa en los quehaceres del hogar? Respuestas de Hombres y Mujeres
+ggplot(df_hogar_sexo, aes(x = sexo_factor, y = conteo_actividades_hogar, fill = participacion)) + geom_bar(stat = 'identity')
+```
+
+
+
+
+
+
+
