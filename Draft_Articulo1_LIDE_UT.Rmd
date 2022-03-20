@@ -303,6 +303,7 @@ df_cocina_sexo_2019
 ```
 
 
+
 ```{r}
 # Validacion df_cocina_sexo_2019: Success
 
