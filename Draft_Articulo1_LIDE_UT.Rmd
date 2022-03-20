@@ -1,6 +1,6 @@
 ---
 title: "Uso del tiempo de los ecuatorianos"
-author: "Christian Salas Marquez"
+author: "Christian Javier Salas Marquez"
 date: "2022-03-17"
 output: html_notebook
 ---
@@ -99,17 +99,19 @@ hist(data_UT2012$P03)
 
 
 ```{r}
-t_trabajo_mercado_laboral <- data_UT2012 %>%
-  rowwise() %>%
-  mutate(tiempo_trabajo_mercadolaboral = sum(as.numeric(P19A), (as.numeric(P19B)/60),as.numeric(P19C), (as.numeric(P19D)/60), na.rm = TRUE))
+# OPTIMIZAR
+#t_trabajo_mercado_laboral <- data_UT2012 %>%
+#  rowwise() %>%
+#  mutate(tiempo_trabajo_mercadolaboral = sum(as.numeric(P19A), (as.numeric(P19B)/60),as.numeric(P19C), (as.numeric(P19D)/60), na.rm = #TRUE))
 
 ```
 
 
 ```{r}
-tiempo_trabajo <- t_trabajo_mercado_laboral$tiempo_trabajo_mercadolaboral
+# OPTIMIZAR
+#tiempo_trabajo <- t_trabajo_mercado_laboral$tiempo_trabajo_mercadolaboral
 
-ggplot(t_trabajo_mercado_laboral, aes(x =tiempo_trabajo_mercadolaboral )) + geom_histogram()
+#ggplot(t_trabajo_mercado_laboral, aes(x =tiempo_trabajo_mercadolaboral )) + geom_histogram()
 
 ```
 
@@ -132,6 +134,12 @@ df_info_personas2019 <- data.frame(id_per = data_personas2019$id_per, s1p2 = dat
 
 df_analisis_UT2019 <- merge(df_info_personas2019, data_UT2019, by = "id_per")
 
+
+```
+
+```{r}
+df_analisis_UT2019$s1p2_factor <- fct_recode(factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" )
+df_analisis_UT2019$s51p2_factor <- fct_recode(factor(df_analisis_UT2019$s51p2), "Si"="1","No"="2" ) 
 ```
 
 
@@ -148,7 +156,7 @@ summary(s51p1_2019_factor)
 
 
 
-```{r}
+```{r include = FALSE}
 #s51p1_2019 <- df_analisis_UT2019$s51p1
 #s51p1_2019_factor <- factor(df_analisis_UT2019$s51p1)
 #levels(s51p1_2019_factor) <- c("Si","No")
@@ -174,7 +182,7 @@ df_hogar_sexo <- df_analisis_UT2019 %>%
 df_hogar_sexo
 ```
 
-```{r}
+```{r include = FALSE}
 # Summarize() con length también funciona igual
 # Participa en quehaceres del hogar? Por sexo
 #df_hogar_sexo <- df_analisis_UT2019 %>%
@@ -184,7 +192,7 @@ df_hogar_sexo
 # df_hogar_sexo
 ```
 
-```{r}
+```{r include = FALSE}
 # Validacion cantidad de Si o No en s51p1: Success
 
 #summary(fct_recode(factor(data_UT2019$s51p1), "Si" = "1", "No"="2"))[1] ==  df_hogar_sexo$conteo_actividades_hogar[1] + df_hogar_sexo$conteo_actividades_hogar[3]
@@ -199,7 +207,7 @@ df_hogar_sexo
 
 
 
-```{r}
+```{r include = FALSE}
 # Validación cantidad de hombres y mujeres en s1p2: Success
 # El conteo en el summarize() funciona tanto con summary() como con length()
 
@@ -227,7 +235,7 @@ ggplot(df_hogar_sexo, aes(x = s1p2_factor, y = conteo_actividades_hogar, fill = 
 
 
 
-# Comparaciones 2012 y 2019
+# Comparaciones de participacion 2012 y 2019
 
 
 
@@ -268,7 +276,7 @@ df_cocina_sexo_2012
 
 ```
 
-```{r}
+```{r include = FALSE}
 #df_analisis_UT15_UT2012 %>%
 #  group_by( P02_factor , UT15_factor ) %>%
 #  summarize(conteo_cocina = summary( UT15_factor ))
@@ -278,21 +286,53 @@ df_cocina_sexo_2012
 
 
 ```{r}
+# Considerando NA values
+
 ggplot(df_cocina_sexo_2012, aes(x = P02_factor, y = conteo_cocina, fill =  UT15_factor)) + geom_bar(stat = 'identity', position = 'dodge')
 
 # Pensar en considerar las edades o rango de edades
 
 ```
 
+```{r}
+# Sin considerar NA values
 
+df_cocina_sexo_2012_plot <- df_cocina_sexo_2012 %>%
+  filter( UT15_factor == "Si" | UT15_factor == "No" )
+
+ggplot(df_cocina_sexo_2012_plot, aes(x = P02_factor, y = conteo_cocina, fill =  UT15_factor)) + geom_bar(stat = 'identity', position = 'dodge')
+```
+
+```{r}
+# Proporciones
+
+#df_cocina_sexo_2012
+
+#df_cocina_sexo_2012[1,3] + df_cocina_sexo_2012[2,3] # Total de hombres que respondieron la pregunta UT15
+
+
+#df_cocina_sexo_2012[4,3] + df_cocina_sexo_2012[5,3] # Total de mujeres que respondieron la pregunta UT15
+
+
+p_hombres_cocina_si_2012 <- df_cocina_sexo_2012[1,3]/(df_cocina_sexo_2012[1,3] + df_cocina_sexo_2012[2,3])
+
+p_mujeres_cocina_si_2012 <- df_cocina_sexo_2012[4,3]/(df_cocina_sexo_2012[4,3] + df_cocina_sexo_2012[5,3] )
+
+p_hombres_cocina_si_2012
+
+p_mujeres_cocina_si_2012
+
+```
+
+
+En el 2012, de los hombres y mujeres que respondieron la pregunta 'En la semana pasada, ¿Cocinó o preparó alimentos...?', un 13% de los hombres respondieron que Si y un 71% de las mujeres respondieron que Si.
 
 
 ```{r}
 # 2019
 # La semana pasada... Cocinó o preparó alimentos para consumirse en el desayuno, almuerzo, merienda, entre comidas, incluyendo comidas para llevar?
 
-df_analisis_UT2019$s1p2_factor <- fct_recode(factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" )
-df_analisis_UT2019$s51p2_factor <- fct_recode(factor(df_analisis_UT2019$s51p2), "Si"="1","No"="2" ) 
+
 
 df_cocina_sexo_2019 <- df_analisis_UT2019 %>%
   group_by(s1p2_factor, s51p2_factor) %>%
@@ -304,7 +344,7 @@ df_cocina_sexo_2019
 
 
 
-```{r}
+```{r include =  FALSE}
 # Validacion df_cocina_sexo_2019: Success
 
 #summary( fct_recode( factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" ) )[1] == df_cocina_sexo_2019[1,3] + df_cocina_sexo_2019[2,3] + df_cocina_sexo_2019[3,3]
@@ -315,6 +355,8 @@ df_cocina_sexo_2019
 ```
 
 
+
+
 ```{r}
 # Considerando NA values
 ggplot(df_cocina_sexo_2019, aes(x = s1p2_factor, y = conteo_cocina, fill = s51p2_factor)) + geom_bar(stat = 'identity', position = 'dodge')
@@ -323,7 +365,120 @@ ggplot(df_cocina_sexo_2019, aes(x = s1p2_factor, y = conteo_cocina, fill = s51p2
 
 ```
 
+```{r}
+# Sin considerar NA values: Visto bueno por la explicación del siguiente chunk
 
+df_cocina_sexo_2019_plot <- df_cocina_sexo_2019 %>%
+  filter(s51p2_factor == "Si" | s51p2_factor == "No")
+
+ggplot(df_cocina_sexo_2019_plot, aes(x = s1p2_factor, y = conteo_cocina, fill = s51p2_factor)) + geom_bar(stat = 'identity', position = 'dodge') + labs(title = "Cocinó o preparo alimentos por sexo", caption = "Fuente: INEC")
+```
+
+```{r}
+# Proporciones
+
+#df_cocina_sexo_2019
+
+#df_cocina_sexo_2019[2,3]  + df_cocina_sexo_2019[3,3] # Total hombres que si participan en el hogar
+
+#df_cocina_sexo_2019[5,3]  + df_cocina_sexo_2019[6,3] # Total mujeres que si participan en el hogar
+
+p_hombres_cocina_si_2019 <- df_cocina_sexo_2019[2,3]/(df_cocina_sexo_2019[2,3]  + df_cocina_sexo_2019[3,3])
+
+p_mujeres_cocina_si_2019 <- df_cocina_sexo_2019[5,3]/(df_cocina_sexo_2019[5,3]  + df_cocina_sexo_2019[6,3])
+
+
+p_hombres_cocina_si_2019
+p_mujeres_cocina_si_2019
+
+
+```
+
+
+Podemos estudiar las proporciones. En el 2019, el 54% de los hombres respondieron que si cocinó o preparó alimentos, mientras que el 89% de las mujeres respondieron que si.
+
+
+```{r}
+# Explicacion de los NA
+
+summary(fct_recode(factor(data_UT2019$s51p1), "Si" = "1", "No" = "2" ))[2]
+
+df_cocina_sexo_2019[1,3] + df_cocina_sexo_2019[4,3]
+
+
+#summary(fct_recode(factor(data_UT2019$s51p1), "Si" = "1", "No" = "2" ))[2] == df_cocina_sexo_2019[1,3] + df_cocina_sexo_2019[4,3]
+
+# Los vacios se deben a que la primera pregunta de la sección es ¿Participa en los quehaceres del hogar? Si la persona responde que NO, entonces se salta la sección 6 directamente (actividad fisica y transporte). 
+
+```
+
+
+
+# Comparaciones tiempos 2012 y 2019
+
+
+```{r}
+# Pregunta UT15
+
+df_analisis_UT15_UT2012[is.na(df_analisis_UT15_UT2012)] <- 0 # Reemplazar NA por 0 para poder efectuar la suma para determinar el tiempo semanal en horas dedicado a cocinar alimentos
+
+df_analisis_UT15_UT2012$horas_semanales_cocina <- df_analisis_UT15_UT2012$UT15A + (df_analisis_UT15_UT2012$UT15B/60) + df_analisis_UT15_UT2012$UT15C + (df_analisis_UT15_UT2012$UT15D/60)
+```
+
+```{r}
+# VALIDAR
+df_analisis_UT15_UT2012 %>%
+  group_by(P02_factor) %>%
+  summarize(suma_horas_cocina <- sum(horas_semanales_cocina))
+```
+
+
+En el 2012, sumando las horas en las que todas las mujeres encuestadas dedicaron a cocinar o preparar alimentos se obtiene 264798 horas semanales, mientras que para todos los hombres 27348 horas semanales. ACUMULADO DE HORAS. REVISAR LA INTERPRETACIÓN Y EL CÁLCULO.
+
+
+
+
+
+```{r}
+
+df_analisis_UT2019_s51p2 <- data.frame( s51p2a = as.numeric(df_analisis_UT2019$s51p2a), s51p2b = as.numeric(df_analisis_UT2019$s51p2b), s51p2c = as.numeric(df_analisis_UT2019$s51p2c), s51p2d = as.numeric(df_analisis_UT2019$s51p2d) )
+
+df_analisis_UT2019_s51p2[is.na(df_analisis_UT2019_s51p2)] <- 0
+
+df_analisis_UT2019$horas_semanales_cocina <- df_analisis_UT2019_s51p2$s51p2a + (df_analisis_UT2019_s51p2$s51p2b/60) + df_analisis_UT2019_s51p2$s51p2c + (df_analisis_UT2019_s51p2$s51p2d/60)
+
+
+
+```
+
+
+
+
+```{r}
+# VALIDAR
+df_analisis_UT2019 %>%
+  group_by(s1p2_factor) %>%
+  summarize(suma_horas_cocina <- sum(horas_semanales_cocina))
+```
+
+
+En el 2012, sumando las horas en las que todas las mujeres encuestadas dedicaron a cocinar o preparar alimentos se obtiene 111921 horas semanales, mientras que para todos los hombres 26220 horas semanales. ACUMULADO DE HORAS. REVISAR LA INTERPRETACIÓN Y EL CÁLCULO.
+
+
+
+
+# Serie de tiempo
+
+```{r}
+tiempo <- c(2012, 2019)
+h <- c(27348.17	, 26220.93)
+m <- c(264798.17, 111921.10	)
+
+df_ts <- data.frame(tiempo,h,m)
+
+ggplot( df_ts, aes(x = tiempo) ) + geom_line(aes(y = h, colour = 'Hombres')) + geom_line(aes(y = m, colour = 'Mujeres')) + labs(title = "Horas semanales en cocinar y preparar alimentos por sexo en 2012 vs 2019")
+
+```
 
 
 
