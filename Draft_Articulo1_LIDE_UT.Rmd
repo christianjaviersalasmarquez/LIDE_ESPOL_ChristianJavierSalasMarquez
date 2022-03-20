@@ -88,8 +88,14 @@ colnames(data_personas2019)[1] <- 'area'
 
 
 
+# 2012
 
+```{r}
+# Histograma de las edades
 
+hist(data_UT2012$P03)
+
+```
 
 
 ```{r}
@@ -108,6 +114,15 @@ ggplot(t_trabajo_mercado_laboral, aes(x =tiempo_trabajo_mercadolaboral )) + geom
 ```
 
 
+
+
+
+# 2019
+
+```{r}
+# Histograma de las edades 2019
+hist(as.numeric(df_analisis_UT2019$s1p3))
+```
 
 
 ```{r}
@@ -134,17 +149,17 @@ summary(s51p1_2019_factor)
 
 
 ```{r}
-s51p1_2019 <- df_analisis_UT2019$s51p1
-s51p1_2019_factor <- factor(df_analisis_UT2019$s51p1)
-levels(s51p1_2019_factor) <- c("Si","No")
+#s51p1_2019 <- df_analisis_UT2019$s51p1
+#s51p1_2019_factor <- factor(df_analisis_UT2019$s51p1)
+#levels(s51p1_2019_factor) <- c("Si","No")
 
-s1p2_2019_factor <- factor(df_analisis_UT2019$s1p2)
-levels(s1p2_2019_factor) <- c("Hombre","Mujer")
+#s1p2_2019_factor <- factor(df_analisis_UT2019$s1p2)
+#levels(s1p2_2019_factor) <- c("Hombre","Mujer")
 
-summary(s51p1_2019_factor)
-summary(s1p2_2019_factor)
+#summary(s51p1_2019_factor)
+#summary(s1p2_2019_factor)
 
-df_analisis_UT2019$sexo_factor <- s1p2_2019_factor
+
 
 ```
 
@@ -153,7 +168,7 @@ df_analisis_UT2019$sexo_factor <- s1p2_2019_factor
 # Summarize() con summary()
 # Participa en quehaceres del hogar? Por sexo
 df_hogar_sexo <- df_analisis_UT2019 %>%
-  group_by(sexo_factor, participacion = fct_recode(factor(s51p1), "Si" = "1", "No" = "2" )) %>%
+  group_by(s1p2_factor, participacion = fct_recode(factor(s51p1), "Si" = "1", "No" = "2" )) %>%
   summarize(conteo_actividades_hogar = summary(factor(s51p1)))
 
 df_hogar_sexo
@@ -163,7 +178,7 @@ df_hogar_sexo
 # Summarize() con length también funciona igual
 # Participa en quehaceres del hogar? Por sexo
 #df_hogar_sexo <- df_analisis_UT2019 %>%
-#  group_by(sexo_factor,fct_recode(factor(s51p1), "Si" = "1", "No" = "2" )) %>%
+#  group_by(s1p2_factor,fct_recode(factor(s51p1), "Si" = "1", "No" = "2" )) %>%
 #  summarize(conteo_actividades_hogar = length(factor(s51p1)))
 
 # df_hogar_sexo
@@ -201,8 +216,117 @@ df_hogar_sexo
 
 ```{r}
 # ¿Participa en los quehaceres del hogar? Respuestas de Hombres y Mujeres
-ggplot(df_hogar_sexo, aes(x = sexo_factor, y = conteo_actividades_hogar, fill = participacion)) + geom_bar(stat = 'identity')
+ggplot(df_hogar_sexo, aes(x = s1p2_factor, y = conteo_actividades_hogar, fill = participacion)) + geom_bar(stat = 'identity')
 ```
+
+
+```{r}
+ggplot(df_hogar_sexo, aes(x = s1p2_factor, y = conteo_actividades_hogar, fill = participacion)) + geom_bar(stat = 'identity', position = 'dodge')
+```
+
+
+
+
+# Comparaciones 2012 y 2019
+
+
+
+
+```{r}
+# 2012
+# EN LA SEMANA PASADA: ¿Cocinó o preparó alimentos para consumirse en el desayuno, almuerzo, merienda, entre comidas, incluyendo comidas para llevar?
+
+UT15_2012 <- data_UT2012$UT15
+
+UT15_2012 <- factor(UT15_2012)
+
+#str(UT15_2012)
+#class(UT15_2012)
+
+summary(UT15_2012)
+
+# dim(data_UT2012[1])[1] == summary(UT15_2012)[1] + summary(UT15_2012)[2] + summary(UT15_2012)[3]
+
+
+
+```
+
+
+```{r}
+df_analisis_UT15_UT2012 <- data.frame(P02_factor = fct_recode(factor(data_UT2012$P02), "Hombre" = "1", "Mujer"="2") , CIUDAD = data_UT2012$CIUDAD, UT15 = data_UT2012$UT15 , UT15_factor = fct_recode(factor(data_UT2012$UT15), "Si"="1","No"="2" ) , UT15A = data_UT2012$UT15A, UT15B = data_UT2012$UT15B, UT15C = data_UT2012$UT15C, UT15D = data_UT2012$UT15D)
+```
+
+```{r}
+# SUCCESS
+
+df_cocina_sexo_2012 <- df_analisis_UT15_UT2012 %>%
+  group_by( P02_factor , UT15_factor ) %>%
+  summarize(conteo_cocina = summary( factor(UT15) ))
+
+df_cocina_sexo_2012
+# Hay 11623 hombres con NA y 10835 mujeres con NA. Sumando el total de 22458 de la pregunta UT15
+
+```
+
+```{r}
+#df_analisis_UT15_UT2012 %>%
+#  group_by( P02_factor , UT15_factor ) %>%
+#  summarize(conteo_cocina = summary( UT15_factor ))
+
+# Funciona pero resulta en filas adicionales innecesarias
+```
+
+
+```{r}
+ggplot(df_cocina_sexo_2012, aes(x = P02_factor, y = conteo_cocina, fill =  UT15_factor)) + geom_bar(stat = 'identity', position = 'dodge')
+
+# Pensar en considerar las edades o rango de edades
+
+```
+
+
+
+
+```{r}
+# 2019
+# La semana pasada... Cocinó o preparó alimentos para consumirse en el desayuno, almuerzo, merienda, entre comidas, incluyendo comidas para llevar?
+
+df_analisis_UT2019$s1p2_factor <- fct_recode(factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" )
+df_analisis_UT2019$s51p2_factor <- fct_recode(factor(df_analisis_UT2019$s51p2), "Si"="1","No"="2" ) 
+
+df_cocina_sexo_2019 <- df_analisis_UT2019 %>%
+  group_by(s1p2_factor, s51p2_factor) %>%
+  summarize(conteo_cocina = summary( factor(s1p2)  ) )  #Resulta el mismo conteo si se coloca factor(s1p2) o factor(s51p2) en el summary
+
+df_cocina_sexo_2019
+
+```
+
+
+```{r}
+# Validacion df_cocina_sexo_2019: Success
+
+#summary( fct_recode( factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" ) )[1] == df_cocina_sexo_2019[1,3] + df_cocina_sexo_2019[2,3] + df_cocina_sexo_2019[3,3]
+
+#summary( fct_recode( factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" ) )[2] == df_cocina_sexo_2019[4,3] + df_cocina_sexo_2019[5,3] + df_cocina_sexo_2019[6,3]
+
+
+```
+
+
+```{r}
+# Considerando NA values
+ggplot(df_cocina_sexo_2019, aes(x = s1p2_factor, y = conteo_cocina, fill = s51p2_factor)) + geom_bar(stat = 'identity', position = 'dodge')
+
+# Pensar en considerar las edades o rango de edades
+
+```
+
+
+
+
+
+
 
 
 
