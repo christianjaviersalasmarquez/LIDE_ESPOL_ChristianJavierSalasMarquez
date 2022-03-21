@@ -1,0 +1,158 @@
+---
+title: "Tiempo de actividad física de los ecuatorianos"
+author: "Christian Javier Salas Marquez"
+date: "Marzo de 2022"
+output: html_notebook
+---
+
+
+En este script se busca comparar los resultados de la pregunta: En la semana pasada... ¿Hizo ejercicios o practicó algún deporte?
+Tanto en la encuesta de uso del tiempo del 2012 como en la encuesta nacional multipropósito del 2020 se encuentra esta pregunta.
+
+
+```{r}
+###############################################################
+####                   Librerias                           ####
+###############################################################
+
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+if(!require(haven)) install.packages("haven", repos = "http://cran.us.r-project.org")
+if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
+
+```
+
+```{r}
+###############################################################
+####                   Descargar los datos                 ####
+###############################################################
+
+# Base de datos 
+# Le damos un nombre al url
+url <- "https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/raw/main/Base%20EUT%202012.zip"
+# Creamos un directorio temporal
+td <- tempdir()
+# Creamos una carpeta temporal
+tf <- tempfile(tmpdir=td, fileext = ".zip")
+# Descargamos los discap en la carpeta temporal
+download.file(url,tf)
+
+```
+
+```{r}
+# Obtenemos el nombre del archivo dentro del archivo zip, lo descomprimimos (unzip), obtenemos el nombre del 
+# parche, y finalmente lo cargamos
+EUT2012.f.name <- unzip(tf, list=TRUE)$Name[1] # El archivo SAV de la EUT 2012 es el primero
+unzip(tf, files=EUT2012.f.name, exdir=td, overwrite=TRUE)
+EUT2012.f.path <- file.path(td, EUT2012.f.name)
+uso_del_tiempo_2012 <- read_sav(EUT2012.f.path)
+```
+
+```{r}
+data_UT2012 <- data.frame(uso_del_tiempo_2012)
+```
+
+```{r}
+educacion_actfisica_tics_2020 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/202012_multibdd_educaci%C3%B3n_actfisica_tics.csv", header = FALSE)
+```
+
+```{r}
+personas_2020 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/202012_multibdd_personas.csv", header = FALSE)
+```
+
+
+
+
+```{r}
+header_true <- function(df) {
+  names(df) <- as.character(unlist(df[1,]))
+  df[-1,]
+}
+```
+
+```{r}
+data_EDUCACION_ACTFISICA_TICS2020 <- header_true(educacion_actfisica_tics_2020)
+
+colnames(data_EDUCACION_ACTFISICA_TICS2020)[1] <- 'area'
+```
+
+```{r}
+data_personas2020 <- header_true(personas_2020)
+
+colnames(data_personas2020)[1] <- 'area'
+```
+
+```{r}
+df_info_personas2020 <- data.frame(id_per = data_personas2020$id_per, s1p2 = data_personas2020$s1p2)
+
+df_analisis_UT2020 <- merge(df_info_personas2020, data_EDUCACION_ACTFISICA_TICS2020, by = "id_per")
+```
+
+
+
+# 2012
+
+
+
+# 2020
+
+CONTEOS
+
+```{r}
+df_analisis_UT2020$s1p2_factor <- fct_recode(factor(df_analisis_UT2020$s1p2), "Hombre"="1","Mujer"="2" )
+df_analisis_UT2020$s6p4_factor <- fct_recode(factor(df_analisis_UT2020$s6p4), "Si"="1","No"="2" ) 
+```
+
+```{r}
+# En la semana pasada ¿Hizo ejercicios o practicó algún deporte? Por sexo
+df_deporte_sexo2020 <- df_analisis_UT2020 %>%
+  group_by(s1p2_factor, s6p4_factor) %>%
+  summarize(conteo_deporte = summary(factor(s6p4)))
+
+df_deporte_sexo2020
+```
+
+
+TIEMPO
+
+```{r}
+df_analisis_UT2020_s6p4 <- data.frame( s6p4a = as.numeric(df_analisis_UT2020$s6p4a),s6p4b =  as.numeric(df_analisis_UT2020$s6p4b), s6p4c = as.numeric(df_analisis_UT2020$s6p4c), s6p4d = as.numeric(df_analisis_UT2020$s6p4d))
+
+df_analisis_UT2020_s6p4[is.na(df_analisis_UT2020_s6p4)] <- 0
+
+
+df_analisis_UT2020$horas_semanales_deporte <- df_analisis_UT2020_s6p4$s6p4a + (df_analisis_UT2020_s6p4$s6p4b/60) + df_analisis_UT2020_s6p4$s6p4c + (df_analisis_UT2020_s6p4$s6p4d/60)
+```
+
+
+De los que respondieron que sí, cuanto tiempo...? Promedio de horas semanales deporte, por sexo
+
+```{r}
+df_analisis_UT2020 %>%
+  filter( s6p4_factor == "Si" ) %>%
+  group_by(s1p2_factor) %>%
+  summarize( promedio_horas_deporte <- mean(horas_semanales_deporte), sd = sd(horas_semanales_deporte), suma <- sum(horas_semanales_deporte)  )
+```
+
+
+
+```{r}
+# CONSIDERAR UN ANALISIS A LAS PRINCIPALES CIUDADES 
+df_analisis_UT2020 %>%
+  filter( s6p4_factor == "Si" ) %>%
+  group_by(factor(ciudad)) %>%
+  summarize( promedio_horas_deporte <- mean(horas_semanales_deporte), sd = sd(horas_semanales_deporte), suma <- sum(horas_semanales_deporte)  )
+```
+
+
+
+
+
+# Comparacion
+
+
+
+
+
+
+
+
