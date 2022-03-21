@@ -5,6 +5,10 @@ date: "2022-03-17"
 output: html_notebook
 ---
 
+Work in progress :) 
+
+Last edited: 21-03-2022
+
 ```{r}
 ###############################################################
 ####                   Librerias                           ####
@@ -449,7 +453,7 @@ En el 2012, sumando las horas en las que todas las mujeres encuestadas dedicaron
 
 
 ```{r}
-# VALIDAR
+# VALIDAR 
 # PROMEDIO DE HORAS SEMANALES EN COCINAR O PREPARAR ALIMENTOS 2012
 # CONSIDERAR RANGO DE EDADES
 df_analisis_UT15_UT2012 %>%
