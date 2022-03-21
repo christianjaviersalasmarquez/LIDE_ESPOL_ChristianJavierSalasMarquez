@@ -7,7 +7,7 @@ output: html_notebook
 
 ```{r}
 ###############################################################
-####                   Descargar los datos                 ####
+####                   Librerias                           ####
 ###############################################################
 
 if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
@@ -19,7 +19,12 @@ if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.
 
 
 ```{r}
-# Base de datos de personas ----------
+###############################################################
+####                   Descargar los datos                 ####
+###############################################################
+
+
+# Base de datos 
 # Le damos un nombre al url
 url <- "https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/raw/main/Base%20EUT%202012.zip"
 # Creamos un directorio temporal
@@ -46,7 +51,6 @@ uso_del_tiempo_2012 <- read_sav(EUT2012.f.path)
 #data_UT2012 <- uso_del_tiempo_2012
 data_UT2012 <- data.frame(uso_del_tiempo_2012)
 ```
-
 
 
 ```{r}
@@ -87,6 +91,11 @@ colnames(data_personas2019)[1] <- 'area'
 
 
 
+En el año 2012, se ejecutó la Encuesta Específica de Uso del Tiempo, la cual tiene un tamaño muestral de 22968 viviendas, cuya población objetivo son las personas de 12 años y más. El periodo de levantamiento fue entre noviembre y diciembre de 2012.
+
+De acuerdo con el INEC, las encuestas de uso del tiempo son importantes porque proporcionan una forma de conocer la distribución de tiempos entre hombres y mujeres. 
+
+En el año 2019, el uso del tiempo es un módulo de la Encuesta Nacional Multipropósito de Hogares. Entre las diferencias metodológicas, en la Encuesta Nacional Multipropósito de Hogares la población objetivo abarca los hogares y personas constituidas por personas de 5 años y más. El tamaño muestral fue de 12072 viviendas. 
 
 # 2012
 
@@ -235,7 +244,9 @@ ggplot(df_hogar_sexo, aes(x = s1p2_factor, y = conteo_actividades_hogar, fill = 
 
 
 
-# Comparaciones de participacion 2012 y 2019
+# Comparacion de participacion 2012 y 2019
+
+
 
 
 
@@ -437,6 +448,17 @@ En el 2012, sumando las horas en las que todas las mujeres encuestadas dedicaron
 
 
 
+```{r}
+# VALIDAR
+# PROMEDIO DE HORAS SEMANALES EN COCINAR O PREPARAR ALIMENTOS 2012
+# CONSIDERAR RANGO DE EDADES
+df_analisis_UT15_UT2012 %>%
+  group_by(P02_factor) %>%
+  summarize(promedio_horas_cocina <- mean(horas_semanales_cocina), sd_horas_cocina <- sd(horas_semanales_cocina))
+```
+
+
+
 
 
 ```{r}
@@ -456,6 +478,7 @@ df_analisis_UT2019$horas_semanales_cocina <- df_analisis_UT2019_s51p2$s51p2a + (
 
 ```{r}
 # VALIDAR
+# SUMA DE HORAS
 df_analisis_UT2019 %>%
   group_by(s1p2_factor) %>%
   summarize(suma_horas_cocina <- sum(horas_semanales_cocina))
@@ -465,20 +488,70 @@ df_analisis_UT2019 %>%
 En el 2012, sumando las horas en las que todas las mujeres encuestadas dedicaron a cocinar o preparar alimentos se obtiene 111921 horas semanales, mientras que para todos los hombres 26220 horas semanales. ACUMULADO DE HORAS. REVISAR LA INTERPRETACIÓN Y EL CÁLCULO.
 
 
+```{r}
+# VALIDAR
+# PROMEDIO DE HORAS SEMANALES EN COCINAR O PREPARAR ALIMENTOS 2019
+# CONSIDERAR RANGO DE EDADES
+df_analisis_UT2019 %>%
+  group_by(s1p2_factor) %>%
+  summarize(promedio_horas_cocina <- mean(horas_semanales_cocina), sd_horas_cocina <- sd(horas_semanales_cocina))
+```
+
+
 
 
 # Serie de tiempo
 
 ```{r}
+# Test
 tiempo <- c(2012, 2019)
-h <- c(27348.17	, 26220.93)
-m <- c(264798.17, 111921.10	)
+h <- c(0.662504	, 1.615684	)
+m <- c(6.266967	, 6.580884	)
 
 df_ts <- data.frame(tiempo,h,m)
 
-ggplot( df_ts, aes(x = tiempo) ) + geom_line(aes(y = h, colour = 'Hombres')) + geom_line(aes(y = m, colour = 'Mujeres')) + labs(title = "Horas semanales en cocinar y preparar alimentos por sexo en 2012 vs 2019")
+ggplot( df_ts, aes(x = tiempo) ) + geom_line(aes(y = h, colour = 'Hombres')) + geom_line(aes(y = m, colour = 'Mujeres')) + labs(title = "Tiempo promedio semanal en cocinar y preparar alimentos por sexo en 2012 vs 2019 (horas)")
 
 ```
+
+
+
+
+
+
+
+Referencias
+
+Instituto Nacional de Estadística y Censos INEC. (2013). "Metodología de la Encuesta Específica de Uso del Tiempo - 2012." Ecuador, Noviembre 2013. Recuperado de: https://www.ecuadorencifras.gob.ec//documentos/web-inec/Uso_Tiempo/Metodologia_EUT_2012.pdf
+
+Instituto Nacional de Estadística y Censos INEC. (2012). "Encuesta específica de uso del tiempo EUT 2012" Ecuador, Noviembre 2012. Recuperado de: https://www.ecuadorencifras.gob.ec//documentos/web-inec/Uso_Tiempo/Formulario_2012.pdf
+
+Instituto Nacional de Estadística y Censos INEC. (2012). "Encuesta específica de uso del tiempo EUT 2012" [base de datos]. Ecuador. Recuperado de: https://www.ecuadorencifras.gob.ec/uso-del-tiempo-2/#:~:text=Uso%20del%20Tiempo%20%E2%80%93%202012,y%20formulaci%C3%B3n%20de%20pol%C3%ADticas%20p%C3%BAblicas.
+
+Instituto Nacional de Estadística y Censos INEC. (2020). "Documento metodológico de la Encuesta Nacional Multipropósito de Hogares (Seguimiento al Plan Nacional de Desarrollo)-2019" Ecuador, 2020. Recuperado de: https://www.ecuadorencifras.gob.ec/documentos/web-inec/Multiproposito/2019/201912_Metodologia_Multiproposito.pdf 
+
+Instituto Nacional de Estadística y Censos INEC. (2019). "Encuesta Nacional Multipropósito de Hogares-Diciembre-2019" Recuperado de: https://www.ecuadorencifras.gob.ec/documentos/web-inec/Multiproposito/2019/201912_Formulario_Multiproposito.pdf
+
+
+Instituto Nacional de Estadística y Censos INEC. (2020). "Guia para el usuario de base de datos. Encuesta Nacional Multipropósito de Hogares (Seguimiento al Plan Nacional de Desarrollo)" Ecuador, junio 2020. Recuperado de: https://www.ecuadorencifras.gob.ec/documentos/web-inec/Multiproposito/2019/201912_%20Guia%20de%20usuario%20BDD_Multiproposito.pdf 
+
+Instituto Nacional de Estadística y Censos INEC. (2019). "Encuesta Nacional Multipropósito de Hogares (Seguimiento al Plan Nacional de Desarrollo)-2019" [base de datos]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
