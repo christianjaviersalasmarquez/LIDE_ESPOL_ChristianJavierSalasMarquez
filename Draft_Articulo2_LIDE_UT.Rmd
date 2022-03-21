@@ -162,11 +162,67 @@ ggplot(df_deporte_sexo2020 %>% filter(s6p4_factor == "Si" | s6p4_factor == "No")
 
 ```{r}
 # En la semana pasada ¿Hizo ejercicios o practicó algún deporte? Por rango de edad
-df_deporte_edad2020 <- df_analisis_UT2020 %>%
+df_deporte_edad2020_5 <- df_analisis_UT2020 %>%
   group_by(rango_edad, s6p4_factor) %>%
   summarize(conteo_deporte = summary(factor(s6p4)))
 
 df_deporte_edad2020
+```
+
+
+
+```{r}
+ggplot(df_deporte_edad2020_5 %>% filter(s6p4_factor == "Si" | s6p4_factor == "No"), aes(x = conteo_deporte  , y = rango_edad , fill = s6p4_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  labs(title = "¿Hizo ejercicio o practicó algún deporte? Respuestas por grupo de edad en 2020", caption = "Fuente: INEC") + 
+  geom_text(aes(label = conteo_deporte), color ="black", size = 3,position = position_dodge(0.9),vjust = 0) +
+  theme_classic()
+```
+
+
+
+```{r}
+# Rango de edades opción 2
+
+edad_2020 <- as.numeric(df_analisis_UT2020$s1p3)
+
+R = length(edad_2020)
+rango_edad_10 <- rep(0,R)
+
+for (i in 1:R) {
+  
+  if((edad_2020[i] >= 0 ) & (edad_2020[i] <= 11)) { rango_edad_10[i] <- 'Edad entre 0 y 11 años' }
+  else if ( (edad_2020[i] >=12  ) & (edad_2020[i] <= 19  ) ) { rango_edad_10[i] <- 'Edad entre 12 y 19 años' }
+  else if ( (edad_2020[i] >=20  ) & (edad_2020[i] <= 29  ) ) { rango_edad_10[i] <- 'Edad entre 20 y 29 años' }
+  else if ( (edad_2020[i] >=30  ) & (edad_2020[i] <= 39  ) ) { rango_edad_10[i] <- 'Edad entre 30 y 39 años' }
+  else if ( (edad_2020[i] >=40  ) & (edad_2020[i] <= 49  ) ) { rango_edad_10[i] <- 'Edad entre 40 y 49 años' }
+  else if ( (edad_2020[i] >=50  ) & (edad_2020[i] <= 59  ) ) { rango_edad_10[i] <- 'Edad entre 50 y 59 años' }
+  else if ( (edad_2020[i] >=60  ) & (edad_2020[i] <= 69  ) ) { rango_edad_10[i] <- 'Edad entre 60 y 69 años' }
+  else if ( (edad_2020[i] >=70  )) { rango_edad_10[i] <- 'Edad mayor a 70 años' }
+  
+  
+}
+
+df_analisis_UT2020$rango_edad_10 <- factor(rango_edad_10)
+```
+
+
+```{r}
+# En la semana pasada ¿Hizo ejercicios o practicó algún deporte? Por rango de edad de cada 10 años
+df_deporte_edad2020 <- df_analisis_UT2020 %>%
+  group_by(rango_edad_10, s6p4_factor) %>%
+  summarize(conteo_deporte = summary(factor(s6p4)))
+
+df_deporte_edad2020
+```
+
+
+```{r}
+ggplot(df_deporte_edad2020 %>% filter(s6p4_factor == "Si" | s6p4_factor == "No"), aes(x = conteo_deporte  , y = rango_edad_10 , fill = s6p4_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  labs(title = "¿Hizo ejercicio o practicó algún deporte? Respuestas por grupo de edad en 2020", caption = "Fuente: INEC") + 
+  geom_text(aes(label = conteo_deporte), color ="black", size = 3,position = position_dodge(0.9),vjust = 0) +
+  theme_classic()
 ```
 
 
@@ -213,23 +269,53 @@ ggplot(df_analisis_UT2020_sexo_summary, aes(x = promedio_horas_deporte , y = s1p
 
 De los que respondieron que sí, cuanto tiempo...? Promedio de horas semanales deporte, por edad
 
+Considerar los pesos 
 
 ```{r}
 # VERIFICAR
-df_analisis_UT2020_edad_summary <- df_analisis_UT2020 %>%
+df_analisis_UT2020_edad_summary_5 <- df_analisis_UT2020 %>%
   filter( s6p4_factor == "Si" ) %>%
   group_by(rango_edad) %>%
   summarize( promedio_horas_deporte = mean(horas_semanales_deporte), sd = sd(horas_semanales_deporte), suma = sum(horas_semanales_deporte), max = max(horas_semanales_deporte), min = min(horas_semanales_deporte) )
 
-df_analisis_UT2020_edad_summary
+df_analisis_UT2020_edad_summary_5
 
+```
+Considerar por grupos de 10 años.
+
+
+
+```{r}
+df_analisis_UT2020_edad_summary <- df_analisis_UT2020 %>%
+  filter( s6p4_factor == "Si" ) %>%
+  group_by(rango_edad_10) %>%
+  summarize( promedio_horas_deporte = mean(horas_semanales_deporte), sd = sd(horas_semanales_deporte), suma = sum(horas_semanales_deporte), max = max(horas_semanales_deporte), min = min(horas_semanales_deporte) )
+
+df_analisis_UT2020_edad_summary
 ```
 
 
 ```{r}
-ggplot(df_analisis_UT2020_edad_summary, aes(x = promedio_horas_deporte, y = rango_edad)) + 
+ggplot(df_analisis_UT2020_edad_summary_5, aes(x = promedio_horas_deporte, y = rango_edad)) + 
   labs(title = "Promedio de horas semanales de actividad física por edad en 2020") +
-  geom_segment(aes(xend =3, yend = rango_edad), size = 2, color = "lightblue") +
+  geom_segment(aes(xend =0, yend = rango_edad), size = 2, color = "lightblue") +
+  geom_point(size = 8, color = "blue") + 
+  geom_text(aes(label = round(promedio_horas_deporte, digits = 1.5)), color ="white", size = 3) +
+  theme_classic() +
+  theme(axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text = element_text(color = "black"),
+        axis.title = element_blank(),
+        legend.position = "none")
+```
+
+
+
+
+```{r}
+ggplot(df_analisis_UT2020_edad_summary, aes(x = promedio_horas_deporte, y = rango_edad_10)) + 
+  labs(title = "Promedio de horas semanales de actividad física por edad en 2020") +
+  geom_segment(aes(xend =0, yend = rango_edad_10), size = 2, color = "lightblue") +
   geom_point(size = 8, color = "blue") + 
   geom_text(aes(label = round(promedio_horas_deporte, digits = 1.5)), color ="white", size = 3) +
   theme_classic() +
@@ -251,9 +337,13 @@ df_analisis_UT2020 %>%
   summarize( promedio_horas_deporte = mean(horas_semanales_deporte), sd = sd(horas_semanales_deporte), suma = sum(horas_semanales_deporte)  )
 ```
 
+Hizo deporte?  Por edad
 
+Segmentar por provincia. Esperar el significado de los códigos de ciudad (verificar si los 3 primeros dígitos indican la provincia)
 
+Segmentar por región.
 
+Considerar el tiempo de respuesta de los que responden NO, o sea 0 horas, lo cual también influye en el promedio.
 
 
 
