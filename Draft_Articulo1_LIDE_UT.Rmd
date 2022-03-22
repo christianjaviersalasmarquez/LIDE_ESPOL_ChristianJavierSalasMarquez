@@ -7,7 +7,7 @@ output: html_notebook
 
 Work in progress :) 
 
-Last edited: 21-03-2022
+Last edited: 22-03-2022
 
 ```{r}
 ###############################################################
@@ -20,7 +20,6 @@ if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.
 
 
 ```
-
 
 ```{r}
 ###############################################################
@@ -40,7 +39,6 @@ download.file(url,tf)
 
 ```
 
-
 ```{r}
 # Obtenemos el nombre del archivo dentro del archivo zip, lo descomprimimos (unzip), obtenemos el nombre del 
 # parche, y finalmente lo cargamos
@@ -50,25 +48,18 @@ EUT2012.f.path <- file.path(td, EUT2012.f.name)
 uso_del_tiempo_2012 <- read_sav(EUT2012.f.path)
 ```
 
-
 ```{r}
 #data_UT2012 <- uso_del_tiempo_2012
 data_UT2012 <- data.frame(uso_del_tiempo_2012)
 ```
 
-
 ```{r}
 uso_del_tiempo_2019 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/201912_multibdd_uso_del_tiempo.sav.csv", header = FALSE)
 ```
 
-
 ```{r}
 personas_2019 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/201912_multibdd_personas.sav.csv", header = FALSE)
 ```
-
-
-
-
 
 
 
@@ -78,7 +69,6 @@ header_true <- function(df) {
   names(df) <- as.character(unlist(df[1,]))
   df[-1,]
 }
-
 ```
 
 ```{r}
@@ -103,156 +93,8 @@ En el año 2019, el uso del tiempo es un módulo de la Encuesta Nacional Multipr
 
 # 2012
 
-```{r}
-# Histograma de las edades
 
-hist(data_UT2012$P03)
-
-```
-
-
-```{r}
-# OPTIMIZAR
-#t_trabajo_mercado_laboral <- data_UT2012 %>%
-#  rowwise() %>%
-#  mutate(tiempo_trabajo_mercadolaboral = sum(as.numeric(P19A), (as.numeric(P19B)/60),as.numeric(P19C), (as.numeric(P19D)/60), na.rm = #TRUE))
-
-```
-
-
-```{r}
-# OPTIMIZAR
-#tiempo_trabajo <- t_trabajo_mercado_laboral$tiempo_trabajo_mercadolaboral
-
-#ggplot(t_trabajo_mercado_laboral, aes(x =tiempo_trabajo_mercadolaboral )) + geom_histogram()
-
-```
-
-
-
-
-
-# 2019
-
-```{r}
-# Histograma de las edades 2019
-hist(as.numeric(df_analisis_UT2019$s1p3))
-```
-
-
-```{r}
-#Merge de la base de datos de uso del tiempo con la de personas, para conocer información sobre la persona
-
-df_info_personas2019 <- data.frame(id_per = data_personas2019$id_per, s1p2 = data_personas2019$s1p2, s1p3 = data_personas2019$s1p3)
-
-df_analisis_UT2019 <- merge(df_info_personas2019, data_UT2019, by = "id_per")
-
-
-```
-
-```{r}
-df_analisis_UT2019$s1p2_factor <- fct_recode(factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" )
-df_analisis_UT2019$s51p2_factor <- fct_recode(factor(df_analisis_UT2019$s51p2), "Si"="1","No"="2" ) 
-```
-
-
-
-De los encuestados, ¿Cuántos respondieron que sí participan en los quehaceres del hogar y cuantos no?
-
-
-```{r}
-s51p1_2019 <- data_UT2019$s51p1
-s51p1_2019_factor <- factor(data_UT2019$s51p1)
-levels(s51p1_2019_factor) <- c("Si","No")
-summary(s51p1_2019_factor)
-```
-
-
-
-```{r include = FALSE}
-#s51p1_2019 <- df_analisis_UT2019$s51p1
-#s51p1_2019_factor <- factor(df_analisis_UT2019$s51p1)
-#levels(s51p1_2019_factor) <- c("Si","No")
-
-#s1p2_2019_factor <- factor(df_analisis_UT2019$s1p2)
-#levels(s1p2_2019_factor) <- c("Hombre","Mujer")
-
-#summary(s51p1_2019_factor)
-#summary(s1p2_2019_factor)
-
-
-
-```
-
-
-```{r}
-# Summarize() con summary()
-# Participa en quehaceres del hogar? Por sexo
-df_hogar_sexo <- df_analisis_UT2019 %>%
-  group_by(s1p2_factor, participacion = fct_recode(factor(s51p1), "Si" = "1", "No" = "2" )) %>%
-  summarize(conteo_actividades_hogar = summary(factor(s51p1)))
-
-df_hogar_sexo
-```
-
-```{r include = FALSE}
-# Summarize() con length también funciona igual
-# Participa en quehaceres del hogar? Por sexo
-#df_hogar_sexo <- df_analisis_UT2019 %>%
-#  group_by(s1p2_factor,fct_recode(factor(s51p1), "Si" = "1", "No" = "2" )) %>%
-#  summarize(conteo_actividades_hogar = length(factor(s51p1)))
-
-# df_hogar_sexo
-```
-
-```{r include = FALSE}
-# Validacion cantidad de Si o No en s51p1: Success
-
-#summary(fct_recode(factor(data_UT2019$s51p1), "Si" = "1", "No"="2"))[1] ==  df_hogar_sexo$conteo_actividades_hogar[1] + df_hogar_sexo$conteo_actividades_hogar[3]
-
-#summary(fct_recode(factor(data_UT2019$s51p1), "Si" = "1", "No"="2"))[2] == df_hogar_sexo$conteo_actividades_hogar[2] + df_hogar_sexo$conteo_actividades_hogar[4]
-
-
-
-# summary(factor(data_UT2019$s51p1))[1] + summary(factor(data_UT2019$s51p1))[2] # Cantidad de respuesta Si + No 33236
-
-```
-
-
-
-```{r include = FALSE}
-# Validación cantidad de hombres y mujeres en s1p2: Success
-# El conteo en el summarize() funciona tanto con summary() como con length()
-
-#summary(factor(df_analisis_UT2019$s1p2))[1] == df_hogar_sexo$conteo_actividades_hogar[1] + df_hogar_sexo$conteo_actividades_hogar[2]
-
-#summary(factor(df_analisis_UT2019$s1p2))[2] == df_hogar_sexo$conteo_actividades_hogar[3] + df_hogar_sexo$conteo_actividades_hogar[4]
-
-# summary(factor(df_analisis_UT2019$s1p2))[1] + summary(factor(df_analisis_UT2019$s1p2))[2] # Cantidad de Hombres + Mujeres en data_UT2019 33236
-
-
-```
-
-
-
-```{r}
-# ¿Participa en los quehaceres del hogar? Respuestas de Hombres y Mujeres
-ggplot(df_hogar_sexo, aes(x = s1p2_factor, y = conteo_actividades_hogar, fill = participacion)) + geom_bar(stat = 'identity')
-```
-
-
-```{r}
-ggplot(df_hogar_sexo, aes(x = s1p2_factor, y = conteo_actividades_hogar, fill = participacion)) + geom_bar(stat = 'identity', position = 'dodge')
-```
-
-
-
-
-# Comparacion de participacion 2012 y 2019
-
-
-
-
+## CONTEO COCINA UT15 2012
 
 
 ```{r}
@@ -276,7 +118,8 @@ summary(UT15_2012)
 
 
 ```{r}
-df_analisis_UT15_UT2012 <- data.frame(P02_factor = fct_recode(factor(data_UT2012$P02), "Hombre" = "1", "Mujer"="2") , CIUDAD = data_UT2012$CIUDAD, UT15 = data_UT2012$UT15 , UT15_factor = fct_recode(factor(data_UT2012$UT15), "Si"="1","No"="2" ) , UT15A = data_UT2012$UT15A, UT15B = data_UT2012$UT15B, UT15C = data_UT2012$UT15C, UT15D = data_UT2012$UT15D)
+df_analisis_UT15_UT2012 <- data.frame(P02_factor = fct_recode(factor(data_UT2012$P02), "Hombre" = "1", "Mujer"="2") , CIUDAD = data_UT2012$CIUDAD, UT15 = data_UT2012$UT15 , UT15_factor = fct_recode(factor(data_UT2012$UT15), "Si"="1","No"="2" ), P03 = data_UT2012$P03 , UT15A = data_UT2012$UT15A, UT15B = data_UT2012$UT15B, UT15C = data_UT2012$UT15C, UT15D = data_UT2012$UT15D)
+
 ```
 
 ```{r}
@@ -291,23 +134,10 @@ df_cocina_sexo_2012
 
 ```
 
-```{r include = FALSE}
-#df_analisis_UT15_UT2012 %>%
-#  group_by( P02_factor , UT15_factor ) %>%
-#  summarize(conteo_cocina = summary( UT15_factor ))
-
-# Funciona pero resulta en filas adicionales innecesarias
-```
 
 
-```{r}
-# Considerando NA values
 
-ggplot(df_cocina_sexo_2012, aes(x = P02_factor, y = conteo_cocina, fill =  UT15_factor)) + geom_bar(stat = 'identity', position = 'dodge')
 
-# Pensar en considerar las edades o rango de edades
-
-```
 
 ```{r}
 # Sin considerar NA values
@@ -343,94 +173,7 @@ p_mujeres_cocina_si_2012
 En el 2012, de los hombres y mujeres que respondieron la pregunta 'En la semana pasada, ¿Cocinó o preparó alimentos...?', un 13% de los hombres respondieron que Si y un 71% de las mujeres respondieron que Si.
 
 
-```{r}
-# 2019
-# La semana pasada... Cocinó o preparó alimentos para consumirse en el desayuno, almuerzo, merienda, entre comidas, incluyendo comidas para llevar?
-
-
-
-df_cocina_sexo_2019 <- df_analisis_UT2019 %>%
-  group_by(s1p2_factor, s51p2_factor) %>%
-  summarize(conteo_cocina = summary( factor(s1p2)  ) )  #Resulta el mismo conteo si se coloca factor(s1p2) o factor(s51p2) en el summary
-
-df_cocina_sexo_2019
-
-```
-
-
-
-```{r include =  FALSE}
-# Validacion df_cocina_sexo_2019: Success
-
-#summary( fct_recode( factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" ) )[1] == df_cocina_sexo_2019[1,3] + df_cocina_sexo_2019[2,3] + df_cocina_sexo_2019[3,3]
-
-#summary( fct_recode( factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" ) )[2] == df_cocina_sexo_2019[4,3] + df_cocina_sexo_2019[5,3] + df_cocina_sexo_2019[6,3]
-
-
-```
-
-
-
-
-```{r}
-# Considerando NA values
-ggplot(df_cocina_sexo_2019, aes(x = s1p2_factor, y = conteo_cocina, fill = s51p2_factor)) + geom_bar(stat = 'identity', position = 'dodge')
-
-# Pensar en considerar las edades o rango de edades
-
-```
-
-```{r}
-# Sin considerar NA values: Visto bueno por la explicación del siguiente chunk
-
-df_cocina_sexo_2019_plot <- df_cocina_sexo_2019 %>%
-  filter(s51p2_factor == "Si" | s51p2_factor == "No")
-
-ggplot(df_cocina_sexo_2019_plot, aes(x = s1p2_factor, y = conteo_cocina, fill = s51p2_factor)) + geom_bar(stat = 'identity', position = 'dodge') + labs(title = "Cocinó o preparo alimentos por sexo", caption = "Fuente: INEC")
-```
-
-```{r}
-# Proporciones
-
-#df_cocina_sexo_2019
-
-#df_cocina_sexo_2019[2,3]  + df_cocina_sexo_2019[3,3] # Total hombres que si participan en el hogar
-
-#df_cocina_sexo_2019[5,3]  + df_cocina_sexo_2019[6,3] # Total mujeres que si participan en el hogar
-
-p_hombres_cocina_si_2019 <- df_cocina_sexo_2019[2,3]/(df_cocina_sexo_2019[2,3]  + df_cocina_sexo_2019[3,3])
-
-p_mujeres_cocina_si_2019 <- df_cocina_sexo_2019[5,3]/(df_cocina_sexo_2019[5,3]  + df_cocina_sexo_2019[6,3])
-
-
-p_hombres_cocina_si_2019
-p_mujeres_cocina_si_2019
-
-
-```
-
-
-Podemos estudiar las proporciones. En el 2019, el 54% de los hombres respondieron que si cocinó o preparó alimentos, mientras que el 89% de las mujeres respondieron que si.
-
-
-```{r}
-# Explicacion de los NA
-
-summary(fct_recode(factor(data_UT2019$s51p1), "Si" = "1", "No" = "2" ))[2]
-
-df_cocina_sexo_2019[1,3] + df_cocina_sexo_2019[4,3]
-
-
-#summary(fct_recode(factor(data_UT2019$s51p1), "Si" = "1", "No" = "2" ))[2] == df_cocina_sexo_2019[1,3] + df_cocina_sexo_2019[4,3]
-
-# Los vacios se deben a que la primera pregunta de la sección es ¿Participa en los quehaceres del hogar? Si la persona responde que NO, entonces se salta la sección 6 directamente (actividad fisica y transporte). 
-
-```
-
-
-
-# Comparaciones tiempos 2012 y 2019
-
+## TIEMPO COCINA UT15 2012
 
 ```{r}
 # Pregunta UT15
@@ -440,29 +183,18 @@ df_analisis_UT15_UT2012[is.na(df_analisis_UT15_UT2012)] <- 0 # Reemplazar NA por
 df_analisis_UT15_UT2012$horas_semanales_cocina <- df_analisis_UT15_UT2012$UT15A + (df_analisis_UT15_UT2012$UT15B/60) + df_analisis_UT15_UT2012$UT15C + (df_analisis_UT15_UT2012$UT15D/60)
 ```
 
-```{r}
-# VALIDAR
-df_analisis_UT15_UT2012 %>%
-  group_by(P02_factor) %>%
-  summarize(suma_horas_cocina <- sum(horas_semanales_cocina))
-```
-
-
-En el 2012, sumando las horas en las que todas las mujeres encuestadas dedicaron a cocinar o preparar alimentos se obtiene 264798 horas semanales, mientras que para todos los hombres 27348 horas semanales. ACUMULADO DE HORAS. REVISAR LA INTERPRETACIÓN Y EL CÁLCULO.
 
 
 
 ```{r}
-# VALIDAR 
-# PROMEDIO DE HORAS SEMANALES EN COCINAR O PREPARAR ALIMENTOS 2012
-# CONSIDERAR RANGO DE EDADES
+# Promedio de horas semanales en cocinar o preparar alimentos de los ecuatorianos de 12 años en adelante en el 2012
+# No se consideran los NA values porque la pregunta UT15 está dirigida a informantes de 12 años en adelante. Los NA values están conformados por los informantes que tienen menos de 12 años
+
 df_analisis_UT15_UT2012 %>%
+  filter( UT15_factor == "Si" | UT15_factor == "No" ) %>%
   group_by(P02_factor) %>%
-  summarize(promedio_horas_cocina <- mean(horas_semanales_cocina), sd_horas_cocina <- sd(horas_semanales_cocina))
+  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
 ```
-
-
-
 
 
 ```{r}
@@ -480,43 +212,222 @@ df_analisis_UT2019$horas_semanales_cocina <- df_analisis_UT2019_s51p2$s51p2a + (
 
 
 
+# 2019
+
+
 ```{r}
-# VALIDAR
-# SUMA DE HORAS
+#Merge de la base de datos de uso del tiempo con la de personas, para conocer información sobre la persona
+
+df_info_personas2019 <- data.frame(id_per = data_personas2019$id_per, s1p2 = data_personas2019$s1p2, s1p3 = data_personas2019$s1p3)
+
+df_analisis_UT2019 <- merge(df_info_personas2019, data_UT2019, by = "id_per")
+
+
+```
+
+```{r}
+df_analisis_UT2019$s1p2_factor <- fct_recode(factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" )
+df_analisis_UT2019$s51p2_factor <- fct_recode(factor(df_analisis_UT2019$s51p2), "Si"="1","No"="2" ) 
+```
+
+
+```{r}
+# Rango de edades 
+
+edad_2019 <- as.numeric(df_analisis_UT2019$s1p3)
+
+R_edad_2019 = length(edad_2019)
+rango_edad_10_UT2019 <- rep(0,R_edad_2019)
+
+for (i in 1:R_edad_2019) {
+  
+  if((edad_2019[i] >= 0 ) & (edad_2019[i] <= 11)) { rango_edad_10_UT2019[i] <- 'Edad entre 0 y 11 años' }
+  else if ( (edad_2019[i] >=12  ) & (edad_2019[i] <= 19  ) ) { rango_edad_10_UT2019[i] <- 'Edad entre 12 y 19 años' }
+  else if ( (edad_2019[i] >=20  ) & (edad_2019[i] <= 29  ) ) { rango_edad_10_UT2019[i] <- 'Edad entre 20 y 29 años' }
+  else if ( (edad_2019[i] >=30  ) & (edad_2019[i] <= 39  ) ) { rango_edad_10_UT2019[i] <- 'Edad entre 30 y 39 años' }
+  else if ( (edad_2019[i] >=40  ) & (edad_2019[i] <= 49  ) ) { rango_edad_10_UT2019[i] <- 'Edad entre 40 y 49 años' }
+  else if ( (edad_2019[i] >=50  ) & (edad_2019[i] <= 59  ) ) { rango_edad_10_UT2019[i] <- 'Edad entre 50 y 59 años' }
+  else if ( (edad_2019[i] >=60  ) & (edad_2019[i] <= 69  ) ) { rango_edad_10_UT2019[i] <- 'Edad entre 60 y 69 años' }
+  else if ( (edad_2019[i] >=70  )) { rango_edad_10_UT2019[i] <- 'Edad mayor a 70 años' }
+  
+  
+}
+
+df_analisis_UT2019$rango_edad_10_UT2019 <- factor(rango_edad_10_UT2019)
+```
+
+
+```{r}
+# Segmentador de provincias
+# En la variable ciudad, el INEC maneja un código de 6 dígitos, donde el 1er y 2do dígito forman el Código de Provincia, el 3er y 4to dígito forman el Código de Cantón y el 5to y 6to dígito forman el Código de Parroquia. Por ejemplo, en el código 010150, 01 indica la provincia de Azuay, 0101 indica el cantón Cuenca y 010150 indica la parroquia 'Cuenca'
+
+
+codigo_ciudad_2019 <- df_analisis_UT2019$ciudad
+
+R_provincia_2019 <- length(codigo_ciudad_2019)
+provincia_UT2019 <- rep(0, R_provincia_2019)
+
+for (i in 1:R_provincia_2019) {
+  
+  if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "01") { provincia_UT2019[i] <- 'Azuay' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "02") { provincia_UT2019[i] <- 'Bolívar' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "03") { provincia_UT2019[i] <- 'Cañar' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "04") { provincia_UT2019[i] <- 'Carchi' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "05") { provincia_UT2019[i] <- 'Cotopaxi' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "06") { provincia_UT2019[i] <- 'Chimborazo' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "07") { provincia_UT2019[i] <- 'El Oro' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "08") { provincia_UT2019[i] <- 'Esmeraldas' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "09") { provincia_UT2019[i] <- 'Guayas' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "10") { provincia_UT2019[i] <- 'Imbabura' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "11") { provincia_UT2019[i] <- 'Loja' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "12") { provincia_UT2019[i] <- 'Los Ríos' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "13") { provincia_UT2019[i] <- 'Manabí' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "14") { provincia_UT2019[i] <- 'Morona Santiago' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "15") { provincia_UT2019[i] <- 'Napo' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "16") { provincia_UT2019[i] <- 'Pastaza' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "17") { provincia_UT2019[i] <- 'Pichincha' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "18") { provincia_UT2019[i] <- 'Tungurahua' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "19") { provincia_UT2019[i] <- 'Zamora Chinchipe' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "20") { provincia_UT2019[i] <- 'Galápagos' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "21") { provincia_UT2019[i] <- 'Sucumbíos' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "22") { provincia_UT2019[i] <- 'Orellana' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "23") { provincia_UT2019[i] <- 'Santo Domingo de los Tsáchilas' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "24") { provincia_UT2019[i] <- 'Santa Elena' }
+  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "90") { provincia_UT2019[i] <- 'Zonas no delimitadas' }
+  
+}
+
+df_analisis_UT2019$provincia_UT2019 <- factor(provincia_UT2019)
+
+```
+
+
+
+
+### QUEHACERES DEL HOGAR
+
+Es importante considerar brevemente la pregunta s51p1 ¿Participa en los quehaceres de su hogar...? porque las personas que respondan que NO, omiten el resto de preguntas de la sección de uso del tiempo, la cual incluye la pregunta principal de interés s51p2 'En la semana pasada ¿Cocinó o preparó alimentos...?. Es decir, en este caso, los NA values de la variable s51p2_factor están conformados tanto por personas que NO tienen más de 12 años como por personas que responden que NO a la pregunta s51p1 omitiendo s51p2.
+
+
+```{r}
+# Summarize() con summary()
+# Participa en quehaceres del hogar? Por sexo
+df_hogar_sexo <- df_analisis_UT2019 %>%
+  group_by(s1p2_factor, participacion = fct_recode(factor(s51p1), "Si" = "1", "No" = "2" )) %>%
+  summarize(conteo_actividades_hogar = summary(factor(s51p1)))
+
+df_hogar_sexo
+```
+
+
+De los encuestados, ¿Cuántos respondieron que sí participan en los quehaceres del hogar y cuantos no? Por sexo
+
+```{r}
+ggplot(df_hogar_sexo, aes(x = s1p2_factor, y = conteo_actividades_hogar, fill = participacion)) + geom_bar(stat = 'identity', position = 'dodge')
+```
+
+FIN DE SECCION DE QUEHACERES DEL HOGAR.
+
+
+
+
+
+
+
+
+## CONTEO COCINA s51p2 2019
+
+
+```{r}
+# 2019
+# La semana pasada... Cocinó o preparó alimentos para consumirse en el desayuno, almuerzo, merienda, entre comidas, incluyendo comidas para llevar?
+
+df_cocina_sexo_2019 <- df_analisis_UT2019 %>%
+  group_by(s1p2_factor, s51p2_factor) %>%
+  summarize(conteo_cocina = summary( factor(s1p2)  ) )  #Resulta el mismo conteo si se coloca factor(s1p2) o factor(s51p2) en el summary
+
+df_cocina_sexo_2019
+
+```
+
+
+```{r}
+df_cocina_sexo_2019_plot <- df_cocina_sexo_2019 %>%
+  filter(s51p2_factor == "Si" | s51p2_factor == "No")
+
+ggplot(df_cocina_sexo_2019_plot, aes(x = s1p2_factor, y = conteo_cocina, fill = s51p2_factor)) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  labs(title = "Cocinó o preparo alimentos? Respuestas por sexo en 2019", caption = "Fuente: INEC") +
+  geom_text(aes(label = conteo_cocina), color ="black", size = 3,position = position_dodge(0.9),vjust = 0) +
+  theme_classic()
+  
+```
+
+
+
+```{r}
+# Proporciones
+
+#df_cocina_sexo_2019[2,3]  + df_cocina_sexo_2019[3,3] # Total hombres que si participan en el hogar
+#df_cocina_sexo_2019[5,3]  + df_cocina_sexo_2019[6,3] # Total mujeres que si participan en el hogar
+
+p_hombres_cocina_si_2019 <- df_cocina_sexo_2019[2,3]/(df_cocina_sexo_2019[2,3]  + df_cocina_sexo_2019[3,3])
+p_mujeres_cocina_si_2019 <- df_cocina_sexo_2019[5,3]/(df_cocina_sexo_2019[5,3]  + df_cocina_sexo_2019[6,3])
+
+p_hombres_cocina_si_2019
+p_mujeres_cocina_si_2019
+
+```
+
+
+Podemos estudiar las proporciones. En el 2019, el 54% de los hombres respondieron que si cocinó o preparó alimentos, mientras que el 89% de las mujeres respondieron que si.
+
+
+
+```{r}
+df_cocina_edad_2019 <- df_analisis_UT2019 %>%
+  group_by(rango_edad_10_UT2019, s51p2_factor) %>%
+  summarize( conteo_cocina = summary( factor(s51p2) ) )
+
+df_cocina_edad_2019
+
+df_cocina_edad_2019 %>% filter(s51p2_factor == "Si" | s51p2_factor == "No")
+
+# Por cada grupo edad, los NA values de s51p2_factor están dados por las personas que respondieron que NO a s51p1
+```
+
+
+
+
+
+
+
+```{r}
+ggplot(    df_cocina_edad_2019 %>% filter(s51p2_factor == "Si" | s51p2_factor == "No")    , aes(x = conteo_cocina, y = rango_edad_10_UT2019, fill = s51p2_factor)) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  labs(title = "Cocinó o preparo alimentos? Respuestas por grupo de edad en 2019", caption = "Fuente: INEC") +
+  geom_text(aes(label = conteo_cocina), color ="black", size = 3,position = position_dodge(0.9),vjust = 0) +
+  theme_classic()
+  
+```
+
+
+
+
+## TIEMPO COCINA s51p2 2019
+
+
+
+
+```{r}
+# Promedio de horas semanales en cocinar o preparar alimentos en 2019 por sexo.
 df_analisis_UT2019 %>%
+  filter( s51p2_factor == "Si" | s51p2_factor == "No" ) %>%
   group_by(s1p2_factor) %>%
-  summarize(suma_horas_cocina <- sum(horas_semanales_cocina))
+  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
 ```
 
 
-En el 2012, sumando las horas en las que todas las mujeres encuestadas dedicaron a cocinar o preparar alimentos se obtiene 111921 horas semanales, mientras que para todos los hombres 26220 horas semanales. ACUMULADO DE HORAS. REVISAR LA INTERPRETACIÓN Y EL CÁLCULO.
-
-
-```{r}
-# VALIDAR
-# PROMEDIO DE HORAS SEMANALES EN COCINAR O PREPARAR ALIMENTOS 2019
-# CONSIDERAR RANGO DE EDADES
-df_analisis_UT2019 %>%
-  group_by(s1p2_factor) %>%
-  summarize(promedio_horas_cocina <- mean(horas_semanales_cocina), sd_horas_cocina <- sd(horas_semanales_cocina))
-```
-
-
-
-
-# Serie de tiempo
-
-```{r}
-# Test
-tiempo <- c(2012, 2019)
-h <- c(0.662504	, 1.615684	)
-m <- c(6.266967	, 6.580884	)
-
-df_ts <- data.frame(tiempo,h,m)
-
-ggplot( df_ts, aes(x = tiempo) ) + geom_line(aes(y = h, colour = 'Hombres')) + geom_line(aes(y = m, colour = 'Mujeres')) + labs(title = "Tiempo promedio semanal en cocinar y preparar alimentos por sexo en 2012 vs 2019 (horas)")
-
-```
 
 
 
