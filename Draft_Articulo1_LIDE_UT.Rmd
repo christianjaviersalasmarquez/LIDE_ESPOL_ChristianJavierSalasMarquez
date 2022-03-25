@@ -7,7 +7,7 @@ output: html_notebook
 
 Work in progress :) 
 
-Last edited: 22-03-2022
+Last edited: 25-03-2022
 
 ```{r}
 ###############################################################
@@ -122,7 +122,8 @@ summary(UT15_2012)
 
 
 ```{r}
-df_analisis_UT15_UT2012 <- data.frame(P02_factor = fct_recode(factor(data_UT2012$P02), "Hombre" = "1", "Mujer"="2") , CIUDAD = data_UT2012$CIUDAD, UT15 = data_UT2012$UT15 , UT15_factor = fct_recode(factor(data_UT2012$UT15), "Si"="1","No"="2" ), P03 = data_UT2012$P03 , UT15A = data_UT2012$UT15A, UT15B = data_UT2012$UT15B, UT15C = data_UT2012$UT15C, UT15D = data_UT2012$UT15D)
+df_analisis_UT15_UT2012 <- data.frame(P02_factor = fct_recode(factor(data_UT2012$P02), "Hombre" = "1", "Mujer"="2") , CIUDAD = data_UT2012$CIUDAD, UT15 = data_UT2012$UT15 , UT15_factor = fct_recode(factor(data_UT2012$UT15), "Si"="1","No"="2" ), P03 = data_UT2012$P03 , UT15A = data_UT2012$UT15A, UT15B = data_UT2012$UT15B, UT15C = data_UT2012$UT15C, UT15D = data_UT2012$UT15D, fexp_UT2012 = data_UT2012$fexp )
+
 
 ```
 
@@ -182,6 +183,7 @@ En el 2012, de los hombres y mujeres que respondieron la pregunta 'En la semana 
 ```{r}
 # Pregunta UT15
 
+#MEJORAR, ESPECIFICA SOLO A LAS COLUMNAS REQUERIDAS
 df_analisis_UT15_UT2012[is.na(df_analisis_UT15_UT2012)] <- 0 # Reemplazar NA por 0 para poder efectuar la suma para determinar el tiempo semanal en horas dedicado a cocinar alimentos
 
 df_analisis_UT15_UT2012$horas_semanales_cocina <- df_analisis_UT15_UT2012$UT15A + (df_analisis_UT15_UT2012$UT15B/60) + df_analisis_UT15_UT2012$UT15C + (df_analisis_UT15_UT2012$UT15D/60)
@@ -236,7 +238,9 @@ df_analisis_UT2019$horas_semanales_cocina <- df_analisis_UT2019_s51p2$s51p2a + (
 
 ```{r}
 df_analisis_UT2019$s1p2_factor <- fct_recode(factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" )
+df_analisis_UT2019$s51p1_factor <- fct_recode(factor(df_analisis_UT2019$s51p1), "Si"="1","No"="2" )
 df_analisis_UT2019$s51p2_factor <- fct_recode(factor(df_analisis_UT2019$s51p2), "Si"="1","No"="2" ) 
+
 ```
 
 
@@ -420,6 +424,8 @@ ggplot(    df_cocina_edad_2019 %>% filter(s51p2_factor == "Si" | s51p2_factor ==
   
 ```
 
+EL NUMERO DE PERSONAS NO ES TAN INFORMATIVO PORQUE ES UNA MUESTRA. QUEREMOS CALCULAR EL PARAMETRO DE LA MEDIA. ENTONCES LA MEDIA. EN EJE DE LAS X CAMBIAR A PORCENTAJE.
+
 
 
 
@@ -433,8 +439,25 @@ ggplot(    df_cocina_edad_2019 %>% filter(s51p2_factor == "Si" | s51p2_factor ==
 df_analisis_UT2019 %>%
   filter( s51p2_factor == "Si" | s51p2_factor == "No" ) %>%
   group_by(s1p2_factor) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(promedio_horas_cocina = mean(horas_semanales_cocina),media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
 ```
+
+
+
+```{r}
+# SUCCESS
+# Promedio de horas semanales en cocinar o preparar alimentos en 2019 por sexo. CONSIDERANDO FACTORES DE EXPANSION.
+# Se considera los que responden que NO a s51p1 '¿Participa en los quehaceres del hogar... ?, pues se considera que la semana pasada aporto 0 horas a la cocina. Se considera a los que responden que SI cocinó y a los que responden que NO porque de igual forma se considera que la semana pasada aporto 0 horas a la cocina.
+
+df_analisis_UT2019 %>%
+  filter( s51p1_factor == "No" | s51p2_factor == "Si" | s51p2_factor == "No" ) %>%
+  group_by(s1p2_factor) %>%
+  summarize(promedio_horas_cocina = mean(horas_semanales_cocina),media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+```
+
+
+
+
 
 
 
@@ -488,16 +511,41 @@ options(survey.lonely.psu="certainty")
 
 
 
+# VALIDACION 
 
 ```{r}
-# Cálculos
-#d_multiproposito2019 %>%
-#summarise(tdesem = survey_mean(tdeso, vartype=c("se","ci","cv"), na.rm=T, deff = T))
-
-#d_multiproposito2019 %>%
-#group_by(NDOMINIO)%>%
-#summarise(tdesem = survey_mean(tdeso, vartype=c("se","ci","cv"), na.rm=T, deff = T)) 
+# Promedio de horas semanales en cocinar o preparar alimentos en 2019 por sexo. METODO DE ALONSO (Sin haber especifcado NA en s51p2_factor)
+df_analisis_UT2019 %>%
+  filter( !is.na(s51p2_factor) ) %>%
+  group_by(s1p2_factor) %>%
+  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
 ```
+
+
+```{r}
+df_analisis_UT2019$s51p2_factor_TEST <- factor(df_analisis_UT2019$s51p2)
+levels(df_analisis_UT2019$s51p2_factor_TEST) <- c(NA,'Si','No')
+
+
+# Promedio de horas semanales en cocinar o preparar alimentos en 2019 por sexo. METODO DE ALONSO (Habiendo especificado NA en s51p2_factor_TEST)
+df_analisis_UT2019 %>%
+  filter( !is.na(s51p2_factor_TEST) ) %>%
+  group_by(s1p2_factor) %>%
+  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+```
+
+
+
+```{r}
+# VALIDACION COMPARANDO METODOS
+df_analisis_UT2019 %>%
+   mutate( Alonso = !is.na(s51p2_factor), Alonso2 =  !is.na(s51p2_factor_TEST) , Christian = (s51p2_factor == "Si" | s51p2_factor == "No"), Christian2 = ( s51p1_factor == "No" | s51p2_factor == "Si" | s51p2_factor == "No" ) ) %>%
+  select(s1p3,s51p1,s51p2,s51p2_factor,Alonso, Alonso2, Christian, Christian2, horas_semanales_cocina) %>%
+  view()
+```
+
+
+
 
 
 
