@@ -18,6 +18,10 @@ if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-
 if(!require(haven)) install.packages("haven", repos = "http://cran.us.r-project.org")
 if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
 
+if(!require(foreign)) install.packages("foreign", repos = "http://cran.us.r-project.org")
+if(!require(survey)) install.packages("survey", repos = "http://cran.us.r-project.org")
+if(!require(srvyr)) install.packages("srvyr", repos = "http://cran.us.r-project.org")
+
 
 ```
 
@@ -197,17 +201,6 @@ df_analisis_UT15_UT2012 %>%
 ```
 
 
-```{r}
-
-df_analisis_UT2019_s51p2 <- data.frame( s51p2a = as.numeric(df_analisis_UT2019$s51p2a), s51p2b = as.numeric(df_analisis_UT2019$s51p2b), s51p2c = as.numeric(df_analisis_UT2019$s51p2c), s51p2d = as.numeric(df_analisis_UT2019$s51p2d) )
-
-df_analisis_UT2019_s51p2[is.na(df_analisis_UT2019_s51p2)] <- 0
-
-df_analisis_UT2019$horas_semanales_cocina <- df_analisis_UT2019_s51p2$s51p2a + (df_analisis_UT2019_s51p2$s51p2b/60) + df_analisis_UT2019_s51p2$s51p2c + (df_analisis_UT2019_s51p2$s51p2d/60)
-
-
-
-```
 
 
 
@@ -224,6 +217,22 @@ df_analisis_UT2019 <- merge(df_info_personas2019, data_UT2019, by = "id_per")
 
 
 ```
+
+
+
+```{r}
+# df_analisis_UT2019_s51p2 es un data frame auxiliar para calcular la cantidad horas_semanales_cocina
+
+df_analisis_UT2019_s51p2 <- data.frame( s51p2a = as.numeric(df_analisis_UT2019$s51p2a), s51p2b = as.numeric(df_analisis_UT2019$s51p2b), s51p2c = as.numeric(df_analisis_UT2019$s51p2c), s51p2d = as.numeric(df_analisis_UT2019$s51p2d) )
+
+df_analisis_UT2019_s51p2[is.na(df_analisis_UT2019_s51p2)] <- 0
+
+df_analisis_UT2019$horas_semanales_cocina <- df_analisis_UT2019_s51p2$s51p2a + (df_analisis_UT2019_s51p2$s51p2b/60) + df_analisis_UT2019_s51p2$s51p2c + (df_analisis_UT2019_s51p2$s51p2d/60)
+
+```
+
+
+
 
 ```{r}
 df_analisis_UT2019$s1p2_factor <- fct_recode(factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" )
@@ -431,7 +440,64 @@ df_analisis_UT2019 %>%
 
 
 
+# Factores de Expansión, Unidades Primarias de Muestreo y Estratos
 
+
+```{r}
+# En el dataset, fexp está compuesta por valores del tipo character con coma, por lo cual R no puede transformar a numeric sin que aparezca el warning NAs introduced by coercion transformando todos los valores en NA. Primero es necesario reemplazar las comas por puntos
+
+R_fexp <- length(df_analisis_UT2019$fexp)
+fexp_UT2019 <- rep(0,R_fexp)
+
+for (i in 1:R_fexp) {
+  fexp_UT2019[i] <- gsub(",",".", df_analisis_UT2019$fexp[i])
+  
+}
+
+df_analisis_UT2019$fexp_UT2019 <- as.numeric(fexp_UT2019)
+
+```
+
+
+
+```{r}
+# Histograma de los factores de expansión de UT2019
+
+
+ggplot(df_analisis_UT2019, aes(x = fexp_UT2019)) +  geom_histogram()
+
+```
+
+
+```{r}
+df_analisis_UT2019$upm_factor <- factor(df_analisis_UT2019$upm)
+df_analisis_UT2019$estrato_factor <- factor(df_analisis_UT2019$estrato)
+```
+
+
+
+```{r}
+# Declaración del diseño muestral de la encuesta multipropósito
+d_multiproposito2019 <- df_analisis_UT2019 %>% as_survey_design(ids = upm_factor,
+ strata = estrato_factor,
+ weights = fexp_UT2019,
+ nest = T) # Especifica los estratos y los conglomerados que se presentan en el diseño muestral de la encuesta
+options(survey.lonely.psu="certainty")
+```
+
+
+
+
+
+```{r}
+# Cálculos
+#d_multiproposito2019 %>%
+#summarise(tdesem = survey_mean(tdeso, vartype=c("se","ci","cv"), na.rm=T, deff = T))
+
+#d_multiproposito2019 %>%
+#group_by(NDOMINIO)%>%
+#summarise(tdesem = survey_mean(tdeso, vartype=c("se","ci","cv"), na.rm=T, deff = T)) 
+```
 
 
 
