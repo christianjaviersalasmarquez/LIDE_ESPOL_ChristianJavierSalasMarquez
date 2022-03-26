@@ -180,6 +180,8 @@ En el 2012, de los hombres y mujeres que respondieron la pregunta 'En la semana 
 
 ## TIEMPO COCINA UT15 2012
 
+
+MEJORAR
 ```{r}
 # Pregunta UT15
 
@@ -221,13 +223,25 @@ df_analisis_UT2019 <- merge(df_info_personas2019, data_UT2019, by = "id_per")
 ```
 
 
+SOLO ASEGURAR SI LOS NA CON 0 ERAN DE PERSONAS QUE EN REALIDAD TUVIERON 0 HORAS EN LA COCINA
+
+REVISAR SI EN LA ENCUESTA HAY NAS EN LA PREGUNTA DE QUEHACERES EN EL HOGAR
+
+```{r}
+sum(is.na(data_UT2019$s51p1))
+```
+
 
 ```{r}
 # df_analisis_UT2019_s51p2 es un data frame auxiliar para calcular la cantidad horas_semanales_cocina
 
+
+
 df_analisis_UT2019_s51p2 <- data.frame( s51p2a = as.numeric(df_analisis_UT2019$s51p2a), s51p2b = as.numeric(df_analisis_UT2019$s51p2b), s51p2c = as.numeric(df_analisis_UT2019$s51p2c), s51p2d = as.numeric(df_analisis_UT2019$s51p2d) )
 
-df_analisis_UT2019_s51p2[is.na(df_analisis_UT2019_s51p2)] <- 0
+# LOS NA PERTENECEN A LAS PERSONAS DE PERSONAS QUE REPORTARON NO HABER REALIZADO TAREAS EN EL HOGAR. POR LO TANTO SE REEMPLAZAN LOS NAs CON 0.
+
+df_analisis_UT2019_s51p2[is.na(df_analisis_UT2019_s51p2)] <- 0 
 
 df_analisis_UT2019$horas_semanales_cocina <- df_analisis_UT2019_s51p2$s51p2a + (df_analisis_UT2019_s51p2$s51p2b/60) + df_analisis_UT2019_s51p2$s51p2c + (df_analisis_UT2019_s51p2$s51p2d/60)
 
@@ -242,6 +256,28 @@ df_analisis_UT2019$s51p1_factor <- fct_recode(factor(df_analisis_UT2019$s51p1), 
 df_analisis_UT2019$s51p2_factor <- fct_recode(factor(df_analisis_UT2019$s51p2), "Si"="1","No"="2" ) 
 
 ```
+
+```{r}
+# En el dataset, fexp está compuesta por valores del tipo character con coma, por lo cual R no puede transformar a numeric sin que aparezca el warning NAs introduced by coercion transformando todos los valores en NA. Primero es necesario reemplazar las comas por puntos
+
+R_fexp <- length(df_analisis_UT2019$fexp)
+fexp_UT2019 <- rep(0,R_fexp)
+
+for (i in 1:R_fexp) {
+  fexp_UT2019[i] <- gsub(",",".", df_analisis_UT2019$fexp[i])
+  
+}
+
+df_analisis_UT2019$fexp_UT2019 <- as.numeric(fexp_UT2019)
+
+```
+
+```{r}
+df_analisis_UT2019$upm_factor <- factor(df_analisis_UT2019$upm)
+df_analisis_UT2019$estrato_factor <- factor(df_analisis_UT2019$estrato)
+```
+
+
 
 
 ```{r}
@@ -270,49 +306,22 @@ df_analisis_UT2019$rango_edad_10_UT2019 <- factor(rango_edad_10_UT2019)
 ```
 
 
+
+
 ```{r}
-# Segmentador de provincias
-# En la variable ciudad, el INEC maneja un código de 6 dígitos, donde el 1er y 2do dígito forman el Código de Provincia, el 3er y 4to dígito forman el Código de Cantón y el 5to y 6to dígito forman el Código de Parroquia. Por ejemplo, en el código 010150, 01 indica la provincia de Azuay, 0101 indica el cantón Cuenca y 010150 indica la parroquia 'Cuenca'
+# Creación de variable de provincia
 
+df_analisis_UT2019$provincia_UT2019 <- substr(df_analisis_UT2019$ciudad,start = 1, stop = 2)
 
-codigo_ciudad_2019 <- df_analisis_UT2019$ciudad
+df_analisis_UT2019$provincia_UT2019 <- as.factor(df_analisis_UT2019$provincia_UT2019)
 
-R_provincia_2019 <- length(codigo_ciudad_2019)
-provincia_UT2019 <- rep(0, R_provincia_2019)
-
-for (i in 1:R_provincia_2019) {
-  
-  if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "01") { provincia_UT2019[i] <- 'Azuay' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "02") { provincia_UT2019[i] <- 'Bolívar' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "03") { provincia_UT2019[i] <- 'Cañar' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "04") { provincia_UT2019[i] <- 'Carchi' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "05") { provincia_UT2019[i] <- 'Cotopaxi' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "06") { provincia_UT2019[i] <- 'Chimborazo' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "07") { provincia_UT2019[i] <- 'El Oro' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "08") { provincia_UT2019[i] <- 'Esmeraldas' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "09") { provincia_UT2019[i] <- 'Guayas' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "10") { provincia_UT2019[i] <- 'Imbabura' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "11") { provincia_UT2019[i] <- 'Loja' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "12") { provincia_UT2019[i] <- 'Los Ríos' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "13") { provincia_UT2019[i] <- 'Manabí' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "14") { provincia_UT2019[i] <- 'Morona Santiago' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "15") { provincia_UT2019[i] <- 'Napo' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "16") { provincia_UT2019[i] <- 'Pastaza' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "17") { provincia_UT2019[i] <- 'Pichincha' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "18") { provincia_UT2019[i] <- 'Tungurahua' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "19") { provincia_UT2019[i] <- 'Zamora Chinchipe' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "20") { provincia_UT2019[i] <- 'Galápagos' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "21") { provincia_UT2019[i] <- 'Sucumbíos' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "22") { provincia_UT2019[i] <- 'Orellana' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "23") { provincia_UT2019[i] <- 'Santo Domingo de los Tsáchilas' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "24") { provincia_UT2019[i] <- 'Santa Elena' }
-  else if (substr(codigo_ciudad_2019[i], start = 1, stop = 2) == "90") { provincia_UT2019[i] <- 'Zonas no delimitadas' }
-  
-}
-
-df_analisis_UT2019$provincia_UT2019 <- factor(provincia_UT2019)
+levels(df_analisis_UT2019$provincia_UT2019) <- c('Azuay','Bolívar','Cañar','Carchi','Cotopaxi','Chimborazo','El Oro','Esmeraldas','Guayas','Imbabura','Loja','Los Ríos','Manabí','Morona Santiago','Napo','Pastaza','Pichincha','Tungurahua','Zamora Chinchipe','Galápagos','Sucumbíos','Orellana','Santo Domingo de los Tsáchilas','Santa Elena','Zonas no delimitadas')
 
 ```
+
+
+
+
 
 
 
@@ -434,6 +443,8 @@ EL NUMERO DE PERSONAS NO ES TAN INFORMATIVO PORQUE ES UNA MUESTRA. QUEREMOS CALC
 
 
 
+
+
 ```{r}
 # Promedio de horas semanales en cocinar o preparar alimentos en 2019 por sexo.
 df_analisis_UT2019 %>%
@@ -457,6 +468,13 @@ df_analisis_UT2019 %>%
 
 
 
+```{r}
+# NO ES NECESARIA LA REDUNDANCIA
+
+df_analisis_UT2019 %>%
+  group_by(s1p2_factor) %>%
+  summarize(promedio_horas_cocina = mean(horas_semanales_cocina),media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+```
 
 
 
@@ -466,20 +484,7 @@ df_analisis_UT2019 %>%
 # Factores de Expansión, Unidades Primarias de Muestreo y Estratos
 
 
-```{r}
-# En el dataset, fexp está compuesta por valores del tipo character con coma, por lo cual R no puede transformar a numeric sin que aparezca el warning NAs introduced by coercion transformando todos los valores en NA. Primero es necesario reemplazar las comas por puntos
 
-R_fexp <- length(df_analisis_UT2019$fexp)
-fexp_UT2019 <- rep(0,R_fexp)
-
-for (i in 1:R_fexp) {
-  fexp_UT2019[i] <- gsub(",",".", df_analisis_UT2019$fexp[i])
-  
-}
-
-df_analisis_UT2019$fexp_UT2019 <- as.numeric(fexp_UT2019)
-
-```
 
 
 
@@ -492,10 +497,7 @@ ggplot(df_analisis_UT2019, aes(x = fexp_UT2019)) +  geom_histogram()
 ```
 
 
-```{r}
-df_analisis_UT2019$upm_factor <- factor(df_analisis_UT2019$upm)
-df_analisis_UT2019$estrato_factor <- factor(df_analisis_UT2019$estrato)
-```
+
 
 
 
@@ -540,7 +542,7 @@ df_analisis_UT2019 %>%
 # VALIDACION COMPARANDO METODOS
 df_analisis_UT2019 %>%
    mutate( Alonso = !is.na(s51p2_factor), Alonso2 =  !is.na(s51p2_factor_TEST) , Christian = (s51p2_factor == "Si" | s51p2_factor == "No"), Christian2 = ( s51p1_factor == "No" | s51p2_factor == "Si" | s51p2_factor == "No" ) ) %>%
-  select(s1p3,s51p1,s51p2,s51p2_factor,Alonso, Alonso2, Christian, Christian2, horas_semanales_cocina) %>%
+  select(s1p3,s51p1, s51p1_factor,s51p2,s51p2_factor, s51p2_factor_TEST,Alonso, Alonso2, Christian, Christian2, horas_semanales_cocina) %>%
   view()
 ```
 
