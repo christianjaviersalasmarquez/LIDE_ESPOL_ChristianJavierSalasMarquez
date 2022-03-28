@@ -101,35 +101,109 @@ En el año 2019, el uso del tiempo es un módulo de la Encuesta Nacional Multipr
 ## CONTEO COCINA UT15 2012
 
 
+
 ```{r}
 # 2012
-# EN LA SEMANA PASADA: ¿Cocinó o preparó alimentos para consumirse en el desayuno, almuerzo, merienda, entre comidas, incluyendo comidas para llevar?
+# UT15: EN LA SEMANA PASADA... ¿Cocinó o preparó alimentos para consumirse en el desayuno, almuerzo, merienda, entre comidas, incluyendo comidas para llevar?
 
-UT15_2012 <- data_UT2012$UT15
-
-UT15_2012 <- factor(UT15_2012)
-
-#str(UT15_2012)
-#class(UT15_2012)
-
-summary(UT15_2012)
-
-# dim(data_UT2012[1])[1] == summary(UT15_2012)[1] + summary(UT15_2012)[2] + summary(UT15_2012)[3]
-
-
-
-```
-
-
-```{r}
 df_analisis_UT15_UT2012 <- data.frame(P02_factor = fct_recode(factor(data_UT2012$P02), "Hombre" = "1", "Mujer"="2") , CIUDAD = data_UT2012$CIUDAD, UT15 = data_UT2012$UT15 , UT15_factor = fct_recode(factor(data_UT2012$UT15), "Si"="1","No"="2" ), P03 = data_UT2012$P03 , UT15A = data_UT2012$UT15A, UT15B = data_UT2012$UT15B, UT15C = data_UT2012$UT15C, UT15D = data_UT2012$UT15D, fexp_UT2012 = data_UT2012$fexp )
 
-
 ```
 
-```{r}
-# SUCCESS
 
+```{r}
+# Rango de edades 2012
+
+edad_2012 <- as.numeric(df_analisis_UT15_UT2012$P03)
+
+# 98: 98 y más
+# 99: No informa
+
+R_edad_2012 = length(edad_2012)
+rango_edad_10_UT2012 <- rep(0,R_edad_2012)
+
+for (i in 1:R_edad_2012) {
+  
+  if((edad_2012[i] >= 0 ) & (edad_2012[i] <= 11)) { rango_edad_10_UT2012[i] <- 'Edad entre 0 y 11 años' }
+  else if ( (edad_2012[i] >=12  ) & (edad_2012[i] <= 19  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 12 y 19 años' }
+  else if ( (edad_2012[i] >=20  ) & (edad_2012[i] <= 29  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 20 y 29 años' }
+  else if ( (edad_2012[i] >=30  ) & (edad_2012[i] <= 39  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 30 y 39 años' }
+  else if ( (edad_2012[i] >=40  ) & (edad_2012[i] <= 49  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 40 y 49 años' }
+  else if ( (edad_2012[i] >=50  ) & (edad_2012[i] <= 59  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 50 y 59 años' }
+  else if ( (edad_2012[i] >=60  ) & (edad_2012[i] <= 69  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 60 y 69 años' }
+  else if ( (edad_2012[i] >=70  ) & (edad_2012[i] <= 98  )) { rango_edad_10_UT2012[i] <- 'Edad mayor a 70 años' }
+  else if ( edad_2012[i] == 99  ) { rango_edad_10_UT2012[i] <- 'No informa' }
+  
+  
+}
+
+df_analisis_UT15_UT2012$rango_edad_10_UT2012 <- factor(rango_edad_10_UT2012)
+```
+
+
+
+
+
+```{r}
+# VALIDADO 100%
+# Segmentador de provincias
+# En la variable ciudad, el INEC maneja un código de 6 dígitos, donde el 1er y 2do dígito forman el Código de Provincia, el 3er y 4to dígito forman el Código de Cantón y el 5to y 6to dígito forman el Código de Parroquia. Por ejemplo, en el código 010150, 01 indica la provincia de Azuay, 0101 indica el cantón Cuenca y 010150 indica la parroquia 'Cuenca'
+
+
+codigo_ciudad_2012 <- as.character(df_analisis_UT15_UT2012$CIUDAD)
+
+
+R_provincia_2012 <- length(codigo_ciudad_2012)
+provincia_UT2012 <- rep(0, R_provincia_2012)
+
+for (i in 1:R_provincia_2012) {
+  if (nchar(codigo_ciudad_2012[i]) == 5 ) {
+    codigo_ciudad_2012[i] <- paste("0",codigo_ciudad_2012[i], sep = "")
+  }
+}
+
+
+
+
+for (i in 1:R_provincia_2012) {
+  
+  if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "01") { provincia_UT2012[i] <- 'Azuay' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "02") { provincia_UT2012[i] <- 'Bolívar' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "03") { provincia_UT2012[i] <- 'Cañar' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "04") { provincia_UT2012[i] <- 'Carchi' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "05") { provincia_UT2012[i] <- 'Cotopaxi' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "06") { provincia_UT2012[i] <- 'Chimborazo' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "07") { provincia_UT2012[i] <- 'El Oro' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "08") { provincia_UT2012[i] <- 'Esmeraldas' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "09") { provincia_UT2012[i] <- 'Guayas' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "10") { provincia_UT2012[i] <- 'Imbabura' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "11") { provincia_UT2012[i] <- 'Loja' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "12") { provincia_UT2012[i] <- 'Los Ríos' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "13") { provincia_UT2012[i] <- 'Manabí' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "14") { provincia_UT2012[i] <- 'Morona Santiago' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "15") { provincia_UT2012[i] <- 'Napo' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "16") { provincia_UT2012[i] <- 'Pastaza' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "17") { provincia_UT2012[i] <- 'Pichincha' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "18") { provincia_UT2012[i] <- 'Tungurahua' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "19") { provincia_UT2012[i] <- 'Zamora Chinchipe' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "20") { provincia_UT2012[i] <- 'Galápagos' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "21") { provincia_UT2012[i] <- 'Sucumbíos' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "22") { provincia_UT2012[i] <- 'Orellana' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "23") { provincia_UT2012[i] <- 'Santo Domingo de los Tsáchilas' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "24") { provincia_UT2012[i] <- 'Santa Elena' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "90") { provincia_UT2012[i] <- 'Zonas no delimitadas' }
+  
+}
+
+df_analisis_UT15_UT2012$provincia_UT2012 <- factor(provincia_UT2012)
+```
+
+
+
+
+
+
+```{r}
 df_cocina_sexo_2012 <- df_analisis_UT15_UT2012 %>%
   group_by( P02_factor , UT15_factor ) %>%
   summarize(conteo_cocina = summary( factor(UT15) ))
@@ -138,10 +212,6 @@ df_cocina_sexo_2012
 # Hay 11623 hombres con NA y 10835 mujeres con NA. Sumando el total de 22458 de la pregunta UT15
 
 ```
-
-
-
-
 
 
 ```{r}
@@ -154,7 +224,8 @@ ggplot(df_cocina_sexo_2012_plot, aes(x = P02_factor, y = conteo_cocina, fill =  
 ```
 
 ```{r}
-# Proporciones
+# VERIFICAR
+# Proporciones 
 
 #df_cocina_sexo_2012
 
@@ -181,29 +252,29 @@ En el 2012, de los hombres y mujeres que respondieron la pregunta 'En la semana 
 ## TIEMPO COCINA UT15 2012
 
 
-MEJORAR
+
 ```{r}
-# Pregunta UT15
+# df_UT15_ABCD_UT2012 es un data frame auxiliar para calcular la cantidad horas_semanales_cocina
 
-#MEJORAR, ESPECIFICA SOLO A LAS COLUMNAS REQUERIDAS
-df_analisis_UT15_UT2012[is.na(df_analisis_UT15_UT2012)] <- 0 # Reemplazar NA por 0 para poder efectuar la suma para determinar el tiempo semanal en horas dedicado a cocinar alimentos
+df_UT15_ABCD_UT2012 <- data.frame( UT15A = data_UT2012$UT15A, UT15B = data_UT2012$UT15B, UT15C = data_UT2012$UT15C, UT15D = data_UT2012$UT15D  )
 
-df_analisis_UT15_UT2012$horas_semanales_cocina <- df_analisis_UT15_UT2012$UT15A + (df_analisis_UT15_UT2012$UT15B/60) + df_analisis_UT15_UT2012$UT15C + (df_analisis_UT15_UT2012$UT15D/60)
+df_UT15_ABCD_UT2012[is.na(df_UT15_ABCD_UT2012)] <- 0
+
+df_analisis_UT15_UT2012$horas_semanales_cocina <- df_UT15_ABCD_UT2012$UT15A + (df_UT15_ABCD_UT2012$UT15B/60) + df_UT15_ABCD_UT2012$UT15C + (df_UT15_ABCD_UT2012$UT15D/60)
+
 ```
 
 
 
-
 ```{r}
-# Promedio de horas semanales en cocinar o preparar alimentos de los ecuatorianos de 12 años en adelante en el 2012
-# No se consideran los NA values porque la pregunta UT15 está dirigida a informantes de 12 años en adelante. Los NA values están conformados por los informantes que tienen menos de 12 años
+# Promedio de horas semanales en cocinar o preparar alimentos de los ecuatorianos en el 2012
+# No se consideran los NA values porque la pregunta UT15 está dirigida a informantes de 12 en adelante. Los NA values están conformados por los informantes que tienen menos de 12.
 
 df_analisis_UT15_UT2012 %>%
   filter( UT15_factor == "Si" | UT15_factor == "No" ) %>%
   group_by(P02_factor) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2012) , sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
 ```
-
 
 
 
@@ -219,23 +290,12 @@ df_info_personas2019 <- data.frame(id_per = data_personas2019$id_per, s1p2 = dat
 
 df_analisis_UT2019 <- merge(df_info_personas2019, data_UT2019, by = "id_per")
 
-
 ```
 
-
-SOLO ASEGURAR SI LOS NA CON 0 ERAN DE PERSONAS QUE EN REALIDAD TUVIERON 0 HORAS EN LA COCINA
-
-REVISAR SI EN LA ENCUESTA HAY NAS EN LA PREGUNTA DE QUEHACERES EN EL HOGAR
-
-```{r}
-sum(is.na(data_UT2019$s51p1))
-```
 
 
 ```{r}
 # df_analisis_UT2019_s51p2 es un data frame auxiliar para calcular la cantidad horas_semanales_cocina
-
-
 
 df_analisis_UT2019_s51p2 <- data.frame( s51p2a = as.numeric(df_analisis_UT2019$s51p2a), s51p2b = as.numeric(df_analisis_UT2019$s51p2b), s51p2c = as.numeric(df_analisis_UT2019$s51p2c), s51p2d = as.numeric(df_analisis_UT2019$s51p2d) )
 
@@ -249,12 +309,10 @@ df_analisis_UT2019$horas_semanales_cocina <- df_analisis_UT2019_s51p2$s51p2a + (
 
 
 
-
 ```{r}
 df_analisis_UT2019$s1p2_factor <- fct_recode(factor(df_analisis_UT2019$s1p2), "Hombre"="1","Mujer"="2" )
 df_analisis_UT2019$s51p1_factor <- fct_recode(factor(df_analisis_UT2019$s51p1), "Si"="1","No"="2" )
 df_analisis_UT2019$s51p2_factor <- fct_recode(factor(df_analisis_UT2019$s51p2), "Si"="1","No"="2" ) 
-
 ```
 
 ```{r}
@@ -279,9 +337,8 @@ df_analisis_UT2019$estrato_factor <- factor(df_analisis_UT2019$estrato)
 
 
 
-
 ```{r}
-# Rango de edades 
+# Rango de edades 2019
 
 edad_2019 <- as.numeric(df_analisis_UT2019$s1p3)
 
@@ -443,18 +500,6 @@ EL NUMERO DE PERSONAS NO ES TAN INFORMATIVO PORQUE ES UNA MUESTRA. QUEREMOS CALC
 
 
 
-
-
-```{r}
-# Promedio de horas semanales en cocinar o preparar alimentos en 2019 por sexo.
-df_analisis_UT2019 %>%
-  filter( s51p2_factor == "Si" | s51p2_factor == "No" ) %>%
-  group_by(s1p2_factor) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina),media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
-```
-
-
-
 ```{r}
 # SUCCESS
 # Promedio de horas semanales en cocinar o preparar alimentos en 2019 por sexo. CONSIDERANDO FACTORES DE EXPANSION.
@@ -468,12 +513,15 @@ df_analisis_UT2019 %>%
 
 
 
+
 ```{r}
-# NO ES NECESARIA LA REDUNDANCIA
+
 
 df_analisis_UT2019 %>%
   group_by(s1p2_factor) %>%
   summarize(promedio_horas_cocina = mean(horas_semanales_cocina),media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+
+
 ```
 
 
@@ -513,38 +561,11 @@ options(survey.lonely.psu="certainty")
 
 
 
-# VALIDACION 
-
-```{r}
-# Promedio de horas semanales en cocinar o preparar alimentos en 2019 por sexo. METODO DE ALONSO (Sin haber especifcado NA en s51p2_factor)
-df_analisis_UT2019 %>%
-  filter( !is.na(s51p2_factor) ) %>%
-  group_by(s1p2_factor) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
-```
-
-
-```{r}
-df_analisis_UT2019$s51p2_factor_TEST <- factor(df_analisis_UT2019$s51p2)
-levels(df_analisis_UT2019$s51p2_factor_TEST) <- c(NA,'Si','No')
-
-
-# Promedio de horas semanales en cocinar o preparar alimentos en 2019 por sexo. METODO DE ALONSO (Habiendo especificado NA en s51p2_factor_TEST)
-df_analisis_UT2019 %>%
-  filter( !is.na(s51p2_factor_TEST) ) %>%
-  group_by(s1p2_factor) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
-```
+# Gráficos Tiempo Promedio
 
 
 
-```{r}
-# VALIDACION COMPARANDO METODOS
-df_analisis_UT2019 %>%
-   mutate( Alonso = !is.na(s51p2_factor), Alonso2 =  !is.na(s51p2_factor_TEST) , Christian = (s51p2_factor == "Si" | s51p2_factor == "No"), Christian2 = ( s51p1_factor == "No" | s51p2_factor == "Si" | s51p2_factor == "No" ) ) %>%
-  select(s1p3,s51p1, s51p1_factor,s51p2,s51p2_factor, s51p2_factor_TEST,Alonso, Alonso2, Christian, Christian2, horas_semanales_cocina) %>%
-  view()
-```
+
 
 
 
