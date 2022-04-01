@@ -1,5 +1,5 @@
 ---
-title: "Uso del tiempo de los ecuatorianos"
+title: "Uso del tiempo de los ecuatorianos 1"
 author: "Christian Javier Salas Marquez"
 date: '2022-03-17'
 output:
@@ -67,6 +67,7 @@ personas_2019 <- read.csv2("https://raw.githubusercontent.com/christianjaviersal
 
 
 
+
 ```{r include=FALSE}
 header_true <- function(df) {
   names(df) <- as.character(unlist(df[1,]))
@@ -96,7 +97,7 @@ De acuerdo con el INEC, las encuestas de uso del tiempo son importantes porque p
 
 Según el RIMISP en su artículo del 6 de marzo del 2020, las mujeres dedican 3 veces más tiempo al trabajo no remunerado. En partícular, según el INEC, en el Ecuador, las mujeres dedican 31 horas semanales al trabajo doméstico, mientras que los hombres solo 11.3 horas. Queremos investigar en particular el tiempo dedicado a la cocina, dado que es parte del agregado del trabajo doméstico.
 
-Para ejecutar este análisis, usé las encuestas del uso del tiempo del 2012 y 2019 que levantó el INEC. En estos levantamientos, se hicieron preguntas a los ecuatorianos. Ambas encuestas son representativas a nivel nacional y a nivel de provincia. En este artículo, realicé los cálculos de las medias ponderadas de horas semanales dedicado a cocinar o preparar alimentos separando por las variables categóricas de sexo, provincia y grupo de edad.
+Para ejecutar este análisis, usé las encuestas del uso del tiempo del 2012 y 2019 que levantó el INEC. En estos levantamientos, se hicieron preguntas a los ecuatorianos para poder identificar la cantidad de horas semanales dedicadas a alguna actividad en específica al entrevistado. Ambas encuestas son representativas a nivel nacional. En este artículo, realicé los cálculos de las medias ponderadas de horas semanales dedicado a cocinar o preparar alimentos separando por las variables categóricas de sexo, provincia y grupo de edad.
 
 
 METODOLOGIA. (Colocar al final)
@@ -106,11 +107,11 @@ Para contestar este análisis, usé las encuestas de uso del tiempo. La primera 
 
 
 
-# 2012
-
 
 ```{r include=FALSE}
-# 2012
+###############################################################
+####                        2012                           ####
+###############################################################
 # UT15: EN LA SEMANA PASADA... ¿Cocinó o preparó alimentos para consumirse en el desayuno, almuerzo, merienda, entre comidas, incluyendo comidas para llevar?
 
 df_analisis_UT15_UT2012 <- data.frame(P02_factor = fct_recode(factor(data_UT2012$P02), "Hombre" = "1", "Mujer"="2") , CIUDAD = data_UT2012$CIUDAD, UT15 = data_UT2012$UT15 , UT15_factor = fct_recode(factor(data_UT2012$UT15), "Si"="1","No"="2" ), P03 = data_UT2012$P03 , UT15A = data_UT2012$UT15A, UT15B = data_UT2012$UT15B, UT15C = data_UT2012$UT15C, UT15D = data_UT2012$UT15D, fexp_UT2012 = data_UT2012$fexp )
@@ -150,7 +151,7 @@ df_analisis_UT15_UT2012$rango_edad_10_UT2012 <- factor(rango_edad_10_UT2012)
 # VALIDADO 100%
 # Segmentador de provincias
 # En la variable ciudad, el INEC maneja un código de 6 dígitos, donde el 1er y 2do dígito forman el Código de Provincia, el 3er y 4to dígito forman el Código de Cantón y el 5to y 6to dígito forman el Código de Parroquia. Por ejemplo, en el código 010150, 01 indica la provincia de Azuay, 0101 indica el cantón Cuenca y 010150 indica la parroquia 'Cuenca'
-
+#No existen registros para Galápagos en el dataset del 2012
 
 codigo_ciudad_2012 <- as.character(df_analisis_UT15_UT2012$CIUDAD)
 
@@ -188,7 +189,7 @@ for (i in 1:R_provincia_2012) {
   else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "17") { provincia_UT2012[i] <- 'Pichincha' }
   else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "18") { provincia_UT2012[i] <- 'Tungurahua' }
   else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "19") { provincia_UT2012[i] <- 'Zamora Chinchipe' }
-  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "20") { provincia_UT2012[i] <- 'Galápagos' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "20") { provincia_UT2012[i] <- 'Galápagos' } 
   else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "21") { provincia_UT2012[i] <- 'Sucumbíos' }
   else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "22") { provincia_UT2012[i] <- 'Orellana' }
   else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "23") { provincia_UT2012[i] <- 'Santo Domingo de los Tsáchilas' }
@@ -202,9 +203,12 @@ df_analisis_UT15_UT2012$provincia_UT2012 <- factor(provincia_UT2012)
 
 
 
-## TIEMPO COCINA UT15 2012
+
 
 ```{r include=FALSE}
+###############################################################
+####                Cálculos UT15 2012                     ####
+###############################################################
 # df_UT15_ABCD_UT2012 es un data frame auxiliar para calcular la cantidad horas_semanales_cocina
 
 df_UT15_ABCD_UT2012 <- data.frame( UT15A = data_UT2012$UT15A, UT15B = data_UT2012$UT15B, UT15C = data_UT2012$UT15C, UT15D = data_UT2012$UT15D  )
@@ -271,10 +275,18 @@ df_t_cocina_UT2012_plot5
 
 
 
-# 2019
+
+
+
+
+
 
 
 ```{r include=FALSE}
+###############################################################
+####                        2019                           ####
+###############################################################
+
 #Merge de la base de datos de uso del tiempo con la de personas, para conocer información sobre la persona
 
 df_info_personas2019 <- data.frame(id_per = data_personas2019$id_per, s1p2 = data_personas2019$s1p2, s1p3 = data_personas2019$s1p3)
@@ -359,11 +371,13 @@ levels(df_analisis_UT2019$provincia_UT2019) <- c('Azuay','Bolívar','Cañar','Ca
 ```
 
 
-## TIEMPO COCINA s51p2 2019
+
 
 
 ```{r include=FALSE}
-# SUCCESS
+###############################################################
+####                Cálculos s51p2 2019                    ####
+###############################################################
 # Promedio de horas semanales en cocinar o preparar alimentos en 2019 por sexo. CONSIDERANDO FACTORES DE EXPANSION.
 
 df_t_cocina_UT2019_plot1 <- df_analisis_UT2019 %>%
@@ -412,12 +426,19 @@ df_t_cocina_UT2019_plot5
 ```
 
 
-# Gráficos Tiempo Promedio
 
 
-## Tiempo 2012 vs 2019
+
+
+
+
+
+
 
 ```{r echo=FALSE, fig.height=6 , fig.width=12}
+###############################################################
+####                Gráficos 2012 vs 2019                  ####
+###############################################################
 
 grid.arrange(
 
@@ -448,9 +469,11 @@ top = textGrob("Tiempo semanal en cocinar o preparar alimentos, por sexo 2012 vs
 
 ```
 
-En el 2012, se puede observar que, en promedio, las mujeres dedicaron 8.34 horas semanales en cocinar o preparar alimentos. Por otro lado, los hombres solo dedicaron 0.88 horas semanales.
+En esta primera visualización, podemos ver dos gráficos que muestran el tiempo semanal en cocinar o preparar alimentos por sexo. El gráfico de la izquierda es para el año 2012 y el de la derecha para el año 2019. Para el resto de visualizaciones de este artículo se cumple el mismo orden.
 
-En el 2019, podemos observar que, en promedio, las mujeres dedicaron 6.43 horas semanales en cocinar o preparar alimentos. Por otro lado, los hombres solo dedicaron 1.59 horas semanales.
+En el 2012, se puede observar que, en promedio, las mujeres dedicaron 8.34 horas semanales en cocinar o preparar alimentos, mientras que los hombres solo dedicaron 0.88 horas semanales. Por otro lado, en el 2019, podemos observar que, en promedio, las mujeres dedicaron 6.43 horas semanales en cocinar o preparar alimentos, mientras que los hombres dedicaron esta vez 1.59 horas semanales. 
+
+Es decir, para el año 2019, se observa una reducción del promedio de horas semanales que las mujeres dedican a cocinar o preparar alimentos. En el caso de los hombres, se observa un aumento del promedio de horas semanales dedicados a la cocina. Podrían existir diversos factores que expliquen este cambio en el promedio.
 
 
 
@@ -460,17 +483,17 @@ grid.arrange(
 
 ggplot( df_t_cocina_UT2012_plot2 , aes(x = media_ponderada_horas_cocina , y = rango_edad_10_UT2012 )) + 
   geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
-  labs(title = "Tiempo semanal en cocinar o preparar alimentos por grupo de edad 2012 (horas)", caption = "") +
-  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9),hjust = 0) +
-  xlab("Media ponderada de horas") +
+  labs(title = "2012", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9),hjust = 1.2) +
+  xlab("Promedio de horas") +
   ylab("Grupo de edad") +
   theme_classic()
 ,
 ggplot( df_t_cocina_UT2019_plot2 , aes(x = media_ponderada_horas_cocina , y = rango_edad_10_UT2019 )) + 
   geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
-  labs(title = "Tiempo semanal en cocinar o preparar alimentos 2019 (horas)", caption = "") +
-  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9),hjust = 0) +
-  xlab("Media ponderada de horas") +
+  labs(title = "2019", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9),hjust = 1.2) +
+  xlab("Promedio de horas") +
   ylab("Grupo de edad") +
   theme_classic()
 
@@ -494,7 +517,7 @@ grid.arrange(
 ggplot( df_t_cocina_UT2012_plot3 , aes(x = media_ponderada_horas_cocina , y = rango_edad_10_UT2012 , fill = P02_factor )) + 
   geom_bar(stat = 'identity', position = 'dodge') + 
   scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
-  labs(title = "Tiempo semanal en cocinar o preparar alimentos en el 2012 (horas)", caption = "", fill = "Sexo") +
+  labs(title = "2012", caption = "", fill = "Sexo") +
   geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0.4) +
   xlab("Media ponderada de horas") +
   ylab("Grupo de edad") +
@@ -503,7 +526,7 @@ ggplot( df_t_cocina_UT2012_plot3 , aes(x = media_ponderada_horas_cocina , y = ra
 ggplot( df_t_cocina_UT2019_plot3 , aes(x = media_ponderada_horas_cocina , y = rango_edad_10_UT2019 , fill = s1p2_factor )) + 
   geom_bar(stat = 'identity', position = 'dodge') + 
   scale_fill_manual(values =c("#5B7DB1","#FFAC8E")) +
-  labs(title = "Tiempo semanal en cocinar o preparar alimentos 2019 (horas)", caption = "", fill = "Sexo") +
+  labs(title = "2019", caption = "", fill = "Sexo") +
   geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0) +
   xlab("Media ponderada de horas") +
   ylab("Grupo de edad") +
@@ -520,10 +543,6 @@ top = textGrob("Tiempo semanal en cocinar o preparar alimentos, por grupo de eda
 
 
 
-
-
-
-
 ```{r echo=FALSE, fig.height=6 , fig.width=12}
 
 grid.arrange(
@@ -531,7 +550,7 @@ grid.arrange(
 ggplot( df_t_cocina_UT2012_plot3 , aes(x = media_ponderada_horas_cocina , y = rango_edad_10_UT2012 , fill = P02_factor )) + 
   geom_bar(stat = 'identity', position = "fill") + 
   scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
-  labs(title = "Tiempo semanal en cocinar o preparar alimentos en el 2012 (horas)", caption = "", fill = "Sexo") +
+  labs(title = "2012", caption = "", fill = "Sexo") +
   xlab("Proporción") +
   ylab("Grupo de edad") +
   theme_classic()
@@ -539,7 +558,7 @@ ggplot( df_t_cocina_UT2012_plot3 , aes(x = media_ponderada_horas_cocina , y = ra
 ggplot( df_t_cocina_UT2019_plot3 , aes(x = media_ponderada_horas_cocina , y = rango_edad_10_UT2019 , fill = s1p2_factor )) + 
   geom_bar(stat = 'identity', position = "fill") + 
   scale_fill_manual(values =c("#42C2FF","#FBD6D2")) +
-  labs(title = "Tiempo semanal en cocinar o preparar alimentos en el 2019 (horas)", caption = "", fill = "Sexo") +
+  labs(title = "2019", caption = "", fill = "Sexo") +
   xlab("Proporción") +
   ylab("Grupo de edad") +
   theme_classic()
@@ -565,8 +584,8 @@ grid.arrange(
 
 ggplot( df_t_cocina_UT2012_plot4 , aes(x = media_ponderada_horas_cocina , y = reorder(provincia_UT2012, media_ponderada_horas_cocina) )) + 
   geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
-  labs(title = "Tiempo semanal en cocinar en el 2012 (horas)", caption = "") +
-  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0.4) +
+  labs(title = "2012", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9), hjust = 1.2) +
   xlab("Media ponderada de horas") +
   ylab("Provincia") +
   theme_classic()
@@ -574,8 +593,8 @@ ggplot( df_t_cocina_UT2012_plot4 , aes(x = media_ponderada_horas_cocina , y = re
 
 ggplot( df_t_cocina_UT2019_plot4 , aes(x = media_ponderada_horas_cocina , y = reorder(provincia_UT2019, media_ponderada_horas_cocina) )) + 
   geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
-  labs(title = "Tiempo semanal en cocinar o preparar alimentos 2019 (horas)", caption = "") +
-  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0.4) +
+  labs(title = "2019", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9), hjust = 1.2) +
   xlab("Media ponderada de horas") +
   ylab("Provincia") +
   theme_classic()
@@ -590,13 +609,16 @@ top = textGrob("Tiempo semanal en cocinar o preparar alimentos, por provincia 20
 
 
 
+
+
 ```{r echo=FALSE, fig.height=6 , fig.width=12}
 
 grid.arrange(
 
 ggplot( df_t_cocina_UT2012_plot5 , aes(x = media_ponderada_horas_cocina , y = provincia_UT2012 , fill = P02_factor )) + 
   geom_bar(stat = 'identity', position = 'dodge') + 
-  labs(title = "Tiempo semanal en cocinar o preparar alimentos 2012 (horas)", caption = "", fill = "Sexo") +
+  scale_fill_manual(values =c("#5B7DB1","#FFAC8E")) +
+  labs(title = "2012", caption = "", fill = "Sexo") +
   geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0) +
   xlab("Media ponderada de horas") +
   ylab("Provincia") +
@@ -604,7 +626,8 @@ ggplot( df_t_cocina_UT2012_plot5 , aes(x = media_ponderada_horas_cocina , y = pr
 ,
 ggplot( df_t_cocina_UT2019_plot5 , aes(x = media_ponderada_horas_cocina , y = provincia_UT2019 , fill = s1p2_factor )) + 
   geom_bar(stat = 'identity', position = 'dodge') + 
-  labs(title = "Tiempo semanal en cocinar o preparar alimentos 2019 (horas)", caption = "", fill = "Sexo") +
+  scale_fill_manual(values =c("#5B7DB1","#FFAC8E")) +
+  labs(title = "2019", caption = "", fill = "Sexo") +
   geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0) +
   xlab("Media ponderada de horas") +
   ylab("Provincia") +
@@ -630,7 +653,7 @@ grid.arrange(
 ggplot( df_t_cocina_UT2012_plot5 , aes(x = media_ponderada_horas_cocina , y = provincia_UT2012 , fill =  P02_factor  )) + 
   geom_bar(stat = 'identity', position = 'fill') +
   scale_fill_manual(values =c("#5B7DB1","#FFAC8E")) +
-  labs(title = "Tiempo semanal en cocinar o preparar alimentos 2012 (horas)", caption = "", fill = "Sexo") +
+  labs(title = "2012", caption = "", fill = "Sexo") +
   xlab("Proporción") +
   ylab("Provincia") +
   theme_classic()
@@ -639,7 +662,7 @@ ggplot( df_t_cocina_UT2019_plot5 , aes(x = media_ponderada_horas_cocina , y = pr
   geom_bar(stat = 'identity', position = 'fill') + 
   scale_fill_manual(values =c("#42C2FF","#FFC7C7")) +
   #scale_fill_hue(direction = -1) +
-  labs(title = "Tiempo semanal en cocinar o preparar alimentos 2019 (horas)", caption = "", fill = "Sexo") +
+  labs(title = "2019", caption = "", fill = "Sexo") +
   xlab("Proporción") +
   ylab("Provincia") +
   theme_classic()
@@ -653,34 +676,42 @@ top = textGrob("Proporción del tiempo en preparar alimentos, por provincia 2012
 
 
 
-En el 2019 a comparación del 2012, podemos encontrar mayor variabilidad en las proporciones de horas dedicadas a la cocina por sexo en cada provincia. En la mayoría de provincias, ha aumentado el aporte del promedio de horas semanales de los hombres en comparación con el gráfico del 2012.
+En el 2019 a comparación del 2012, podemos encontrar mayor variabilidad en las proporciones de horas dedicadas a la cocina por sexo en cada provincia. En la mayoría de provincias, ha aumentado el aporte del promedio de horas semanales de los hombres en comparación con el gráfico del 2012. Esto concuerda con el primer gráfico que evidenciaba el aumento del promedio de horas semanales dedicados a la cocina por parte de los hombres para el año 2019.
+
+En el caso de Galápagos, para el año 2012, los habitantes de Galápagos no formaron parte de la muestra, por tal motivo no existen registros en el dataset de la provincia de Galápagos en ese año.
 
 
 
 
-
-
-## Serie de tiempo
 
 
 ```{r echo=FALSE}
-año <- c(2012, 2019)
+###############################################################
+####                  Series de tiempo                     ####
+###############################################################
+
+tiempo <- c(2012, 2019)
 h <- c(df_t_cocina_UT2012_plot1$media_ponderada_horas_cocina[1]	, df_t_cocina_UT2019_plot1$media_ponderada_horas_cocina[1]	)
 m <- c(df_t_cocina_UT2012_plot1$media_ponderada_horas_cocina[2]	, df_t_cocina_UT2019_plot1$media_ponderada_horas_cocina[2]	)
 
 
-ggplot( data.frame(año,h,m)  , aes(x = año) ) + 
+ggplot( data.frame(tiempo,h,m)  , aes(x = tiempo) ) + 
   geom_line(aes(y = h, colour = 'Hombres')) + geom_point(aes(y = h)) + 
   geom_line(aes(y = m, colour = 'Mujeres')) + geom_point(aes(y = m)) + 
-  labs(title = "Tiempo promedio semanal en cocinar y preparar alimentos por sexo en 2012 vs 2019 (horas)") +
-  theme_classic()
+  scale_color_manual(values = c("#5B7DB1","#FFAC8E")) +
+  labs(title = "Tiempo semanal en cocinar y preparar alimentos por sexo en 2012 vs 2019 (horas)", colour  = "Sexo") + 
+  xlab("Año") +
+  ylab("Promedio de horas") +
+  ylim(0,8.5) +
+  theme_light()
 ```
 
 El gráfico anterior nos permite observar el cambio en el promedio de horas semanales dedicados a cocinar o preparar alimentos entre 2012 y 2019 para hombres y mujeres. Recordemos que, en el 2012, las mujeres dedicaron 8.34 horas semanales en cocinar o preparar alimentos mientras que en el 2019 esa cifra bajó a 6.43. Por otro lado, en el caso de los hombres, en el 2012 dedicaron 0.88 horas semanales en promedio mientras que el 2019 dedicaron 1.59 horas.
 
-INTRODUCIR LOS RESULTADOS POR SERIE DE TIEMPO, PARA LUEGO PRESENTAR LOS OTROS. AL DE SERIE DE TIEMPO INCLUIR LAS DESVIACIONES (LA PONDERADA). SOLO EN LA SERIE DE TIEMPO. EN LUGAR DE TIEMPO, COLOCAR AÑO.
+INTRODUCIR LOS RESULTADOS POR SERIE DE TIEMPO, PARA LUEGO PRESENTAR LOS OTROS. AL DE SERIE DE TIEMPO INCLUIR LAS DESVIACIONES (LA PONDERADA). SOLO EN LA SERIE DE TIEMPO. 
 
 En nuestro GitHub, podrás revisar el código y reproducir el análisis.
+
 
 
 __Referencias__
