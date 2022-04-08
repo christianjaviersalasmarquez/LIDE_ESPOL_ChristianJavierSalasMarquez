@@ -19,8 +19,10 @@ Last edited: 06-04-2022
 if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
 if(!require(haven)) install.packages("haven", repos = "http://cran.us.r-project.org")
 if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
+if(!require(radiant.data)) install.packages("radiant.data", repos = "http://cran.us.r-project.org")
 if(!require(gridExtra)) install.packages("gridExtra", repos = "http://cran.us.r-project.org")
 if(!require(grid)) install.packages("grid", repos = "http://cran.us.r-project.org")
+
 
 ```
 
@@ -214,7 +216,13 @@ df_analisis_UT15_UT2012$horas_semanales_cocina <- df_UT15_ABCD_UT2012$UT15A + (d
 df_t_cocina_UT2012_plot1 <-  df_analisis_UT15_UT2012 %>%
   filter( UT15_factor == "Si" | UT15_factor == "No" ) %>%
   group_by(P02_factor) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2012) , sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2012),
+            sd_ponderada = weighted.sd(horas_semanales_cocina, fexp_UT2012),
+            promedio_horas_cocina = mean(horas_semanales_cocina),
+            sd = sd(horas_semanales_cocina),
+            suma = sum(horas_semanales_cocina), 
+            max = max(horas_semanales_cocina), 
+            min = min(horas_semanales_cocina))
 
 df_t_cocina_UT2012_plot1
 
@@ -224,7 +232,13 @@ df_t_cocina_UT2012_plot1
 df_t_cocina_UT2012_plot2 <-  df_analisis_UT15_UT2012 %>%
   filter( UT15_factor == "Si" | UT15_factor == "No" ) %>%
   group_by(rango_edad_10_UT2012) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2012) , sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2012),
+            sd_ponderada = weighted.sd(horas_semanales_cocina, fexp_UT2012),
+            promedio_horas_cocina = mean(horas_semanales_cocina),
+            sd = sd(horas_semanales_cocina),
+            suma = sum(horas_semanales_cocina), 
+            max = max(horas_semanales_cocina), 
+            min = min(horas_semanales_cocina))
 
 df_t_cocina_UT2012_plot2
 
@@ -234,7 +248,13 @@ df_t_cocina_UT2012_plot2
 df_t_cocina_UT2012_plot3 <- df_analisis_UT15_UT2012 %>%
   filter( UT15_factor == "Si" | UT15_factor == "No" ) %>%
   group_by(rango_edad_10_UT2012, P02_factor) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2012) , sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2012),
+            sd_ponderada = weighted.sd(horas_semanales_cocina, fexp_UT2012),
+            promedio_horas_cocina = mean(horas_semanales_cocina),
+            sd = sd(horas_semanales_cocina),
+            suma = sum(horas_semanales_cocina), 
+            max = max(horas_semanales_cocina), 
+            min = min(horas_semanales_cocina))
 
 df_t_cocina_UT2012_plot3
 
@@ -244,7 +264,13 @@ df_t_cocina_UT2012_plot3
 df_t_cocina_UT2012_plot4 <- df_analisis_UT15_UT2012 %>%
   filter( UT15_factor == "Si" | UT15_factor == "No" ) %>%
   group_by(provincia_UT2012) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2012) , sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2012),
+            sd_ponderada = weighted.sd(horas_semanales_cocina, fexp_UT2012),
+            promedio_horas_cocina = mean(horas_semanales_cocina),
+            sd = sd(horas_semanales_cocina),
+            suma = sum(horas_semanales_cocina), 
+            max = max(horas_semanales_cocina), 
+            min = min(horas_semanales_cocina))
 
 df_t_cocina_UT2012_plot4
 
@@ -254,7 +280,13 @@ df_t_cocina_UT2012_plot4
 df_t_cocina_UT2012_plot5 <-  df_analisis_UT15_UT2012 %>%
   filter( UT15_factor == "Si" | UT15_factor == "No" ) %>%
   group_by(provincia_UT2012, P02_factor) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina), media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2012) , sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2012),
+            sd_ponderada = weighted.sd(horas_semanales_cocina, fexp_UT2012),
+            promedio_horas_cocina = mean(horas_semanales_cocina),
+            sd = sd(horas_semanales_cocina),
+            suma = sum(horas_semanales_cocina), 
+            max = max(horas_semanales_cocina), 
+            min = min(horas_semanales_cocina))
 
 df_t_cocina_UT2012_plot5
 
@@ -365,7 +397,13 @@ levels(df_analisis_UT2019$provincia_UT2019) <- c('Azuay','Bolívar','Cañar','Ca
 
 df_t_cocina_UT2019_plot1 <- df_analisis_UT2019 %>%
   group_by(s1p2_factor) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina),media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), 
+            sd_ponderada = weighted.sd(horas_semanales_cocina,fexp_UT2019),
+            promedio_horas_cocina = mean(horas_semanales_cocina),
+            sd = sd(horas_semanales_cocina),
+            suma = sum(horas_semanales_cocina), 
+            max = max(horas_semanales_cocina), 
+            min = min(horas_semanales_cocina))
 
 df_t_cocina_UT2019_plot1
 
@@ -375,7 +413,13 @@ df_t_cocina_UT2019_plot1
 ```{r include=FALSE}
 df_t_cocina_UT2019_plot2 <- df_analisis_UT2019 %>%
   group_by(rango_edad_10_UT2019) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina),media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), 
+            sd_ponderada = weighted.sd(horas_semanales_cocina,fexp_UT2019),
+            promedio_horas_cocina = mean(horas_semanales_cocina),
+            sd = sd(horas_semanales_cocina),
+            suma = sum(horas_semanales_cocina), 
+            max = max(horas_semanales_cocina), 
+            min = min(horas_semanales_cocina))
 
 df_t_cocina_UT2019_plot2
 
@@ -384,7 +428,13 @@ df_t_cocina_UT2019_plot2
 ```{r include=FALSE}
 df_t_cocina_UT2019_plot3 <-  df_analisis_UT2019 %>%
   group_by(rango_edad_10_UT2019, s1p2_factor) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina),media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), 
+            sd_ponderada = weighted.sd(horas_semanales_cocina,fexp_UT2019),
+            promedio_horas_cocina = mean(horas_semanales_cocina),
+            sd = sd(horas_semanales_cocina),
+            suma = sum(horas_semanales_cocina), 
+            max = max(horas_semanales_cocina), 
+            min = min(horas_semanales_cocina))
 
 df_t_cocina_UT2019_plot3
 
@@ -393,7 +443,13 @@ df_t_cocina_UT2019_plot3
 ```{r include=FALSE}
 df_t_cocina_UT2019_plot4 <-  df_analisis_UT2019 %>%
   group_by(provincia_UT2019) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina),media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), 
+            sd_ponderada = weighted.sd(horas_semanales_cocina,fexp_UT2019),
+            promedio_horas_cocina = mean(horas_semanales_cocina),
+            sd = sd(horas_semanales_cocina),
+            suma = sum(horas_semanales_cocina), 
+            max = max(horas_semanales_cocina), 
+            min = min(horas_semanales_cocina))
 
 df_t_cocina_UT2019_plot4
 
@@ -402,14 +458,17 @@ df_t_cocina_UT2019_plot4
 ```{r include=FALSE}
 df_t_cocina_UT2019_plot5 <-  df_analisis_UT2019 %>%
   group_by(provincia_UT2019, s1p2_factor) %>%
-  summarize(promedio_horas_cocina = mean(horas_semanales_cocina),media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), sd_horas_cocina = sd(horas_semanales_cocina), suma = sum(horas_semanales_cocina), max = max(horas_semanales_cocina), min = min(horas_semanales_cocina))
+  summarize(media_ponderada_horas_cocina = weighted.mean(horas_semanales_cocina, fexp_UT2019), 
+            sd_ponderada = weighted.sd(horas_semanales_cocina,fexp_UT2019),
+            promedio_horas_cocina = mean(horas_semanales_cocina),
+            sd = sd(horas_semanales_cocina),
+            suma = sum(horas_semanales_cocina), 
+            max = max(horas_semanales_cocina), 
+            min = min(horas_semanales_cocina))
 
 df_t_cocina_UT2019_plot5
 
 ```
-
-
-
 
 
 
@@ -467,6 +526,7 @@ grid.arrange(
 
 ggplot( df_t_cocina_UT2012_plot2 %>% filter(rango_edad_10_UT2012 != 'No informa') , aes(x = media_ponderada_horas_cocina , y = rango_edad_10_UT2012 )) + 
   geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,7) +
   labs(title = "2012", caption = "") +
   geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9),hjust = 1.2) +
   xlab("Promedio de horas") +
@@ -475,6 +535,7 @@ ggplot( df_t_cocina_UT2012_plot2 %>% filter(rango_edad_10_UT2012 != 'No informa'
 ,
 ggplot( df_t_cocina_UT2019_plot2 , aes(x = media_ponderada_horas_cocina , y = rango_edad_10_UT2019 )) + 
   geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,7) +
   labs(title = "2019", caption = "") +
   geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9),hjust = 1.2) +
   xlab("Promedio de horas") +
@@ -502,18 +563,20 @@ grid.arrange(
 ggplot( df_t_cocina_UT2012_plot3 %>% filter(rango_edad_10_UT2012 != 'No informa') , aes(x = media_ponderada_horas_cocina , y = rango_edad_10_UT2012 , fill = P02_factor )) + 
   geom_bar(stat = 'identity', position = 'dodge') + 
   scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  xlim(0,12.5) +
   labs(title = "2012", caption = "", fill = "Sexo") +
-  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0.4) +
-  xlab("Media ponderada de horas") +
+  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0) +
+  xlab("Promedio de horas") +
   ylab("Grupo de edad") +
   theme_classic()
 ,
 ggplot( df_t_cocina_UT2019_plot3 , aes(x = media_ponderada_horas_cocina , y = rango_edad_10_UT2019 , fill = s1p2_factor )) + 
   geom_bar(stat = 'identity', position = 'dodge') + 
   scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  xlim(0,12.5) +
   labs(title = "2019", caption = "", fill = "Sexo") +
   geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0) +
-  xlab("Media ponderada de horas") +
+  xlab("Promedio de horas") +
   ylab("Grupo de edad") +
   theme_classic()
 
@@ -565,7 +628,6 @@ En el 2019, considerando los grupos de edades y el sexo, podemos ver que en el g
 
 
 ```{r echo=FALSE, fig.height=6 , fig.width=12}
-
 grid.arrange(
 
 ggplot( df_t_cocina_UT2012_plot4 , aes(x = media_ponderada_horas_cocina , y = reorder(provincia_UT2012, media_ponderada_horas_cocina) )) + 
@@ -577,7 +639,34 @@ ggplot( df_t_cocina_UT2012_plot4 , aes(x = media_ponderada_horas_cocina , y = re
   theme_classic()
 ,
 
-ggplot( df_t_cocina_UT2019_plot4 , aes(x = media_ponderada_horas_cocina , y = reorder(provincia_UT2019, media_ponderada_horas_cocina) )) + 
+ggplot( df_t_cocina_UT2019_plot4 %>% 
+       mutate(provincia_UT2019 = fct_relevel(provincia_UT2019, 
+                                                'Azuay',
+                                                'Bolívar',
+                                                'Cañar',
+                                                'Carchi',
+                                                'Chimborazo',
+                                                'Cotopaxi',
+                                                'El Oro',
+                                                'Esmeraldas',
+                                                'Guayas',
+                                                'Imbabura',
+                                                'Loja',
+                                                'Los Ríos',
+                                                'Manabí',
+                                                'Morona Santiago',
+                                                'Napo',
+                                                'Orellana',
+                                                'Pastaza',
+                                                'Pichincha',
+                                                'Santa Elena',
+                                                'Santo Domingo de los Tsáchilas',
+                                                'Sucumbíos',
+                                                'Tungurahua',
+                                                'Zamora Chinchipe',
+                                                'Zonas no delimitadas',
+                                                'Galápagos')) %>% 
+       filter(provincia_UT2019 != 'Galápagos' & provincia_UT2019 != 'Zonas no delimitadas') , aes(x = media_ponderada_horas_cocina , y = reorder(provincia_UT2019, media_ponderada_horas_cocina) )) + 
   geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
   labs(title = "2019", caption = "") +
   geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9), hjust = 1.2) +
@@ -590,18 +679,73 @@ ncol=2
 ,
 top = textGrob("Tiempo semanal en cocinar o preparar alimentos, por provincia 2012 vs 2019 (horas)", gp=gpar(fontsize=14,font=1)))
 
+```
+
+
+
+```{r echo=FALSE, fig.height=6 , fig.width=12}
+grid.arrange(
+
+ggplot( df_t_cocina_UT2012_plot4 %>% filter(provincia_UT2012 != 'Zonas no delimitadas') , aes(x = media_ponderada_horas_cocina , y = provincia_UT2012 )) + 
+  geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,6) +
+  labs(title = "2012", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9), hjust = 1.2) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+,
+
+ggplot( df_t_cocina_UT2019_plot4 %>% 
+       mutate(provincia_UT2019 = fct_relevel(provincia_UT2019, 
+                                                'Azuay',
+                                                'Bolívar',
+                                                'Cañar',
+                                                'Carchi',
+                                                'Chimborazo',
+                                                'Cotopaxi',
+                                                'El Oro',
+                                                'Esmeraldas',
+                                                'Guayas',
+                                                'Imbabura',
+                                                'Loja',
+                                                'Los Ríos',
+                                                'Manabí',
+                                                'Morona Santiago',
+                                                'Napo',
+                                                'Orellana',
+                                                'Pastaza',
+                                                'Pichincha',
+                                                'Santa Elena',
+                                                'Santo Domingo de los Tsáchilas',
+                                                'Sucumbíos',
+                                                'Tungurahua',
+                                                'Zamora Chinchipe',
+                                                'Zonas no delimitadas',
+                                                'Galápagos')) %>% 
+       filter(provincia_UT2019 != 'Galápagos' & provincia_UT2019 != 'Zonas no delimitadas') , aes(x = media_ponderada_horas_cocina , y = provincia_UT2019 )) + 
+  geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,6) +
+  labs(title = "2019", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9), hjust = 1.2) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+
+,
+ncol=2
+,
+top = textGrob("Tiempo semanal en cocinar o preparar alimentos, por provincia 2012 vs 2019 (horas)", gp=gpar(fontsize=14,font=1)))
 
 ```
 
 
 
-
-
-```{r echo=FALSE, fig.height=6 , fig.width=12}
-
+```{r, fig.height=6 , fig.width=12}
+# DESCARTAR
 grid.arrange(
 
-ggplot( df_t_cocina_UT2012_plot5 , aes(x = media_ponderada_horas_cocina , y = provincia_UT2012 , fill = P02_factor )) + 
+ggplot( df_t_cocina_UT2012_plot5  , aes(x = media_ponderada_horas_cocina , y = provincia_UT2012 , fill = P02_factor )) + 
   geom_bar(stat = 'identity', position = 'dodge') + 
   scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
   labs(title = "2012", caption = "", fill = "Sexo") +
@@ -623,8 +767,72 @@ ggplot( df_t_cocina_UT2019_plot5 , aes(x = media_ponderada_horas_cocina , y = pr
 ncol=2
 ,
 top = textGrob("Tiempo semanal en cocinar o preparar alimentos, por provincia, por sexo 2012 vs 2019 (horas)", gp=gpar(fontsize=14,font=1)))
+```
+
+
+¿Qué ocurrió en las 3 principales provincias del Ecuador?
+
+
+```{r echo=FALSE, fig.height=6 , fig.width=12}
+
+grid.arrange(
+
+ggplot( df_t_cocina_UT2012_plot5 %>% filter(provincia_UT2012 == 'Pichincha' | provincia_UT2012 == 'Guayas' | provincia_UT2012 == 'Azuay') , aes(x = media_ponderada_horas_cocina , y = provincia_UT2012 , fill = P02_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  labs(title = "2012", caption = "", fill = "Sexo") +
+  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+,
+ggplot( df_t_cocina_UT2019_plot5 %>% filter(provincia_UT2019 == 'Pichincha' | provincia_UT2019 == 'Guayas' | provincia_UT2019 == 'Azuay') , aes(x = media_ponderada_horas_cocina , y = provincia_UT2019 , fill = s1p2_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  labs(title = "2019", caption = "", fill = "Sexo") +
+  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+
+,
+ncol=2
+,
+top = textGrob("Tiempo semanal en cocinar o preparar alimentos, por provincia, por sexo 2012 vs 2019 (horas)", gp=gpar(fontsize=14,font=1)))
 
 ```
+
+
+```{r echo=FALSE, fig.height=6 , fig.width=12}
+grid.arrange(
+
+ggplot( df_t_cocina_UT2012_plot5 %>% filter(provincia_UT2012 == 'Pichincha' | provincia_UT2012 == 'Guayas' | provincia_UT2012 == 'Azuay') , aes(x = provincia_UT2012 , y = media_ponderada_horas_cocina  , fill = P02_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  ylim(0,9) +
+  labs(title = "2012", caption = "", fill = "Sexo") +
+  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), vjust = -0.2) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+,
+ggplot( df_t_cocina_UT2019_plot5 %>% filter(provincia_UT2019 == 'Pichincha' | provincia_UT2019 == 'Guayas' | provincia_UT2019 == 'Azuay') , aes(x = provincia_UT2019  , y = media_ponderada_horas_cocina , fill = s1p2_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  ylim(0,9) +
+  labs(title = "2019", caption = "", fill = "Sexo") +
+  geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), vjust = -0.2) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+
+,
+ncol=2
+,
+top = textGrob("Tiempo semanal en cocinar o preparar alimentos, por provincia, por sexo 2012 vs 2019 (horas)", gp=gpar(fontsize=14,font=1)))
+```
+
+
 
 Considerando las dos principales provincias del Ecuador, en el caso del Pichincha, las mujeres dedicaron en promedio 7.85 horas semanales en cocinar o preparar alimentos y los hombres 1.17 horas. Por otro lado, en Guayas, las mujeres dedicaron en promedio 8.67 horas semanales en cocinar o preparar alimentos y los hombres 0.73 horas.
 
@@ -633,7 +841,6 @@ Considerando las dos principales provincias del Ecuador, en el caso del Pichinch
 
 
 ```{r echo=FALSE, fig.height=6 , fig.width=12}
-
 grid.arrange(
 
 ggplot( df_t_cocina_UT2012_plot5 %>% filter(provincia_UT2012 != 'Zonas no delimitadas') , aes(x = media_ponderada_horas_cocina , y = provincia_UT2012 , fill =  P02_factor  )) + 
@@ -644,7 +851,34 @@ ggplot( df_t_cocina_UT2012_plot5 %>% filter(provincia_UT2012 != 'Zonas no delimi
   ylab("Provincia") +
   theme_classic()
 ,
-ggplot( df_t_cocina_UT2019_plot5 %>% filter(provincia_UT2019 != 'Galápagos' & provincia_UT2019 != 'Zonas no delimitadas')  , aes(x = media_ponderada_horas_cocina , y = provincia_UT2019 , fill = s1p2_factor )) + 
+ggplot(df_t_cocina_UT2019_plot5 %>% 
+       mutate(provincia_UT2019 = fct_relevel(provincia_UT2019, 
+                                                'Azuay',
+                                                'Bolívar',
+                                                'Cañar',
+                                                'Carchi',
+                                                'Chimborazo',
+                                                'Cotopaxi',
+                                                'El Oro',
+                                                'Esmeraldas',
+                                                'Guayas',
+                                                'Imbabura',
+                                                'Loja',
+                                                'Los Ríos',
+                                                'Manabí',
+                                                'Morona Santiago',
+                                                'Napo',
+                                                'Orellana',
+                                                'Pastaza',
+                                                'Pichincha',
+                                                'Santa Elena',
+                                                'Santo Domingo de los Tsáchilas',
+                                                'Sucumbíos',
+                                                'Tungurahua',
+                                                'Zamora Chinchipe',
+                                                'Zonas no delimitadas',
+                                                'Galápagos')) %>% 
+       filter(provincia_UT2019 != 'Galápagos' & provincia_UT2019 != 'Zonas no delimitadas')  , aes(x = media_ponderada_horas_cocina , y = provincia_UT2019 , fill = s1p2_factor )) + 
   geom_bar(stat = 'identity', position = 'fill') + 
   scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
   #scale_fill_manual(values =c("#42C2FF","#FFC7C7")) +
@@ -658,6 +892,7 @@ ggplot( df_t_cocina_UT2019_plot5 %>% filter(provincia_UT2019 != 'Galápagos' & p
 ncol=2
 ,
 top = textGrob("Proporción del tiempo promedio semanal dedicado en cocinar, por sexo, por provincia 2012 vs 2019", gp=gpar(fontsize=14,font=1)))
+
 
 ```
 
