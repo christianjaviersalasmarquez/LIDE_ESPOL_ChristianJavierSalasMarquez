@@ -1,5 +1,5 @@
 ---
-title: "Tiempo de actividad física de los ecuatorianos"
+title: "Uso del tiempo de los ecuatorianos 2"
 author: "Christian Javier Salas Marquez"
 date: "Marzo de 2022"
 output: html_notebook
@@ -7,13 +7,13 @@ output: html_notebook
 
 Work in progress
 
-Last edited: 22-03-2022
+Last edited: 07-04-2022
 
 En este script se busca comparar los resultados de la pregunta: En la semana pasada... ¿Hizo ejercicios o practicó algún deporte?
 Tanto en la encuesta de uso del tiempo del 2012 como en la encuesta nacional multipropósito del 2020 se encuentra esta pregunta.
 
 
-```{r}
+```{r include=FALSE}
 ###############################################################
 ####                   Librerias                           ####
 ###############################################################
@@ -21,13 +21,16 @@ Tanto en la encuesta de uso del tiempo del 2012 como en la encuesta nacional mul
 if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
 if(!require(haven)) install.packages("haven", repos = "http://cran.us.r-project.org")
 if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
+if(!require(radiant.data)) install.packages("radiant.data", repos = "http://cran.us.r-project.org")
+
 
 ```
 
-```{r}
+```{r include=FALSE}
 ###############################################################
 ####                   Descargar los datos                 ####
 ###############################################################
+
 
 # Base de datos 
 # Le damos un nombre al url
@@ -41,7 +44,7 @@ download.file(url,tf)
 
 ```
 
-```{r}
+```{r include=FALSE}
 # Obtenemos el nombre del archivo dentro del archivo zip, lo descomprimimos (unzip), obtenemos el nombre del 
 # parche, y finalmente lo cargamos
 EUT2012.f.name <- unzip(tf, list=TRUE)$Name[1] # El archivo SAV de la EUT 2012 es el primero
@@ -50,55 +53,257 @@ EUT2012.f.path <- file.path(td, EUT2012.f.name)
 uso_del_tiempo_2012 <- read_sav(EUT2012.f.path)
 ```
 
-```{r}
+```{r include=FALSE}
 data_UT2012 <- data.frame(uso_del_tiempo_2012)
 ```
 
-```{r}
+```{r include=FALSE}
 educacion_actfisica_tics_2020 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/202012_multibdd_educaci%C3%B3n_actfisica_tics.csv", header = FALSE)
 ```
 
-```{r}
+```{r include=FALSE}
 personas_2020 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/202012_multibdd_personas.csv", header = FALSE)
 ```
 
-
-
-
-```{r}
+```{r include=FALSE}
 header_true <- function(df) {
   names(df) <- as.character(unlist(df[1,]))
   df[-1,]
 }
 ```
 
-```{r}
+```{r include=FALSE}
 data_EDUCACION_ACTFISICA_TICS2020 <- header_true(educacion_actfisica_tics_2020)
 
 colnames(data_EDUCACION_ACTFISICA_TICS2020)[1] <- 'area'
 ```
 
-```{r}
+```{r include=FALSE}
 data_personas2020 <- header_true(personas_2020)
 
 colnames(data_personas2020)[1] <- 'area'
 ```
 
-```{r}
-df_info_personas2020 <- data.frame(id_per = data_personas2020$id_per, s1p2 = data_personas2020$s1p2)
-
-df_analisis_UT2020 <- merge(df_info_personas2020, data_EDUCACION_ACTFISICA_TICS2020, by = "id_per")
-```
 
 
 
 # 2012
 
+```{r}
+###############################################################
+####                        2012                           ####
+###############################################################
+# UT111: En la semana pasada... ¿Hizo ejercicios o practicó algún deporte?
+
+df_analisis_UT111_UT2012 <- data.frame(P02_factor = fct_recode(factor(data_UT2012$P02), "Hombre" = "1", "Mujer"="2") , CIUDAD = data_UT2012$CIUDAD, UT111 = data_UT2012$UT111 , UT111_factor = fct_recode(factor(data_UT2012$UT111), "Si"="1","No"="2" ), P03 = data_UT2012$P03 , UT111A = data_UT2012$UT111A, UT111B = data_UT2012$UT111B, UT111C = data_UT2012$UT111C, UT111D = data_UT2012$UT111D, fexp_UT2012 = data_UT2012$fexp )
+
+```
+
+```{r}
+# Rango de edades 2012
+
+edad_2012 <- as.numeric(df_analisis_UT111_UT2012$P03)
+
+# 98: 98 y más
+# 99: No informa
+
+R_edad_2012 = length(edad_2012)
+rango_edad_10_UT2012 <- rep(0,R_edad_2012)
+
+for (i in 1:R_edad_2012) {
+  if((edad_2012[i] >= 0 ) & (edad_2012[i] <= 11)) { rango_edad_10_UT2012[i] <- 'Edad entre 0 y 11 años' }
+  else if ( (edad_2012[i] >=12  ) & (edad_2012[i] <= 19  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 12 y 19 años' }
+  else if ( (edad_2012[i] >=20  ) & (edad_2012[i] <= 29  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 20 y 29 años' }
+  else if ( (edad_2012[i] >=30  ) & (edad_2012[i] <= 39  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 30 y 39 años' }
+  else if ( (edad_2012[i] >=40  ) & (edad_2012[i] <= 49  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 40 y 49 años' }
+  else if ( (edad_2012[i] >=50  ) & (edad_2012[i] <= 59  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 50 y 59 años' }
+  else if ( (edad_2012[i] >=60  ) & (edad_2012[i] <= 69  ) ) { rango_edad_10_UT2012[i] <- 'Edad entre 60 y 69 años' }
+  else if ( (edad_2012[i] >=70  ) & (edad_2012[i] <= 98  )) { rango_edad_10_UT2012[i] <- 'Edad mayor a 70 años' }
+  else if ( edad_2012[i] == 99  ) { rango_edad_10_UT2012[i] <- 'No informa' }
+}
+
+df_analisis_UT111_UT2012$rango_edad_10_UT2012 <- factor(rango_edad_10_UT2012)
+```
+
+
+
+```{r}
+codigo_ciudad_2012 <- as.character(df_analisis_UT111_UT2012$CIUDAD)
+
+R_provincia_2012 <- length(codigo_ciudad_2012)
+provincia_UT2012 <- rep(0, R_provincia_2012)
+
+for (i in 1:R_provincia_2012) {
+  if (nchar(codigo_ciudad_2012[i]) == 5 ) {
+    codigo_ciudad_2012[i] <- paste("0",codigo_ciudad_2012[i], sep = "")
+  }
+}
+
+
+for (i in 1:R_provincia_2012) {
+  
+  if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "01") { provincia_UT2012[i] <- 'Azuay' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "02") { provincia_UT2012[i] <- 'Bolívar' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "03") { provincia_UT2012[i] <- 'Cañar' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "04") { provincia_UT2012[i] <- 'Carchi' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "05") { provincia_UT2012[i] <- 'Cotopaxi' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "06") { provincia_UT2012[i] <- 'Chimborazo' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "07") { provincia_UT2012[i] <- 'El Oro' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "08") { provincia_UT2012[i] <- 'Esmeraldas' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "09") { provincia_UT2012[i] <- 'Guayas' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "10") { provincia_UT2012[i] <- 'Imbabura' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "11") { provincia_UT2012[i] <- 'Loja' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "12") { provincia_UT2012[i] <- 'Los Ríos' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "13") { provincia_UT2012[i] <- 'Manabí' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "14") { provincia_UT2012[i] <- 'Morona Santiago' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "15") { provincia_UT2012[i] <- 'Napo' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "16") { provincia_UT2012[i] <- 'Pastaza' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "17") { provincia_UT2012[i] <- 'Pichincha' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "18") { provincia_UT2012[i] <- 'Tungurahua' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "19") { provincia_UT2012[i] <- 'Zamora Chinchipe' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "20") { provincia_UT2012[i] <- 'Galápagos' } 
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "21") { provincia_UT2012[i] <- 'Sucumbíos' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "22") { provincia_UT2012[i] <- 'Orellana' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "23") { provincia_UT2012[i] <- 'Santo Domingo de los Tsáchilas' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "24") { provincia_UT2012[i] <- 'Santa Elena' }
+  else if (substr(codigo_ciudad_2012[i], start = 1, stop = 2) == "90") { provincia_UT2012[i] <- 'Zonas no delimitadas' }
+  
+}
+
+df_analisis_UT111_UT2012$provincia_UT2012 <- factor(provincia_UT2012)
+```
+
+
+```{r}
+###############################################################
+####                Cálculos UT111 2012                    ####
+###############################################################
+
+# df_UT111_ABCD_UT2012 es un data frame auxiliar para calcular la cantidad horas_semanales_deporte
+
+df_UT111_ABCD_UT2012 <- data.frame( UT111A = data_UT2012$UT111A, UT111B = data_UT2012$UT111B, UT111C = data_UT2012$UT111C, UT111D = data_UT2012$UT111D  )
+
+df_UT111_ABCD_UT2012[is.na(df_UT111_ABCD_UT2012)] <- 0
+
+df_analisis_UT111_UT2012$horas_semanales_deporte <- df_UT111_ABCD_UT2012$UT111A + (df_UT111_ABCD_UT2012$UT111B/60) + df_UT111_ABCD_UT2012$UT111C + (df_UT111_ABCD_UT2012$UT111D/60)
+
+```
+
+
+```{r}
+df_t_deporte_UT2012_plot1 <-  df_analisis_UT111_UT2012 %>%
+  filter( UT111_factor == "Si" | UT111_factor == "No" ) %>%
+  group_by(P02_factor) %>%
+  summarize( 
+    media_ponderada_horas_deporte = weighted.mean(horas_semanales_deporte, fexp_UT2012), 
+    sd_ponderada = weighted.sd(horas_semanales_deporte, fexp_UT2012),
+    promedio_horas_deporte = mean(horas_semanales_deporte), 
+    sd = sd(horas_semanales_deporte), 
+    suma = sum(horas_semanales_deporte), 
+    max = max(horas_semanales_deporte), 
+    min = min(horas_semanales_deporte))
+
+
+df_t_deporte_UT2012_plot1
+```
+
+
+```{r}
+df_t_deporte_UT2012_plot2 <-  df_analisis_UT111_UT2012 %>%
+  filter( UT111_factor == "Si" | UT111_factor == "No" ) %>%
+  group_by(rango_edad_10_UT2012) %>%
+  summarize( 
+    media_ponderada_horas_deporte = weighted.mean(horas_semanales_deporte, fexp_UT2012), 
+    sd_ponderada = weighted.sd(horas_semanales_deporte, fexp_UT2012),
+    promedio_horas_deporte = mean(horas_semanales_deporte), 
+    sd = sd(horas_semanales_deporte), 
+    suma = sum(horas_semanales_deporte), 
+    max = max(horas_semanales_deporte), 
+    min = min(horas_semanales_deporte))
+
+
+df_t_deporte_UT2012_plot2
+```
+
+```{r}
+df_t_deporte_UT2012_plot3 <-  df_analisis_UT111_UT2012 %>%
+  filter( UT111_factor == "Si" | UT111_factor == "No" ) %>%
+  group_by(rango_edad_10_UT2012, P02_factor) %>%
+  summarize( 
+    media_ponderada_horas_deporte = weighted.mean(horas_semanales_deporte, fexp_UT2012), 
+    sd_ponderada = weighted.sd(horas_semanales_deporte, fexp_UT2012),
+    promedio_horas_deporte = mean(horas_semanales_deporte), 
+    sd = sd(horas_semanales_deporte), 
+    suma = sum(horas_semanales_deporte), 
+    max = max(horas_semanales_deporte), 
+    min = min(horas_semanales_deporte))
+
+
+df_t_deporte_UT2012_plot3
+```
+
+```{r}
+df_t_deporte_UT2012_plot4 <-  df_analisis_UT111_UT2012 %>%
+  filter( UT111_factor == "Si" | UT111_factor == "No" ) %>%
+  group_by(provincia_UT2012) %>%
+  summarize( 
+    media_ponderada_horas_deporte = weighted.mean(horas_semanales_deporte, fexp_UT2012), 
+    sd_ponderada = weighted.sd(horas_semanales_deporte, fexp_UT2012),
+    promedio_horas_deporte = mean(horas_semanales_deporte), 
+    sd = sd(horas_semanales_deporte), 
+    suma = sum(horas_semanales_deporte), 
+    max = max(horas_semanales_deporte), 
+    min = min(horas_semanales_deporte))
+
+
+df_t_deporte_UT2012_plot4
+```
+
+```{r}
+df_t_deporte_UT2012_plot5 <-  df_analisis_UT111_UT2012 %>%
+  filter( UT111_factor == "Si" | UT111_factor == "No" ) %>%
+  group_by(provincia_UT2012, P02_factor) %>%
+  summarize( 
+    media_ponderada_horas_deporte = weighted.mean(horas_semanales_deporte, fexp_UT2012), 
+    sd_ponderada = weighted.sd(horas_semanales_deporte, fexp_UT2012),
+    promedio_horas_deporte = mean(horas_semanales_deporte), 
+    sd = sd(horas_semanales_deporte), 
+    suma = sum(horas_semanales_deporte), 
+    max = max(horas_semanales_deporte), 
+    min = min(horas_semanales_deporte))
+
+
+df_t_deporte_UT2012_plot5
+```
+
 
 
 # 2020
 
-CONTEOS
+
+```{r include=FALSE}
+###############################################################
+####                        2020                           ####
+###############################################################
+
+df_info_personas2020 <- data.frame(id_per = data_personas2020$id_per, s1p2 = data_personas2020$s1p2)
+
+df_analisis_UT2020 <- merge(df_info_personas2020, data_EDUCACION_ACTFISICA_TICS2020, by = "id_per")
+```
+
+Se debe considerar también el tiempo de respuesta de los que responden que NO hicieron actividad física o deporte en la semana pasada, lo que implica que el encuestado realizó 0 horas de deporte, lo cual también influye en el promedio y debe considerarse.
+
+```{r}
+# df_analisis_UT2020_s6p4 es un data frame auxiliar para calcular la cantidad horas_semanales_deporte
+
+df_analisis_UT2020_s6p4 <- data.frame( s6p4a = as.numeric(df_analisis_UT2020$s6p4a), s6p4b =  as.numeric(df_analisis_UT2020$s6p4b), s6p4c = as.numeric(df_analisis_UT2020$s6p4c), s6p4d = as.numeric(df_analisis_UT2020$s6p4d))
+
+
+df_analisis_UT2020_s6p4[is.na(df_analisis_UT2020_s6p4)] <- 0
+
+
+df_analisis_UT2020$horas_semanales_deporte <- df_analisis_UT2020_s6p4$s6p4a + (df_analisis_UT2020_s6p4$s6p4b/60) + df_analisis_UT2020_s6p4$s6p4c + (df_analisis_UT2020_s6p4$s6p4d/60)
+```
 
 ```{r}
 df_analisis_UT2020$s1p2_factor <- fct_recode(factor(df_analisis_UT2020$s1p2), "Hombre"="1","Mujer"="2" )
@@ -106,30 +311,18 @@ df_analisis_UT2020$s6p4_factor <- fct_recode(factor(df_analisis_UT2020$s6p4), "S
 ```
 
 
-
-
-
-
-
-
 ```{r}
-# En la semana pasada ¿Hizo ejercicios o practicó algún deporte? Por sexo
-df_deporte_sexo2020 <- df_analisis_UT2020 %>%
-  group_by(s1p2_factor, s6p4_factor) %>%
-  summarize(conteo_deporte = summary(factor(s6p4)))
+# En el dataset, fexp está compuesta por valores del tipo character con coma, por lo cual R no puede transformar a numeric sin que aparezca el warning NAs introduced by coercion transformando todos los valores en NA. Primero es necesario reemplazar las comas por puntos
 
-df_deporte_sexo2020
+R_fexp_2020 <- length(df_analisis_UT2020$fexp)
+fexp_UT2020 <- rep(0,R_fexp_2020)
+
+for (i in 1:R_fexp_2020) {
+  fexp_UT2020[i] <- gsub(",",".", df_analisis_UT2020$fexp[i])
+}
+
+df_analisis_UT2020$fexp_UT2020 <- as.numeric(fexp_UT2020)
 ```
-
-```{r}
-ggplot(df_deporte_sexo2020 %>% filter(s6p4_factor == "Si" | s6p4_factor == "No"), aes(x = s1p2_factor, y = conteo_deporte, fill = s6p4_factor )) + 
-  geom_bar(stat = 'identity', position = 'dodge') + 
-  labs(title = "¿Hizo ejercicio o practicó algún deporte? Respuestas por sexo en 2020", caption = "Fuente: INEC") + 
-  geom_text(aes(label = conteo_deporte), color ="black", size = 3,position = position_dodge(0.9),vjust = 0) +
-  theme_classic()
-```
-
-
 
 
 ```{r}
@@ -138,77 +331,182 @@ ggplot(df_deporte_sexo2020 %>% filter(s6p4_factor == "Si" | s6p4_factor == "No")
 edad_2020 <- as.numeric(df_analisis_UT2020$s1p3)
 
 R = length(edad_2020)
-rango_edad_10 <- rep(0,R)
+rango_edad_10_UT2020 <- rep(0,R)
 
 for (i in 1:R) {
+  if((edad_2020[i] >= 0 ) & (edad_2020[i] <= 11)) { rango_edad_10_UT2020[i] <- 'Edad entre 0 y 11 años' }
+  else if ( (edad_2020[i] >=12  ) & (edad_2020[i] <= 19  ) ) { rango_edad_10_UT2020[i] <- 'Edad entre 12 y 19 años' }
+  else if ( (edad_2020[i] >=20  ) & (edad_2020[i] <= 29  ) ) { rango_edad_10_UT2020[i] <- 'Edad entre 20 y 29 años' }
+  else if ( (edad_2020[i] >=30  ) & (edad_2020[i] <= 39  ) ) { rango_edad_10_UT2020[i] <- 'Edad entre 30 y 39 años' }
+  else if ( (edad_2020[i] >=40  ) & (edad_2020[i] <= 49  ) ) { rango_edad_10_UT2020[i] <- 'Edad entre 40 y 49 años' }
+  else if ( (edad_2020[i] >=50  ) & (edad_2020[i] <= 59  ) ) { rango_edad_10_UT2020[i] <- 'Edad entre 50 y 59 años' }
+  else if ( (edad_2020[i] >=60  ) & (edad_2020[i] <= 69  ) ) { rango_edad_10_UT2020[i] <- 'Edad entre 60 y 69 años' }
+  else if ( (edad_2020[i] >=70  )) { rango_edad_10_UT2020[i] <- 'Edad mayor a 70 años' }
+}
+
+df_analisis_UT2020$rango_edad_10_UT2020 <- factor(rango_edad_10_UT2020)
+```
+
+
+```{r}
+codigo_ciudad_2020 <- as.character(df_analisis_UT2020$ciudad)
+
+
+R_provincia_2020 <- length(codigo_ciudad_2020)
+provincia_UT2020 <- rep(0, R_provincia_2020)
+
+for (i in 1:R_provincia_2020) {
+  if (nchar(codigo_ciudad_2020[i]) == 5 ) {
+    codigo_ciudad_2020[i] <- paste("0",codigo_ciudad_2020[i], sep = "")
+  }
+}
+
+
+
+
+for (i in 1:R_provincia_2020) {
   
-  if((edad_2020[i] >= 0 ) & (edad_2020[i] <= 11)) { rango_edad_10[i] <- 'Edad entre 0 y 11 años' }
-  else if ( (edad_2020[i] >=12  ) & (edad_2020[i] <= 19  ) ) { rango_edad_10[i] <- 'Edad entre 12 y 19 años' }
-  else if ( (edad_2020[i] >=20  ) & (edad_2020[i] <= 29  ) ) { rango_edad_10[i] <- 'Edad entre 20 y 29 años' }
-  else if ( (edad_2020[i] >=30  ) & (edad_2020[i] <= 39  ) ) { rango_edad_10[i] <- 'Edad entre 30 y 39 años' }
-  else if ( (edad_2020[i] >=40  ) & (edad_2020[i] <= 49  ) ) { rango_edad_10[i] <- 'Edad entre 40 y 49 años' }
-  else if ( (edad_2020[i] >=50  ) & (edad_2020[i] <= 59  ) ) { rango_edad_10[i] <- 'Edad entre 50 y 59 años' }
-  else if ( (edad_2020[i] >=60  ) & (edad_2020[i] <= 69  ) ) { rango_edad_10[i] <- 'Edad entre 60 y 69 años' }
-  else if ( (edad_2020[i] >=70  )) { rango_edad_10[i] <- 'Edad mayor a 70 años' }
-  
+  if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "01") { provincia_UT2020[i] <- 'Azuay' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "02") { provincia_UT2020[i] <- 'Bolívar' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "03") { provincia_UT2020[i] <- 'Cañar' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "04") { provincia_UT2020[i] <- 'Carchi' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "05") { provincia_UT2020[i] <- 'Cotopaxi' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "06") { provincia_UT2020[i] <- 'Chimborazo' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "07") { provincia_UT2020[i] <- 'El Oro' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "08") { provincia_UT2020[i] <- 'Esmeraldas' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "09") { provincia_UT2020[i] <- 'Guayas' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "10") { provincia_UT2020[i] <- 'Imbabura' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "11") { provincia_UT2020[i] <- 'Loja' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "12") { provincia_UT2020[i] <- 'Los Ríos' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "13") { provincia_UT2020[i] <- 'Manabí' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "14") { provincia_UT2020[i] <- 'Morona Santiago' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "15") { provincia_UT2020[i] <- 'Napo' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "16") { provincia_UT2020[i] <- 'Pastaza' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "17") { provincia_UT2020[i] <- 'Pichincha' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "18") { provincia_UT2020[i] <- 'Tungurahua' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "19") { provincia_UT2020[i] <- 'Zamora Chinchipe' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "20") { provincia_UT2020[i] <- 'Galápagos' } 
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "21") { provincia_UT2020[i] <- 'Sucumbíos' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "22") { provincia_UT2020[i] <- 'Orellana' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "23") { provincia_UT2020[i] <- 'Santo Domingo de los Tsáchilas' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "24") { provincia_UT2020[i] <- 'Santa Elena' }
+  else if (substr(codigo_ciudad_2020[i], start = 1, stop = 2) == "90") { provincia_UT2020[i] <- 'Zonas no delimitadas' }
   
 }
 
-df_analisis_UT2020$rango_edad_10 <- factor(rango_edad_10)
+df_analisis_UT2020$provincia_UT2020 <- factor(provincia_UT2020)
 ```
 
 
 ```{r}
-# En la semana pasada ¿Hizo ejercicios o practicó algún deporte? Por rango de edad de cada 10 años
-df_deporte_edad2020 <- df_analisis_UT2020 %>%
-  group_by(rango_edad_10, s6p4_factor) %>%
-  summarize(conteo_deporte = summary(factor(s6p4)))
+###############################################################
+####                Cálculos 2020                     ####
+###############################################################
 
-df_deporte_edad2020
-```
+# Cuanto tiempo...? Promedio de horas semanales deporte, por sexo. Considerando tanto a los que respondieron que si como los que respondieron que no.
 
 
-```{r}
-ggplot(df_deporte_edad2020 %>% filter(s6p4_factor == "Si" | s6p4_factor == "No"), aes(x = conteo_deporte  , y = rango_edad_10 , fill = s6p4_factor )) + 
-  geom_bar(stat = 'identity', position = 'dodge') + 
-  labs(title = "¿Hizo ejercicio o practicó algún deporte? Respuestas por grupo de edad en 2020", caption = "Fuente: INEC") + 
-  geom_text(aes(label = conteo_deporte), color ="black", size = 3,position = position_dodge(0.9),vjust = 0) +
-  theme_classic()
-```
-
-
-
-TIEMPO
-
-
-Se debe considerar también el tiempo de respuesta de los que responden que NO hicieron actividad física o deporte en la semana pasada, lo que implica que el encuestado realizó 0 horas de deporte, lo cual también influye en el promedio y debe considerarse.
-
-
-```{r}
-df_analisis_UT2020_s6p4 <- data.frame( s6p4a = as.numeric(df_analisis_UT2020$s6p4a),s6p4b =  as.numeric(df_analisis_UT2020$s6p4b), s6p4c = as.numeric(df_analisis_UT2020$s6p4c), s6p4d = as.numeric(df_analisis_UT2020$s6p4d))
-
-df_analisis_UT2020_s6p4[is.na(df_analisis_UT2020_s6p4)] <- 0
-
-
-df_analisis_UT2020$horas_semanales_deporte <- df_analisis_UT2020_s6p4$s6p4a + (df_analisis_UT2020_s6p4$s6p4b/60) + df_analisis_UT2020_s6p4$s6p4c + (df_analisis_UT2020_s6p4$s6p4d/60)
-```
-
-
-
-Cuanto tiempo...? Promedio de horas semanales deporte, por sexo. Considerando tanto a los que respondieron que si como los que respondieron que no.
-
-```{r}
-df_analisis_UT2020_sexo_summary <-  df_analisis_UT2020 %>%
-  filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>%
+df_analisis_UT2020_plot1 <-  df_analisis_UT2020 %>%
+  filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>% # NECESARIO
   group_by(s1p2_factor) %>%
-  summarize( promedio_horas_deporte = mean(horas_semanales_deporte), sd = sd(horas_semanales_deporte), suma = sum(horas_semanales_deporte), max = max(horas_semanales_deporte), min = min(horas_semanales_deporte)  )
+  summarize( 
+    promedio_horas_deporte = mean(horas_semanales_deporte), 
+    media_ponderada_horas_deporte = weighted.mean(horas_semanales_deporte, fexp_UT2020), 
+    sd = sd(horas_semanales_deporte), 
+    sd_ponderada_1 = weighted.sd(horas_semanales_deporte, fexp_UT2020),
+    sd_ponderada_2 = sqrt(sum(fexp_UT2020*((horas_semanales_deporte - weighted.mean(horas_semanales_deporte, fexp_UT2020) )^2))/(sum(fexp_UT2020)-1)),
+    suma = sum(horas_semanales_deporte), 
+    max = max(horas_semanales_deporte), 
+    min = min(horas_semanales_deporte)  )
 
-df_analisis_UT2020_sexo_summary
+df_analisis_UT2020_plot1
+
 ```
 
 
 ```{r}
-ggplot(df_analisis_UT2020_sexo_summary, aes(x = promedio_horas_deporte , y = s1p2_factor)) + 
+# VALIDACION
+
+#View(data.frame(df_analisis_UT2020$s1p3, df_analisis_UT2020$s6p4_factor)) #Los NA corresponden a personas menores a 12, es necesario el filtro.
+```
+
+
+```{r}
+df_analisis_UT2020_plot2 <-  df_analisis_UT2020 %>%
+  filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>% 
+  group_by(rango_edad_10_UT2020) %>%
+  summarize( 
+    media_ponderada_horas_deporte = weighted.mean(horas_semanales_deporte, fexp_UT2020), 
+    sd_ponderada = weighted.sd(horas_semanales_deporte, fexp_UT2020),
+    promedio_horas_deporte = mean(horas_semanales_deporte), 
+    sd = sd(horas_semanales_deporte), 
+    suma = sum(horas_semanales_deporte), 
+    max = max(horas_semanales_deporte), 
+    min = min(horas_semanales_deporte))
+
+df_analisis_UT2020_plot2
+```
+
+
+```{r}
+df_analisis_UT2020_plot3 <-  df_analisis_UT2020 %>%
+  filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>% 
+  group_by(rango_edad_10_UT2020, s1p2_factor) %>%
+  summarize( 
+    media_ponderada_horas_deporte = weighted.mean(horas_semanales_deporte, fexp_UT2020), 
+    sd_ponderada = weighted.sd(horas_semanales_deporte, fexp_UT2020),
+    promedio_horas_deporte = mean(horas_semanales_deporte), 
+    sd = sd(horas_semanales_deporte), 
+    suma = sum(horas_semanales_deporte), 
+    max = max(horas_semanales_deporte), 
+    min = min(horas_semanales_deporte))
+
+df_analisis_UT2020_plot3
+```
+
+
+```{r}
+df_analisis_UT2020_plot4 <-  df_analisis_UT2020 %>%
+  filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>% 
+  group_by(provincia_UT2020) %>%
+  summarize( 
+    media_ponderada_horas_deporte = weighted.mean(horas_semanales_deporte, fexp_UT2020), 
+    sd_ponderada = weighted.sd(horas_semanales_deporte, fexp_UT2020),
+    promedio_horas_deporte = mean(horas_semanales_deporte), 
+    sd = sd(horas_semanales_deporte), 
+    suma = sum(horas_semanales_deporte), 
+    max = max(horas_semanales_deporte), 
+    min = min(horas_semanales_deporte))
+
+df_analisis_UT2020_plot4
+```
+
+
+```{r}
+df_analisis_UT2020_plot5 <-  df_analisis_UT2020 %>%
+  filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>% 
+  group_by(provincia_UT2020, s1p2_factor) %>%
+  summarize( 
+    media_ponderada_horas_deporte = weighted.mean(horas_semanales_deporte, fexp_UT2020), 
+    sd_ponderada = weighted.sd(horas_semanales_deporte, fexp_UT2020),
+    promedio_horas_deporte = mean(horas_semanales_deporte), 
+    sd = sd(horas_semanales_deporte), 
+    suma = sum(horas_semanales_deporte), 
+    max = max(horas_semanales_deporte), 
+    min = min(horas_semanales_deporte))
+
+df_analisis_UT2020_plot5
+```
+
+
+
+
+
+## Resultados
+
+
+```{r}
+ggplot(df_analisis_UT2020_plot1, aes(x = promedio_horas_deporte , y = s1p2_factor)) + 
   labs(title = "Promedio de horas semanales de actividad física por sexo en 2020") +
   geom_segment(aes(xend =0, yend = s1p2_factor), size = 4, color = "lightblue") +
   geom_point(size = 8, color = "blue") +
@@ -221,9 +519,8 @@ ggplot(df_analisis_UT2020_sexo_summary, aes(x = promedio_horas_deporte , y = s1p
         legend.position = "none")
 ```
 
-
 ```{r}
-ggplot(df_analisis_UT2020_sexo_summary, aes(x = promedio_horas_deporte , y = s1p2_factor)) + 
+ggplot(df_analisis_UT2020_plot1, aes(x = promedio_horas_deporte , y = s1p2_factor)) + 
   labs(title = "Promedio de horas semanales de actividad física por sexo en 2020") +
   geom_segment(aes(xend =0, yend = s1p2_factor), size = 4, color = "lightblue") +
   geom_point(size = 8, color = "white") +
@@ -237,12 +534,6 @@ ggplot(df_analisis_UT2020_sexo_summary, aes(x = promedio_horas_deporte , y = s1p
 ```
 
 
-```{r}
-ggplot(df_analisis_UT2020_sexo_summary, aes(x = promedio_horas_deporte , y = s1p2_factor)) + geom_bar(stat = 'identity')
-```
-
-
-
 
 
 De los que respondieron Si y No. cuanto tiempo...? Promedio de horas semanales deporte, por edad. Considerar por grupos de edad de cada 10 años.
@@ -250,19 +541,17 @@ De los que respondieron Si y No. cuanto tiempo...? Promedio de horas semanales d
 ```{r}
 df_analisis_UT2020_edad_summary <- df_analisis_UT2020 %>%
   filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>%
-  group_by(rango_edad_10) %>%
+  group_by(rango_edad_10_UT2020) %>%
   summarize( promedio_horas_deporte = mean(horas_semanales_deporte), sd = sd(horas_semanales_deporte), suma = sum(horas_semanales_deporte), max = max(horas_semanales_deporte), min = min(horas_semanales_deporte) )
 
 df_analisis_UT2020_edad_summary
 ```
 
 
-
-
 ```{r}
-ggplot(df_analisis_UT2020_edad_summary, aes(x = promedio_horas_deporte, y = rango_edad_10)) + 
+ggplot(df_analisis_UT2020_edad_summary, aes(x = promedio_horas_deporte, y = rango_edad_10_UT2020)) + 
   labs(title = "Promedio de horas semanales de actividad física por edad en 2020") +
-  geom_segment(aes(xend =0, yend = rango_edad_10), size = 2, color = "lightblue") +
+  geom_segment(aes(xend =0, yend = rango_edad_10_UT2020), size = 2, color = "lightblue") +
   geom_point(size = 8, color = "blue") + 
   geom_text(aes(label = round(promedio_horas_deporte, digits = 1.5)), color ="white", size = 3) +
   theme_classic() +
@@ -276,19 +565,9 @@ ggplot(df_analisis_UT2020_edad_summary, aes(x = promedio_horas_deporte, y = rang
 
 
 
-```{r}
-# CONSIDERAR UN ANALISIS A LAS PRINCIPALES CIUDADES 
-df_analisis_UT2020 %>%
-  filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>%
-  group_by(factor(ciudad)) %>%
-  summarize( promedio_horas_deporte = mean(horas_semanales_deporte), sd = sd(horas_semanales_deporte), suma = sum(horas_semanales_deporte)  )
-```
 
 
 
-Segmentar por provincia. Esperar el significado de los códigos de ciudad (verificar si los 3 primeros dígitos indican la provincia)
-
-Segmentar por región.
 
 
 
