@@ -632,6 +632,7 @@ grid.arrange(
 
 ggplot( df_t_cocina_UT2012_plot4 , aes(x = media_ponderada_horas_cocina , y = reorder(provincia_UT2012, media_ponderada_horas_cocina) )) + 
   geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,6) +
   labs(title = "2012", caption = "") +
   geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9), hjust = 1.2) +
   xlab("Promedio de horas") +
@@ -668,6 +669,7 @@ ggplot( df_t_cocina_UT2019_plot4 %>%
                                                 'Galápagos')) %>% 
        filter(provincia_UT2019 != 'Galápagos' & provincia_UT2019 != 'Zonas no delimitadas') , aes(x = media_ponderada_horas_cocina , y = reorder(provincia_UT2019, media_ponderada_horas_cocina) )) + 
   geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,6) +
   labs(title = "2019", caption = "") +
   geom_text(aes(label = round(media_ponderada_horas_cocina, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9), hjust = 1.2) +
   xlab("Promedio de horas") +
