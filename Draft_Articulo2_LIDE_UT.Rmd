@@ -22,6 +22,8 @@ if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-
 if(!require(haven)) install.packages("haven", repos = "http://cran.us.r-project.org")
 if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
 if(!require(radiant.data)) install.packages("radiant.data", repos = "http://cran.us.r-project.org")
+if(!require(gridExtra)) install.packages("gridExtra", repos = "http://cran.us.r-project.org")
+if(!require(grid)) install.packages("grid", repos = "http://cran.us.r-project.org")
 
 
 ```
@@ -406,7 +408,7 @@ df_analisis_UT2020$provincia_UT2020 <- factor(provincia_UT2020)
 # Cuanto tiempo...? Promedio de horas semanales deporte, por sexo. Considerando tanto a los que respondieron que si como los que respondieron que no.
 
 
-df_analisis_UT2020_plot1 <-  df_analisis_UT2020 %>%
+df_t_deporte_UT2020_plot1 <-  df_analisis_UT2020 %>%
   filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>% # NECESARIO
   group_by(s1p2_factor) %>%
   summarize( 
@@ -419,7 +421,7 @@ df_analisis_UT2020_plot1 <-  df_analisis_UT2020 %>%
     max = max(horas_semanales_deporte), 
     min = min(horas_semanales_deporte)  )
 
-df_analisis_UT2020_plot1
+df_t_deporte_UT2020_plot1
 
 ```
 
@@ -432,7 +434,7 @@ df_analisis_UT2020_plot1
 
 
 ```{r}
-df_analisis_UT2020_plot2 <-  df_analisis_UT2020 %>%
+df_t_deporte_UT2020_plot2 <-  df_analisis_UT2020 %>%
   filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>% 
   group_by(rango_edad_10_UT2020) %>%
   summarize( 
@@ -444,12 +446,12 @@ df_analisis_UT2020_plot2 <-  df_analisis_UT2020 %>%
     max = max(horas_semanales_deporte), 
     min = min(horas_semanales_deporte))
 
-df_analisis_UT2020_plot2
+df_t_deporte_UT2020_plot2
 ```
 
 
 ```{r}
-df_analisis_UT2020_plot3 <-  df_analisis_UT2020 %>%
+df_t_deporte_UT2020_plot3 <-  df_analisis_UT2020 %>%
   filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>% 
   group_by(rango_edad_10_UT2020, s1p2_factor) %>%
   summarize( 
@@ -461,12 +463,12 @@ df_analisis_UT2020_plot3 <-  df_analisis_UT2020 %>%
     max = max(horas_semanales_deporte), 
     min = min(horas_semanales_deporte))
 
-df_analisis_UT2020_plot3
+df_t_deporte_UT2020_plot3
 ```
 
 
 ```{r}
-df_analisis_UT2020_plot4 <-  df_analisis_UT2020 %>%
+df_t_deporte_UT2020_plot4 <-  df_analisis_UT2020 %>%
   filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>% 
   group_by(provincia_UT2020) %>%
   summarize( 
@@ -478,12 +480,12 @@ df_analisis_UT2020_plot4 <-  df_analisis_UT2020 %>%
     max = max(horas_semanales_deporte), 
     min = min(horas_semanales_deporte))
 
-df_analisis_UT2020_plot4
+df_t_deporte_UT2020_plot4
 ```
 
 
 ```{r}
-df_analisis_UT2020_plot5 <-  df_analisis_UT2020 %>%
+df_t_deporte_UT2020_plot5 <-  df_analisis_UT2020 %>%
   filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>% 
   group_by(provincia_UT2020, s1p2_factor) %>%
   summarize( 
@@ -495,7 +497,7 @@ df_analisis_UT2020_plot5 <-  df_analisis_UT2020 %>%
     max = max(horas_semanales_deporte), 
     min = min(horas_semanales_deporte))
 
-df_analisis_UT2020_plot5
+df_t_deporte_UT2020_plot5
 ```
 
 
@@ -505,70 +507,323 @@ df_analisis_UT2020_plot5
 ## Resultados
 
 
-```{r}
-ggplot(df_analisis_UT2020_plot1, aes(x = promedio_horas_deporte , y = s1p2_factor)) + 
-  labs(title = "Promedio de horas semanales de actividad física por sexo en 2020") +
-  geom_segment(aes(xend =0, yend = s1p2_factor), size = 4, color = "lightblue") +
-  geom_point(size = 8, color = "blue") +
-  geom_text(aes(label = round(promedio_horas_deporte, digits = 1.5)), color ="white", size = 3) +
-  theme_classic() +
-  theme(axis.line.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        axis.text = element_text(color = "black"),
-        axis.title = element_blank(),
-        legend.position = "none")
-```
+```{r, fig.height=6 , fig.width=12}
+###############################################################
+####                Gráficos 2012 vs 2019                  ####
+###############################################################
 
-```{r}
-ggplot(df_analisis_UT2020_plot1, aes(x = promedio_horas_deporte , y = s1p2_factor)) + 
-  labs(title = "Promedio de horas semanales de actividad física por sexo en 2020") +
-  geom_segment(aes(xend =0, yend = s1p2_factor), size = 4, color = "lightblue") +
-  geom_point(size = 8, color = "white") +
-  geom_text(aes(label = round(promedio_horas_deporte, digits = 1.5)), color ="black", size = 3) +
-  theme_classic() +
-  theme(axis.line.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        axis.text = element_text(color = "black"),
-        axis.title = element_blank(),
-        legend.position = "none")
-```
+grid.arrange(
 
-
-
-
-De los que respondieron Si y No. cuanto tiempo...? Promedio de horas semanales deporte, por edad. Considerar por grupos de edad de cada 10 años.
-
-```{r}
-df_analisis_UT2020_edad_summary <- df_analisis_UT2020 %>%
-  filter( s6p4_factor == "Si" | s6p4_factor == "No" ) %>%
-  group_by(rango_edad_10_UT2020) %>%
-  summarize( promedio_horas_deporte = mean(horas_semanales_deporte), sd = sd(horas_semanales_deporte), suma = sum(horas_semanales_deporte), max = max(horas_semanales_deporte), min = min(horas_semanales_deporte) )
-
-df_analisis_UT2020_edad_summary
+ggplot( df_t_deporte_UT2012_plot1 , aes(x = P02_factor , y = media_ponderada_horas_deporte, fill = P02_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  ylim(0,1.5) +
+  labs(title = "2012", caption = " ", fill = "Sexo") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9),vjust = -0.2) +
+  xlab("Sexo") +
+  ylab("Promedio de horas") +
+  theme_classic()
+,
+ggplot( df_t_deporte_UT2020_plot1 , aes(x = s1p2_factor , y = media_ponderada_horas_deporte, fill = s1p2_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  ylim(0,1.5) +
+  labs(title = "2020", caption = " ", fill = "Sexo") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9),vjust = -0.2) +
+  xlab("Sexo") +
+  ylab("Promedio de horas") +
+  theme_classic()
+,
+ncol=2
+,
+top = textGrob("Promedio del tiempo semanal en hacer ejercicio, por sexo 2012 vs 2020 (horas)", gp=gpar(fontsize=14,font=1)))
 ```
 
 
-```{r}
-ggplot(df_analisis_UT2020_edad_summary, aes(x = promedio_horas_deporte, y = rango_edad_10_UT2020)) + 
-  labs(title = "Promedio de horas semanales de actividad física por edad en 2020") +
-  geom_segment(aes(xend =0, yend = rango_edad_10_UT2020), size = 2, color = "lightblue") +
-  geom_point(size = 8, color = "blue") + 
-  geom_text(aes(label = round(promedio_horas_deporte, digits = 1.5)), color ="white", size = 3) +
-  theme_classic() +
-  theme(axis.line.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        axis.text = element_text(color = "black"),
-        axis.title = element_blank(),
-        legend.position = "none")
+```{r, fig.height=6 , fig.width=12}
+
+grid.arrange(
+
+ggplot( df_t_deporte_UT2012_plot2 %>% filter(rango_edad_10_UT2012 != 'No informa') , aes(x = media_ponderada_horas_deporte , y = rango_edad_10_UT2012 )) + 
+  geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,1.5) +
+  labs(title = "2012", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9),hjust = 1.2) +
+  xlab("Promedio de horas") +
+  ylab("Grupo de edad") +
+  theme_classic()
+,
+ggplot( df_t_deporte_UT2020_plot2 , aes(x = media_ponderada_horas_deporte , y = rango_edad_10_UT2020 )) + 
+  geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,1.5) +
+  labs(title = "2020", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9),hjust = 1.2) +
+  xlab("Promedio de horas") +
+  ylab("Grupo de edad") +
+  theme_classic()
+
+,
+ncol=2
+,
+top = textGrob("Promedio del tiempo semanal en hacer ejercicio, por grupo de edad 2012 vs 2020 (horas)", gp=gpar(fontsize=14,font=1)))
+```
+
+
+```{r, fig.height=6 , fig.width=12}
+
+grid.arrange(
+
+ggplot( df_t_deporte_UT2012_plot3 %>% filter(rango_edad_10_UT2012 != 'No informa') , aes(x = media_ponderada_horas_deporte , y = rango_edad_10_UT2012 , fill = P02_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  xlim(0,2) +
+  labs(title = "2012", caption = "", fill = "Sexo") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0) +
+  xlab("Promedio de horas") +
+  ylab("Grupo de edad") +
+  theme_classic()
+,
+ggplot( df_t_deporte_UT2020_plot3 , aes(x = media_ponderada_horas_deporte , y = rango_edad_10_UT2020 , fill = s1p2_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  xlim(0,2) +
+  labs(title = "2020", caption = "", fill = "Sexo") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), hjust = 0) +
+  xlab("Promedio de horas") +
+  ylab("Grupo de edad") +
+  theme_classic()
+
+,
+ncol=2
+,
+top = textGrob("Promedio del tiempo semanal en hacer ejercicio, por grupo de edad, por sexo 2012 vs 2020 (horas)", gp=gpar(fontsize=14,font=1)))
+
+```
+
+
+```{r, fig.height=6 , fig.width=12}
+grid.arrange(
+
+ggplot(df_t_deporte_UT2012_plot3 %>% filter(rango_edad_10_UT2012 != 'No informa'), aes(x = media_ponderada_horas_deporte , y = rango_edad_10_UT2012 , fill = P02_factor )) + 
+  geom_bar(stat = 'identity', position = "fill") + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  labs(title = "2012", caption = "", fill = "Sexo") +
+  xlab("Proporción") +
+  ylab("Grupo de edad") +
+  theme_classic()
+,
+ggplot( df_t_deporte_UT2020_plot3 , aes(x = media_ponderada_horas_deporte , y = rango_edad_10_UT2020 , fill = s1p2_factor )) + 
+  geom_bar(stat = 'identity', position = "fill") + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  #scale_fill_manual(values =c("#5B7DB1","#FFAC8E")) +
+  labs(title = "2020", caption = "", fill = "Sexo") +
+  xlab("Proporción") +
+  ylab("Grupo de edad") +
+  theme_classic()
+
+,
+ncol=2
+,
+top = textGrob("Proporción del tiempo promedio semanal en hacer ejercicio, por grupo de edad, por sexo 2012 vs 2020 (horas)", gp=gpar(fontsize=14,font=1)))
 ```
 
 
 
+```{r, fig.height=6 , fig.width=12}
+grid.arrange(
+
+ggplot( df_t_deporte_UT2012_plot4 , aes(x = media_ponderada_horas_deporte , y = reorder(provincia_UT2012, media_ponderada_horas_deporte) )) + 
+  geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,3) +
+  labs(title = "2012", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9), hjust = 1.2) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+,
+
+ggplot( df_t_deporte_UT2020_plot4 %>% 
+       mutate(provincia_UT2020 = fct_relevel(provincia_UT2020, 
+                                                'Azuay',
+                                                'Bolívar',
+                                                'Cañar',
+                                                'Carchi',
+                                                'Chimborazo',
+                                                'Cotopaxi',
+                                                'El Oro',
+                                                'Esmeraldas',
+                                                'Guayas',
+                                                'Imbabura',
+                                                'Loja',
+                                                'Los Ríos',
+                                                'Manabí',
+                                                'Morona Santiago',
+                                                'Napo',
+                                                'Orellana',
+                                                'Pastaza',
+                                                'Pichincha',
+                                                'Santa Elena',
+                                                'Santo Domingo de los Tsáchilas',
+                                                'Sucumbíos',
+                                                'Tungurahua',
+                                                'Zamora Chinchipe',
+                                                'Zonas no delimitadas',
+                                                'Galápagos')) %>% 
+       filter(provincia_UT2020 != 'Galápagos' & provincia_UT2020 != 'Zonas no delimitadas') , aes(x = media_ponderada_horas_deporte , y = reorder(provincia_UT2020, media_ponderada_horas_deporte) )) + 
+  geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,3) +
+  labs(title = "2020", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9), hjust = 1.2) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+
+,
+ncol=2
+,
+top = textGrob("Promedio del tiempo semanal en hacer ejercicio, por provincia 2012 vs 2020 (horas)", gp=gpar(fontsize=14,font=1)))
+```
 
 
 
+```{r echo=FALSE, fig.height=6 , fig.width=12}
+grid.arrange(
+
+ggplot( df_t_deporte_UT2012_plot4 %>% filter(provincia_UT2012 != 'Zonas no delimitadas') , aes(x = media_ponderada_horas_deporte , y = provincia_UT2012 )) + 
+  geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,3) +
+  labs(title = "2012", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9), hjust = 1.2) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+,
+
+ggplot( df_t_deporte_UT2020_plot4 %>% 
+       mutate(provincia_UT2020 = fct_relevel(provincia_UT2020, 
+                                                'Azuay',
+                                                'Bolívar',
+                                                'Cañar',
+                                                'Carchi',
+                                                'Chimborazo',
+                                                'Cotopaxi',
+                                                'El Oro',
+                                                'Esmeraldas',
+                                                'Guayas',
+                                                'Imbabura',
+                                                'Loja',
+                                                'Los Ríos',
+                                                'Manabí',
+                                                'Morona Santiago',
+                                                'Napo',
+                                                'Orellana',
+                                                'Pastaza',
+                                                'Pichincha',
+                                                'Santa Elena',
+                                                'Santo Domingo de los Tsáchilas',
+                                                'Sucumbíos',
+                                                'Tungurahua',
+                                                'Zamora Chinchipe',
+                                                'Zonas no delimitadas',
+                                                'Galápagos')) %>% 
+       filter(provincia_UT2020 != 'Galápagos' & provincia_UT2020 != 'Zonas no delimitadas') , aes(x = media_ponderada_horas_deporte , y = provincia_UT2020 )) + 
+  geom_bar(stat = 'identity', position = 'dodge', fill = "lightblue") + 
+  xlim(0,3) +
+  labs(title = "2020", caption = "") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="#1A374D", size = 4,position = position_dodge(0.9), hjust = 1.2) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+
+,
+ncol=2
+,
+top = textGrob("Promedio del tiempo semanal en hacer ejercicio, por provincia 2012 vs 2020 (horas)", gp=gpar(fontsize=14,font=1)))
+
+```
 
 
+```{r, fig.height=6 , fig.width=12}
+grid.arrange(
+
+ggplot( df_t_deporte_UT2012_plot5 %>% filter(provincia_UT2012 == 'Pichincha' | provincia_UT2012 == 'Guayas' | provincia_UT2012 == 'Azuay') , aes(x = provincia_UT2012 , y = media_ponderada_horas_deporte  , fill = P02_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  ylim(0,2) +
+  labs(title = "2012", caption = "", fill = "Sexo") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), vjust = -0.2) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+,
+ggplot( df_t_deporte_UT2020_plot5 %>% filter(provincia_UT2020 == 'Pichincha' | provincia_UT2020 == 'Guayas' | provincia_UT2020 == 'Azuay') , aes(x = provincia_UT2020  , y = media_ponderada_horas_deporte , fill = s1p2_factor )) + 
+  geom_bar(stat = 'identity', position = 'dodge') + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  ylim(0,2) +
+  labs(title = "2020", caption = "", fill = "Sexo") +
+  geom_text(aes(label = round(media_ponderada_horas_deporte, digits = 2)  ), color ="black", size = 4,position = position_dodge(0.9), vjust = -0.2) +
+  xlab("Promedio de horas") +
+  ylab("Provincia") +
+  theme_classic()
+
+,
+ncol=2
+,
+top = textGrob("Promedio del tiempo semanal en hacer ejercicio, por provincia, por sexo 2012 vs 2020 (horas)", gp=gpar(fontsize=14,font=1)))
+```
+
+
+```{r, fig.height=6 , fig.width=12}
+grid.arrange(
+
+ggplot( df_t_deporte_UT2012_plot5 %>% filter(provincia_UT2012 != 'Zonas no delimitadas') , aes(x = media_ponderada_horas_deporte , y = provincia_UT2012 , fill =  P02_factor  )) + 
+  geom_bar(stat = 'identity', position = 'fill') +
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  labs(title = "2012", caption = "", fill = "Sexo") +
+  xlab("Proporción") +
+  ylab("Provincia") +
+  theme_classic()
+,
+ggplot(df_t_deporte_UT2020_plot5 %>% 
+       mutate(provincia_UT2020 = fct_relevel(provincia_UT2020, 
+                                                'Azuay',
+                                                'Bolívar',
+                                                'Cañar',
+                                                'Carchi',
+                                                'Chimborazo',
+                                                'Cotopaxi',
+                                                'El Oro',
+                                                'Esmeraldas',
+                                                'Guayas',
+                                                'Imbabura',
+                                                'Loja',
+                                                'Los Ríos',
+                                                'Manabí',
+                                                'Morona Santiago',
+                                                'Napo',
+                                                'Orellana',
+                                                'Pastaza',
+                                                'Pichincha',
+                                                'Santa Elena',
+                                                'Santo Domingo de los Tsáchilas',
+                                                'Sucumbíos',
+                                                'Tungurahua',
+                                                'Zamora Chinchipe',
+                                                'Zonas no delimitadas',
+                                                'Galápagos')) %>% 
+       filter(provincia_UT2020 != 'Galápagos' & provincia_UT2020 != 'Zonas no delimitadas')  , aes(x = media_ponderada_horas_deporte , y = provincia_UT2020 , fill = s1p2_factor )) + 
+  geom_bar(stat = 'identity', position = 'fill') + 
+  scale_fill_manual(values =c("#647A8F","#FFAC8E")) +
+  labs(title = "2020", caption = "", fill = "Sexo") +
+  xlab("Proporción") +
+  ylab("Provincia") +
+  theme_classic()
+
+,
+ncol=2
+,
+top = textGrob("Proporción del tiempo promedio semanal dedicado en hacer ejercicio, por sexo, por provincia 2012 vs 2020", gp=gpar(fontsize=14,font=1)))
+```
 
 
 
