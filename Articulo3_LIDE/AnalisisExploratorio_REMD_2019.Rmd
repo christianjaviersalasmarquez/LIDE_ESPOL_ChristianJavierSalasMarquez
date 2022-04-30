@@ -1,0 +1,35 @@
+---
+title: "Análisis Exploratorio REMD 2019"
+author: "Christian Javier Salas Marquez"
+date: '2022'
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r}
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+if(!require(haven)) install.packages("haven", repos = "http://cran.us.r-project.org")
+if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
+```
+
+
+```{r}
+EMA_2019 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/Articulo3_LIDE/REMD_2019/EMA_2019.csv")
+
+EDV_2019 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/Articulo3_LIDE/REMD_2019/EDV_2019.csv")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
