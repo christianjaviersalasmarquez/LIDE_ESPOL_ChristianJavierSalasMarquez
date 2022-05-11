@@ -415,7 +415,73 @@ autoplot(modelo1_KM, conf.int = FALSE) + ylab('S(t)') + ggtitle('Curva de Superv
 ```
 
 
+```{r}
+modelo2_KM <- survfit(Surv( (df_analisis_EMA_2014 %>% filter(hijos_rec != 99))$duracion_matrimonio , (df_analisis_EMA_2014 %>% filter(hijos_rec != 99))$evento_divorcio ) ~ (df_analisis_EMA_2014 %>% filter(hijos_rec != 99))$hijos_rec )
+modelo2_KM
+```
 
+
+
+
+```{r}
+summary(modelo2_KM)
+```
+
+
+```{r}
+autoplot(modelo2_KM, conf.int = FALSE) + ylab('S(t)') + ggtitle('Curva de Supervivencia de KM Estimada')
+```
+
+
+
+
+
+
+```{r}
+modelo3_KM <- survfit(Surv( (df_analisis_EMA_2014 %>% filter(mcap_bie != 9))$duracion_matrimonio , (df_analisis_EMA_2014 %>% filter(mcap_bie != 9))$evento_divorcio ) ~ (df_analisis_EMA_2014 %>% filter(mcap_bie != 9))$mcap_bie )
+modelo3_KM
+```
+
+
+```{r}
+summary(modelo3_KM)
+```
+
+
+
+```{r}
+autoplot(modelo3_KM, conf.int = FALSE) + ylab('S(t)') + ggtitle('Curva de Supervivencia de KM Estimada')
+```
+
+
+
+```{r}
+R_divorcios_2014 <- dim(df_analisis_EMA_2014)[1]
+nacionalidad_pareja <- rep(0, R_divorcios_2014)
+
+for (i in 1:R_divorcios_2014) {
+  if (df_analisis_EMA_2014$nac_hom[i] == df_analisis_EMA_2014$nac_muj[i]) {nacionalidad_pareja[i] = 'Misma nacionalidad'}
+  else {nacionalidad_pareja[i] = 'Diferentes nacionalidades'}
+}
+
+df_analisis_EMA_2014$nacionalidad_pareja <- nacionalidad_pareja
+```
+
+
+
+```{r}
+modelo4_KM <- survfit(Surv( df_analisis_EMA_2014$duracion_matrimonio , df_analisis_EMA_2014$evento_divorcio ) ~ df_analisis_EMA_2014$nacionalidad_pareja )
+modelo4_KM
+```
+
+```{r}
+summary(modelo4_KM)
+```
+
+
+```{r}
+autoplot(modelo4_KM, conf.int = FALSE) + ylab('S(t)') + ggtitle('Curva de Supervivencia de KM Estimada')
+```
 
 
 
