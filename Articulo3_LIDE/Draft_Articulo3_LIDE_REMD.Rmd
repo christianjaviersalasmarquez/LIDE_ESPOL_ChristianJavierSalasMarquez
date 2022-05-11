@@ -1,0 +1,434 @@
+---
+title: "Artículo 3. REMD 2019."
+author: "Christian Javier Salas Marquez"
+date: '2022'
+output:
+  html_document:
+    df_print: paged
+---
+
+Work in progress
+
+```{r}
+## --------------------------------------------------------------------------- ##
+## ------------------------------ Librerías ---------------------------------- ##
+## --------------------------------------------------------------------------- ##
+
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+if(!require(haven)) install.packages("haven", repos = "http://cran.us.r-project.org")
+if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
+if(!require(survival)) install.packages("survival", repos = "http://cran.us.r-project.org")
+if(!require(ggfortify)) install.packages("ggfortify", repos = "http://cran.us.r-project.org")
+```
+
+
+
+
+```{r}
+EMA_2014 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2014/Matrimonios_2014.sav?raw=true')
+
+EDV_2014 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2014/Divorcios_2014.sav?raw=true')
+```
+
+
+```{r}
+EMA_2015 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2015/matrimonios%202015.sav?raw=true')
+
+EDV_2015 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2015/divorcios%202015.sav?raw=true')
+```
+
+
+```{r}
+EMA_2016 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2016/EMA%202016%20.sav?raw=true')
+
+EDV_2016 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2016/EDV%202016.sav?raw=true')
+```
+
+
+```{r}
+EMA_2017 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2017/EMA%202017.sav?raw=true')
+
+EDV_2017 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2017/EDV%202017.sav?raw=true')
+```
+
+
+```{r}
+EMA_2018 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2018/EMA%202018.sav?raw=true')
+
+EDV_2018 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2018/EDV%202018.sav?raw=true')
+```
+
+
+```{r}
+EMA_2019 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2019/EMA_2019.sav?raw=true')
+
+EDV_2019 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2019/EDV_2019.sav?raw=true')
+```
+
+
+```{r}
+EMA_2020 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2020/EMA_2020.sav?raw=true')
+
+EDV_2020 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2020/EDV_2020.sav?raw=true')
+```
+
+
+
+```{r}
+## --------------------------------------------------------------------------- ##
+## ------------------------------- Filtros ----------------------------------- ##
+## --------------------------------------------------------------------------- ##
+
+df_M2014_EDV_2014 <- EDV_2014 %>%
+  filter(anio_mat == 2014)
+
+df_M2014_EDV_2015 <- EDV_2015 %>%
+  filter(anio_mat == 2014)
+
+df_M2014_EDV_2016 <- EDV_2016 %>%
+  filter(anio_mat == 2014)
+
+df_M2014_EDV_2017 <- EDV_2017 %>%
+  filter(anio_mat == 2014)
+
+df_M2014_EDV_2018 <- EDV_2018 %>%
+  filter(anio_mat == 2014)
+
+df_M2014_EDV_2019 <- EDV_2019 %>%
+  filter(anio_mat == 2014)
+
+```
+
+
+```{r}
+## --------------------------------------------------------------------------- ##
+## ------------------------- ID Matrimonios 2014 ----------------------------- ##
+## --------------------------------------------------------------------------- ##
+
+df_analisis_EMA_2014 <- EMA_2014
+
+df_analisis_EMA_2014 <- df_analisis_EMA_2014 %>%
+  unite(ID_EMA_2014, c('fecha_insc','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
+
+```
+
+```{r}
+# OPCION 2
+
+#df_analisis_EMA_2014 <- EMA_2014
+
+#df_analisis_EMA_2014 <- df_analisis_EMA_2014 %>%
+#  unite(ID_EMA_2014, c('fecha_insc','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+```
+
+
+
+```{r}
+#options(scipen=999)
+
+#f_compleja_paste_ID <- function(x) {
+#  as.numeric(paste(unlist(strsplit(x, split='-', fixed = TRUE)), collapse = ''))
+#} 
+
+```
+
+```{r}
+options(scipen=999)
+
+f_compleja_flatten_ID <- function(x) {
+  as.numeric(str_flatten(unlist(strsplit(x, split='-', fixed = TRUE)), collapse = ''))
+} 
+
+```
+
+```{r}
+#df_analisis_EMA_2014$ID_EMA_2014 <- unlist(lapply(df_analisis_EMA_2014$ID_EMA_2014, f_compleja_paste_ID ))
+```
+
+```{r warning=FALSE}
+df_analisis_EMA_2014$ID_EMA_2014 <- unlist(lapply(df_analisis_EMA_2014$ID_EMA_2014, f_compleja_flatten_ID ))
+```
+
+```{r}
+df_analisis_EMA_2014 <- df_analisis_EMA_2014[!is.na(df_analisis_EMA_2014$ID_EMA_2014),]
+```
+
+
+
+```{r}
+
+df_M2014_EDV_2014 <- df_M2014_EDV_2014 %>%
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
+
+df_M2014_EDV_2015 <- df_M2014_EDV_2015 %>%
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
+
+df_M2014_EDV_2016 <- df_M2014_EDV_2016 %>%
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
+
+df_M2014_EDV_2017 <- df_M2014_EDV_2017 %>%
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
+
+df_M2014_EDV_2018 <- df_M2014_EDV_2018 %>%
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
+
+df_M2014_EDV_2019 <- df_M2014_EDV_2019 %>%
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nac1','fecha_nac2','parr_insc'), sep = '', remove = FALSE)
+
+```
+
+
+```{r}
+# OPCION 2
+
+#df_M2014_EDV_2014 <- df_M2014_EDV_2014 %>%
+#  unite(ID_EMA_2014, c('fecha_mat','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+
+#df_M2014_EDV_2015 <- df_M2014_EDV_2015 %>%
+#  unite(ID_EMA_2014, c('fecha_mat','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+
+#df_M2014_EDV_2016 <- df_M2014_EDV_2016 %>%
+#  unite(ID_EMA_2014, c('fecha_mat','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+
+#df_M2014_EDV_2017 <- df_M2014_EDV_2017 %>%
+#  unite(ID_EMA_2014, c('fecha_mat','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+
+#df_M2014_EDV_2018 <- df_M2014_EDV_2018 %>%
+#  unite(ID_EMA_2014, c('fecha_mat','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+
+#df_M2014_EDV_2019 <- df_M2014_EDV_2019 %>%
+#  unite(ID_EMA_2014, c('fecha_mat','anio_nac1','anio_nac2','parr_insc'), sep = '', remove = FALSE)
+```
+
+
+
+```{r}
+df_M2014_EDV_2014$ID_EMA_2014 <- unlist(lapply(df_M2014_EDV_2014$ID_EMA_2014, f_compleja_flatten_ID))
+
+df_M2014_EDV_2015$ID_EMA_2014 <- unlist(lapply(df_M2014_EDV_2015$ID_EMA_2014, f_compleja_flatten_ID))
+
+df_M2014_EDV_2016$ID_EMA_2014 <- unlist(lapply(df_M2014_EDV_2016$ID_EMA_2014, f_compleja_flatten_ID))
+
+df_M2014_EDV_2017$ID_EMA_2014 <- unlist(lapply(df_M2014_EDV_2017$ID_EMA_2014, f_compleja_flatten_ID))
+
+df_M2014_EDV_2018$ID_EMA_2014 <- unlist(lapply(df_M2014_EDV_2018$ID_EMA_2014, f_compleja_flatten_ID))
+
+df_M2014_EDV_2019$ID_EMA_2014 <- unlist(lapply(df_M2014_EDV_2019$ID_EMA_2014, f_compleja_flatten_ID))
+
+```
+
+
+```{r}
+df_M2014_EDV_2016 <- df_M2014_EDV_2016[!is.na(df_M2014_EDV_2016$ID_EMA_2014),]
+```
+
+
+```{r}
+R_divorcios_2014 <- dim(df_analisis_EMA_2014)[1]
+evento_divorcio <- rep(0,R_divorcios_2014)
+
+for (i in 1:R_divorcios_2014) {
+  
+  if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2014$ID_EMA_2014) {evento_divorcio[i] = 1}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2015$ID_EMA_2014) {evento_divorcio[i] = 1}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2016$ID_EMA_2014) {evento_divorcio[i] = 1}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2017$ID_EMA_2014) {evento_divorcio[i] = 1}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2018$ID_EMA_2014) {evento_divorcio[i] = 1}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2019$ID_EMA_2014) {evento_divorcio[i] = 1}
+  
+}
+
+df_analisis_EMA_2014$evento_divorcio <- evento_divorcio
+
+```
+
+
+
+
+```{r}
+R_divorcios_2014 <- dim(df_analisis_EMA_2014)[1]
+anio_divorcio <- rep(0,R_divorcios_2014)
+
+for (i in 1:R_divorcios_2014) {
+  
+  if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2014$ID_EMA_2014) {anio_divorcio[i] = '2014'}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2015$ID_EMA_2014) {anio_divorcio[i] = '2015'}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2016$ID_EMA_2014) {anio_divorcio[i] = '2016'}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2017$ID_EMA_2014) {anio_divorcio[i] = '2017'}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2018$ID_EMA_2014) {anio_divorcio[i] = '2018'}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2019$ID_EMA_2014) {anio_divorcio[i] = '2019'}
+  
+}
+
+df_analisis_EMA_2014$anio_divorcio_factor <- factor(anio_divorcio)
+```
+
+
+```{r}
+R_divorcios_2014 <- dim(df_analisis_EMA_2014)[1]
+duracion_matrimonio <- rep(0,R_divorcios_2014)
+
+for (i in 1:R_divorcios_2014) {
+  
+  if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2014$ID_EMA_2014) {duracion_matrimonio[i] = df_M2014_EDV_2014$dur_mat[match(c(df_analisis_EMA_2014$ID_EMA_2014[i]), df_M2014_EDV_2014$ID_EMA_2014)]}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2015$ID_EMA_2014) {duracion_matrimonio[i] = df_M2014_EDV_2015$dur_mat[match(c(df_analisis_EMA_2014$ID_EMA_2014[i]), df_M2014_EDV_2015$ID_EMA_2014)]}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2016$ID_EMA_2014) {duracion_matrimonio[i] = df_M2014_EDV_2016$dur_mat[match(c(df_analisis_EMA_2014$ID_EMA_2014[i]), df_M2014_EDV_2016$ID_EMA_2014)]}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2017$ID_EMA_2014) {duracion_matrimonio[i] = df_M2014_EDV_2017$dur_mat[match(c(df_analisis_EMA_2014$ID_EMA_2014[i]), df_M2014_EDV_2017$ID_EMA_2014)]}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2018$ID_EMA_2014) {duracion_matrimonio[i] = df_M2014_EDV_2018$dur_mat[match(c(df_analisis_EMA_2014$ID_EMA_2014[i]), df_M2014_EDV_2018$ID_EMA_2014)]}
+  else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2019$ID_EMA_2014) {duracion_matrimonio[i] = df_M2014_EDV_2019$dur_mat[match(c(df_analisis_EMA_2014$ID_EMA_2014[i]), df_M2014_EDV_2019$ID_EMA_2014)]}
+  else {duracion_matrimonio[i] = 5}
+  
+}
+
+df_analisis_EMA_2014$duracion_matrimonio <- duracion_matrimonio
+```
+
+
+
+```{r}
+# VALIDACION 1
+
+dim(df_M2014_EDV_2014)[1]
+dim(df_M2014_EDV_2015)[1]
+dim(df_M2014_EDV_2016)[1]
+dim(df_M2014_EDV_2017)[1]
+dim(df_M2014_EDV_2018)[1]
+dim(df_M2014_EDV_2019)[1]
+
+dim(df_M2014_EDV_2014)[1] + dim(df_M2014_EDV_2015)[1] + dim(df_M2014_EDV_2016)[1] + dim(df_M2014_EDV_2017)[1] + dim(df_M2014_EDV_2018)[1] + dim(df_M2014_EDV_2019)[1]
+
+summary(factor(evento_divorcio)) 
+
+sum(is.na(df_analisis_EMA_2014$ID_EMA_2014))
+
+```
+
+
+```{r}
+# VALIDACION 2
+
+summary(df_analisis_EMA_2014$anio_divorcio_factor)
+
+```
+
+
+```{r}
+# VALIDACION 3
+
+df_analisis_EMA_2014 %>% filter(anio_divorcio_factor == 2014)
+
+#View(df_analisis_EMA_2014 %>% filter(anio_divorcio_factor == 2014))
+
+```
+
+```{r}
+# VALIDACION 4
+
+n_distinct(df_analisis_EMA_2014$ID_EMA_2014)
+
+n_distinct(df_M2014_EDV_2014$ID_EMA_2014)
+
+n_distinct(df_M2014_EDV_2015$ID_EMA_2014)
+
+n_distinct(df_M2014_EDV_2016$ID_EMA_2014)
+
+n_distinct(df_M2014_EDV_2017$ID_EMA_2014)
+
+n_distinct(df_M2014_EDV_2018$ID_EMA_2014)
+
+n_distinct(df_M2014_EDV_2019$ID_EMA_2014)
+
+```
+
+```{r}
+# VALIDACION 5
+
+dim(df_analisis_EMA_2014)[1]
+
+n_distinct(df_analisis_EMA_2014$ID_EMA_2014)
+
+dim(df_analisis_EMA_2014)[1] - n_distinct(df_analisis_EMA_2014$ID_EMA_2014)
+
+sum(duplicated(df_analisis_EMA_2014$ID_EMA_2014))
+
+sum(is.na(df_analisis_EMA_2014$ID_EMA_2014))
+
+```
+
+```{r}
+# VALIDACION 6
+
+#df_analisis_EMA_2014$ID_EMA_2014[duplicated(df_analisis_EMA_2014$ID_EMA_2014)]
+
+sum(is.na(df_analisis_EMA_2014$ID_EMA_2014[duplicated(df_analisis_EMA_2014$ID_EMA_2014)]))
+
+```
+
+```{r}
+# VALIDACION 7
+
+df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014) | duplicated(df_analisis_EMA_2014$ID_EMA_2014, fromLast = TRUE), ]
+
+df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014), ]
+
+df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014, fromLast = TRUE), ]
+
+```
+
+
+
+
+```{r}
+df_merge_M2014_D2014 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2014, by = c('ID_EMA_2014'))
+
+df_merge_M2014_D2015 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2015, by = c('ID_EMA_2014'))
+
+df_merge_M2014_D2016 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2016, by = c('ID_EMA_2014'))
+
+df_merge_M2014_D2017 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2017, by = c('ID_EMA_2014'))
+
+df_merge_M2014_D2018 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2018, by = c('ID_EMA_2014'))
+
+df_merge_M2014_D2019 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2019, by = c('ID_EMA_2014'))
+
+```
+
+
+
+
+
+### Estimador de Kaplan Meier 
+
+
+```{r}
+modelo1_KM <- survfit(Surv( df_analisis_EMA_2014$duracion_matrimonio , df_analisis_EMA_2014$evento_divorcio ) ~ 1 )
+modelo1_KM
+```
+
+```{r}
+summary(modelo1_KM)
+```
+
+
+```{r}
+autoplot(modelo1_KM, conf.int = FALSE) + ylab('S(t)') + ggtitle('Curva de Supervivencia de KM Estimada')
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
