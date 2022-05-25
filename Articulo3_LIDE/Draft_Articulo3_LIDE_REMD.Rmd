@@ -1,5 +1,5 @@
 ---
-title: "Artículo 3. REMD 2019."
+title: "Artículo 3. REMD."
 author: "Christian Javier Salas Marquez"
 date: '2022'
 output:
@@ -7,9 +7,8 @@ output:
     df_print: paged
 ---
 
-Work in progress
 
-```{r}
+```{r include=FALSE}
 ## --------------------------------------------------------------------------- ##
 ## ------------------------------ Librerías ---------------------------------- ##
 ## --------------------------------------------------------------------------- ##
@@ -19,62 +18,126 @@ if(!require(haven)) install.packages("haven", repos = "http://cran.us.r-project.
 if(!require(readr)) install.packages("readr", repos = "http://cran.us.r-project.org")
 if(!require(survival)) install.packages("survival", repos = "http://cran.us.r-project.org")
 if(!require(ggfortify)) install.packages("ggfortify", repos = "http://cran.us.r-project.org")
+if(!require(hexbin)) install.packages("hexbin", repos = "http://cran.us.r-project.org")
+if(!require(ggpointdensity)) install.packages("ggpointdensity", repos = "http://cran.us.r-project.org")
+if(!require(RColorBrewer)) install.packages("RColorBrewer", repos = "http://cran.us.r-project.org")
+if(!require(survminer)) install.packages("survminer", repos = "http://cran.us.r-project.org")
+
 ```
 
 
 
 
-```{r}
+```{r include=FALSE}
+## --------------------------------------------------------------------------- ##
+## ---------------------------- Bases de datos ------------------------------- ##
+## --------------------------------------------------------------------------- ##
+
 EMA_2014 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2014/Matrimonios_2014.sav?raw=true')
 
 EDV_2014 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2014/Divorcios_2014.sav?raw=true')
 ```
 
 
-```{r}
+```{r include=FALSE}
 EMA_2015 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2015/matrimonios%202015.sav?raw=true')
 
 EDV_2015 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2015/divorcios%202015.sav?raw=true')
 ```
 
 
-```{r}
+```{r include=FALSE}
 EMA_2016 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2016/EMA%202016%20.sav?raw=true')
 
 EDV_2016 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2016/EDV%202016.sav?raw=true')
 ```
 
 
-```{r}
+```{r include=FALSE}
 EMA_2017 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2017/EMA%202017.sav?raw=true')
 
 EDV_2017 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2017/EDV%202017.sav?raw=true')
 ```
 
 
-```{r}
+```{r include=FALSE}
 EMA_2018 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2018/EMA%202018.sav?raw=true')
 
 EDV_2018 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2018/EDV%202018.sav?raw=true')
 ```
 
 
-```{r}
+```{r include=FALSE}
 EMA_2019 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2019/EMA_2019.sav?raw=true')
 
 EDV_2019 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2019/EDV_2019.sav?raw=true')
 ```
 
 
-```{r}
+```{r include=FALSE}
 EMA_2020 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2020/EMA_2020.sav?raw=true')
 
 EDV_2020 <- read_sav(file = 'https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Databases_REMD/REMD_2020/EDV_2020.sav?raw=true')
 ```
 
 
+### Introducción
 
-```{r}
+Para investigar la situación de los matrimonios y divorcios en el Ecuador, en este artículo se presenta un análisis de supervivencia considerando como tiempo de estudio el periodo de tiempo entre 2014 y 2019, es decir, tomando como punto de inicio los matrimonios que comenzaron en 2014. En pocas palabras, un análisis de supervivencia permite estimar la probabilidad de que sobreviva un evento, en este caso un matrimonio. Para lograr ejecutar este análisis, utilizamos las bases de datos de matrimonios y divorcios del 2014 al 2019 proporcionadas por el Instituto Nacional de Estadística y Censos INEC.
+
+
+Para realizar un análisis de supervivencia en este contexto, es necesario disponer de la duración del matrimonio y una variable que indique si el divorcio ocurrió o no. Para lograrlo, construimos un identificador de código único para cada matrimonio, para posteriormente emparejar la base de datos de matrimonios del 2014 con los matrimonios que acabaron en divorcio que están presentes en las bases de datos de divorcios del 2014 al 2019. El identificador está basado en la fecha de matrimonio, la fecha de nacimiento del esposo y la fecha de nacimiento de la esposa.
+
+
+Para realizar este análisis de supervivencia, consideramos la base de datos de matrimonios del 2014 junto a las bases de datos de divorcios de los años 2014, 2015, 2016, 2017, 2018 y 2019. 
+
+El estimador de Kaplan Meier es un modelo estadístico utilizado para estimar la probabilidad de supervivencia en el tiempo. 
+
+### Resumen descriptivo
+
+Dado que tomamos como base los matrimonios del año 2014, revisemos qué ocurre con las edades del novio y de la novia en ese año. 
+
+
+
+```{r echo=FALSE}
+ggplot( EMA_2014 %>% filter(edad_hom != 999 & edad_muj != 999 & edad_muj != 114 & edad_muj != 103) , aes(x = edad_hom, y = edad_muj)) + 
+  geom_pointdensity(size = 0.8,position = 'jitter') + 
+  scale_color_binned() +
+  theme_bw() +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  xlab("Edad del Novio") +
+  ylab("Edad de la Novia") +
+  labs(title = "Edad del novio y edad de la novia de los matrimonios del 2014 en Ecuador", caption = "\n \n Fuente: Base de datos de Matrimonios 2014 - INEC", color = "Matrimonios") 
+```
+
+Este gráfico muestra un diagrama de dispersión junto a un código de color que indica cuántos matrimonios ocurrieron en la cercanía de cada punto. Este tipo de diagrama es necesario dado que la base de datos de matrimonios del 2014 tiene 60315 matrimonios. Es decir, en este gráfico tenemos 60315 puntos. Cada punto es coloreado por el número de puntos vecinos. De esta forma, nos damos cuenta que la mayoría de matrimonios fueron de parejas cuyas edades estaban entre los 20 y 30 años.
+
+
+
+
+```{r eval=FALSE, include=FALSE}
+# Gráfico de validación
+# Permite observar el número de conteos en cada bin
+
+ggplot( EMA_2014 %>% filter(edad_hom != 999 & edad_muj != 999 & edad_muj != 114 & edad_muj != 103) , aes(x = edad_hom, y = edad_muj)) + 
+  geom_bin2d(binwidth = 1) + 
+  stat_bin2d(geom = "text", aes(label = ..count..)) +
+  theme_bw() +
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 10)) +
+  xlab("Edad del Novio") +
+  ylab("Edad de la Novia") +
+  labs(title = "Tabulación cruzada de la edad del novio y edad de la novia en Ecuador (2014)", caption = "\n \n Fuente: Registro Estadístico de Matrimonios 2014 - INEC", fill = "Conteo Matrimonios") +
+  scale_fill_gradient(low="lightcyan", high = "red", limits = c(0, 4000))
+```
+
+
+
+
+### Análisis de supervivencia
+
+```{r include=FALSE}
 ## --------------------------------------------------------------------------- ##
 ## ------------------------------- Filtros ----------------------------------- ##
 ## --------------------------------------------------------------------------- ##
@@ -100,109 +163,166 @@ df_M2014_EDV_2019 <- EDV_2019 %>%
 ```
 
 
-```{r}
+
+```{r include=FALSE}
+## --------------------------------------------------------------------------- ##
+## ---------------------- DataFrame de análisis ------------------------------ ##
+## --------------------------------------------------------------------------- ##
+
+df_analisis_EMA_2014 <- EMA_2014
+```
+
+```{r eval=FALSE, include=FALSE}
+# Validación
+
+sum(is.na(df_analisis_EMA_2014$fecha_insc))
+sum(is.na(df_analisis_EMA_2014$fecha_nach))
+sum(is.na(df_analisis_EMA_2014$fecha_nacm))
+```
+
+```{r include=FALSE}
+# Método 1: Omitiendo matrimonios cuyas fechas de nacimiento de contrayente o de la contrayente sean NA
+
+df_analisis_EMA_2014 <- df_analisis_EMA_2014 %>% filter_at(vars(fecha_nach,fecha_nacm),all_vars(!is.na(.)))
+```
+
+```{r include=FALSE}
+# Método 2: Validación
+
+# df_analisis_EMA_2014 <- df_analisis_EMA_2014[!is.na(df_analisis_EMA_2014$fecha_nach) & !is.na(df_analisis_EMA_2014$fecha_nacm),]
+
+# Ambos métodos generan el mismo resultado
+```
+
+```{r eval=FALSE, include=FALSE}
+# Validación
+
+sum(is.na(df_analisis_EMA_2014$fecha_nach))
+sum(is.na(df_analisis_EMA_2014$fecha_nacm))
+```
+
+
+```{r include=FALSE}
 ## --------------------------------------------------------------------------- ##
 ## ------------------------- ID Matrimonios 2014 ----------------------------- ##
 ## --------------------------------------------------------------------------- ##
 
-df_analisis_EMA_2014 <- EMA_2014
-
 df_analisis_EMA_2014 <- df_analisis_EMA_2014 %>%
-  unite(ID_EMA_2014, c('fecha_insc','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
-
+  unite(ID_EMA_2014, c('fecha_insc','fecha_nach','fecha_nacm'), sep = '', remove = FALSE)
 ```
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 # OPCION 2
 
 #df_analisis_EMA_2014 <- EMA_2014
 
 #df_analisis_EMA_2014 <- df_analisis_EMA_2014 %>%
-#  unite(ID_EMA_2014, c('fecha_insc','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+#  unite(ID_EMA_2014, c('fecha_nach','fecha_nacm'), sep = '', remove = FALSE)
 ```
 
-
-
-```{r}
+```{r eval=FALSE, include=FALSE}
 #options(scipen=999)
 
 #f_compleja_paste_ID <- function(x) {
-#  as.numeric(paste(unlist(strsplit(x, split='-', fixed = TRUE)), collapse = ''))
+#  paste(unlist(strsplit(x, split='-', fixed = TRUE)), collapse = '')
 #} 
 
 ```
 
-```{r}
-options(scipen=999)
+
+```{r include=FALSE}
+#options(scipen=999)
 
 f_compleja_flatten_ID <- function(x) {
-  as.numeric(str_flatten(unlist(strsplit(x, split='-', fixed = TRUE)), collapse = ''))
+  str_flatten(unlist(strsplit(x, split='-', fixed = TRUE)), collapse = '')
 } 
 
 ```
 
-```{r}
+```{r eval=FALSE, warning=FALSE, include=FALSE}
 #df_analisis_EMA_2014$ID_EMA_2014 <- unlist(lapply(df_analisis_EMA_2014$ID_EMA_2014, f_compleja_paste_ID ))
 ```
 
-```{r warning=FALSE}
+```{r warning=FALSE, include=FALSE}
 df_analisis_EMA_2014$ID_EMA_2014 <- unlist(lapply(df_analisis_EMA_2014$ID_EMA_2014, f_compleja_flatten_ID ))
 ```
 
-```{r}
-df_analisis_EMA_2014 <- df_analisis_EMA_2014[!is.na(df_analisis_EMA_2014$ID_EMA_2014),]
+
+```{r eval=FALSE, include=FALSE}
+# Validación
+
+sum(is.na(df_analisis_EMA_2014$ID_EMA_2014))
+```
+
+
+```{r eval=FALSE, include=FALSE}
+#df_analisis_EMA_2014 <- df_analisis_EMA_2014[!is.na(df_analisis_EMA_2014$ID_EMA_2014),] # Línea innecesaria dado los últimos ajustes a los chunks anteriores
+```
+
+
+```{r eval=FALSE, include=FALSE}
+# Validación 
+
+sum(is.na(df_analisis_EMA_2014$ID_EMA_2014))
+```
+
+
+```{r include=FALSE}
+df_M2014_EDV_2016 <- df_M2014_EDV_2016 %>% filter_at(vars(fecha_nach,fecha_nacm),all_vars(!is.na(.)))
 ```
 
 
 
-```{r}
+```{r include=FALSE}
+## --------------------------------------------------------------------------- ##
+## ------------ ID Matrimonio en bases de datos de divorcios ----------------- ##
+## --------------------------------------------------------------------------- ##
 
 df_M2014_EDV_2014 <- df_M2014_EDV_2014 %>%
-  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm' ), sep = '', remove = FALSE)
 
 df_M2014_EDV_2015 <- df_M2014_EDV_2015 %>%
-  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm' ), sep = '', remove = FALSE)
 
 df_M2014_EDV_2016 <- df_M2014_EDV_2016 %>%
-  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm' ), sep = '', remove = FALSE)
 
 df_M2014_EDV_2017 <- df_M2014_EDV_2017 %>%
-  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm' ), sep = '', remove = FALSE)
 
 df_M2014_EDV_2018 <- df_M2014_EDV_2018 %>%
-  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm','parr_insc'), sep = '', remove = FALSE)
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nach','fecha_nacm' ), sep = '', remove = FALSE)
 
 df_M2014_EDV_2019 <- df_M2014_EDV_2019 %>%
-  unite(ID_EMA_2014, c('fecha_mat','fecha_nac1','fecha_nac2','parr_insc'), sep = '', remove = FALSE)
+  unite(ID_EMA_2014, c('fecha_mat','fecha_nac1','fecha_nac2' ), sep = '', remove = FALSE)
 
 ```
 
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 # OPCION 2
 
 #df_M2014_EDV_2014 <- df_M2014_EDV_2014 %>%
-#  unite(ID_EMA_2014, c('fecha_mat','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+#  unite(ID_EMA_2014, c('fecha_nach','fecha_nacm'), sep = '', remove = FALSE)
 
 #df_M2014_EDV_2015 <- df_M2014_EDV_2015 %>%
-#  unite(ID_EMA_2014, c('fecha_mat','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+#  unite(ID_EMA_2014, c('fecha_nach','fecha_nacm'), sep = '', remove = FALSE)
 
 #df_M2014_EDV_2016 <- df_M2014_EDV_2016 %>%
-#  unite(ID_EMA_2014, c('fecha_mat','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+#  unite(ID_EMA_2014, c('fecha_nach','fecha_nacm'), sep = '', remove = FALSE)
 
 #df_M2014_EDV_2017 <- df_M2014_EDV_2017 %>%
-#  unite(ID_EMA_2014, c('fecha_mat','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+#  unite(ID_EMA_2014, c('fecha_nach','fecha_nacm'), sep = '', remove = FALSE)
 
 #df_M2014_EDV_2018 <- df_M2014_EDV_2018 %>%
-#  unite(ID_EMA_2014, c('fecha_mat','anio_nach','anio_nacm','parr_insc'), sep = '', remove = FALSE)
+#  unite(ID_EMA_2014, c('fecha_nach','fecha_nacm'), sep = '', remove = FALSE)
 
 #df_M2014_EDV_2019 <- df_M2014_EDV_2019 %>%
-#  unite(ID_EMA_2014, c('fecha_mat','anio_nac1','anio_nac2','parr_insc'), sep = '', remove = FALSE)
+#  unite(ID_EMA_2014, c('fecha_nac1','fecha_nac2'), sep = '', remove = FALSE)
 ```
 
 
-
-```{r}
+```{r include=FALSE}
 df_M2014_EDV_2014$ID_EMA_2014 <- unlist(lapply(df_M2014_EDV_2014$ID_EMA_2014, f_compleja_flatten_ID))
 
 df_M2014_EDV_2015$ID_EMA_2014 <- unlist(lapply(df_M2014_EDV_2015$ID_EMA_2014, f_compleja_flatten_ID))
@@ -218,16 +338,20 @@ df_M2014_EDV_2019$ID_EMA_2014 <- unlist(lapply(df_M2014_EDV_2019$ID_EMA_2014, f_
 ```
 
 
-```{r}
-df_M2014_EDV_2016 <- df_M2014_EDV_2016[!is.na(df_M2014_EDV_2016$ID_EMA_2014),]
-```
 
+```{r include=FALSE}
+## --------------------------------------------------------------------------- ##
+## ----------------- Construcción de nuevas variables ------------------------ ##
+## --------------------------------------------------------------------------- ##
 
-```{r}
-R_divorcios_2014 <- dim(df_analisis_EMA_2014)[1]
-evento_divorcio <- rep(0,R_divorcios_2014)
+# Variable evento_divorcio
+# 1: El matrimonio acabó en divorcio
+# 0: El matrimonio continúa (Datos censurados por la derecha)
 
-for (i in 1:R_divorcios_2014) {
+R_matrimonios_2014 <- dim(df_analisis_EMA_2014)[1]
+evento_divorcio <- rep(0,R_matrimonios_2014)
+
+for (i in 1:R_matrimonios_2014) {
   
   if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2014$ID_EMA_2014) {evento_divorcio[i] = 1}
   else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2015$ID_EMA_2014) {evento_divorcio[i] = 1}
@@ -240,16 +364,16 @@ for (i in 1:R_divorcios_2014) {
 
 df_analisis_EMA_2014$evento_divorcio <- evento_divorcio
 
+# Datos censurados por la derecha: El evento se observa sólo si ocurre antes del tiempo determinado de estudio. En este caso, un matrimonio que continúa después del tiempo de estudio (2014 a 2019) es una observación censurada por la derecha. Por lo tanto, en este caso, 0 indica los casos censurados. 
+
 ```
 
 
+```{r include=FALSE}
+R_matrimonios_2014 <- dim(df_analisis_EMA_2014)[1]
+anio_divorcio <- rep(0,R_matrimonios_2014)
 
-
-```{r}
-R_divorcios_2014 <- dim(df_analisis_EMA_2014)[1]
-anio_divorcio <- rep(0,R_divorcios_2014)
-
-for (i in 1:R_divorcios_2014) {
+for (i in 1:R_matrimonios_2014) {
   
   if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2014$ID_EMA_2014) {anio_divorcio[i] = '2014'}
   else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2015$ID_EMA_2014) {anio_divorcio[i] = '2015'}
@@ -264,11 +388,11 @@ df_analisis_EMA_2014$anio_divorcio_factor <- factor(anio_divorcio)
 ```
 
 
-```{r}
-R_divorcios_2014 <- dim(df_analisis_EMA_2014)[1]
-duracion_matrimonio <- rep(0,R_divorcios_2014)
+```{r include=FALSE}
+R_matrimonios_2014 <- dim(df_analisis_EMA_2014)[1]
+duracion_matrimonio <- rep(0,R_matrimonios_2014)
 
-for (i in 1:R_divorcios_2014) {
+for (i in 1:R_matrimonios_2014) {
   
   if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2014$ID_EMA_2014) {duracion_matrimonio[i] = df_M2014_EDV_2014$dur_mat[match(c(df_analisis_EMA_2014$ID_EMA_2014[i]), df_M2014_EDV_2014$ID_EMA_2014)]}
   else if (df_analisis_EMA_2014$ID_EMA_2014[i] %in% df_M2014_EDV_2015$ID_EMA_2014) {duracion_matrimonio[i] = df_M2014_EDV_2015$dur_mat[match(c(df_analisis_EMA_2014$ID_EMA_2014[i]), df_M2014_EDV_2015$ID_EMA_2014)]}
@@ -284,9 +408,126 @@ df_analisis_EMA_2014$duracion_matrimonio <- duracion_matrimonio
 ```
 
 
+```{r include=FALSE}
+R_matrimonios_2014 <- dim(df_analisis_EMA_2014)[1]
+hijos_rec_categoria <- rep(0, R_matrimonios_2014)
+
+for (i in 1:R_matrimonios_2014) {
+  
+  if (df_analisis_EMA_2014$hijos_rec[i] == 99) {hijos_rec_categoria[i] = 'No aplica'}
+  else if (df_analisis_EMA_2014$hijos_rec[i] == 0) {hijos_rec_categoria[i] = '0 hijos'}
+  else if ( df_analisis_EMA_2014$hijos_rec[i] == 1 ) {hijos_rec_categoria[i] = '1 hijo'}
+  else if ( df_analisis_EMA_2014$hijos_rec[i] == 2 ) {hijos_rec_categoria[i] = '2 hijos'}
+  else if ( df_analisis_EMA_2014$hijos_rec[i] == 3 ) {hijos_rec_categoria[i] = '3 hijos'}
+  else if ( df_analisis_EMA_2014$hijos_rec[i] >= 4 ) {hijos_rec_categoria[i] = '4 o más hijos'}
+  
+}
+
+df_analisis_EMA_2014$hijos_rec_categoria <- hijos_rec_categoria
+```
+
+
+```{r include=FALSE}
+R_matrimonios_2014 <- dim(df_analisis_EMA_2014)[1]
+nacionalidad_pareja <- rep(0, R_matrimonios_2014)
+
+for (i in 1:R_matrimonios_2014) {
+  if (df_analisis_EMA_2014$nac_hom[i] == df_analisis_EMA_2014$nac_muj[i]) {nacionalidad_pareja[i] = 'Misma nacionalidad'}
+  else {nacionalidad_pareja[i] = 'Diferentes nacionalidades'}
+}
+
+df_analisis_EMA_2014$nacionalidad_pareja <- nacionalidad_pareja
+```
+
+
+```{r eval=FALSE, include=FALSE}
+names(attr(df_analisis_EMA_2014$niv_insth, "labels"))
+names(attr(df_analisis_EMA_2014$niv_instm, "labels"))
+```
+
+```{r eval=FALSE, include=FALSE}
+sum(is.na(df_analisis_EMA_2014$niv_insth))
+sum(is.na(df_analisis_EMA_2014$niv_instm))
+```
+
+```{r include=FALSE}
+df_analisis_EMA_2014 <- df_analisis_EMA_2014 %>%
+  mutate(niv_insth_NA_replaced = replace_na( as.character(niv_insth), 'Dato faltante') )
+
+df_analisis_EMA_2014 <- df_analisis_EMA_2014 %>%
+  mutate(niv_instm_NA_replaced = replace_na( as.character(niv_instm), 'Dato faltante') )
+
+```
+
+```{r eval=FALSE, include=FALSE}
+# Validación
+summary(factor(df_analisis_EMA_2014$nivel_instruccion))
+```
+
+```{r include=FALSE}
+R_matrimonios_2014 <- dim(df_analisis_EMA_2014)[1]
+nivel_instruccion <- rep(0, R_matrimonios_2014)
+
+for (i in 1:R_matrimonios_2014) {
+  
+  if (df_analisis_EMA_2014$niv_insth_NA_replaced[i] == 'Dato faltante' | df_analisis_EMA_2014$niv_instm_NA_replaced[i] == 'Dato faltante') {nivel_instruccion[i] = 'No aplica'}
+  else if ( (df_analisis_EMA_2014$niv_insth_NA_replaced[i] == '9' ) | (df_analisis_EMA_2014$niv_instm_NA_replaced[i] == '9' ) ) {nivel_instruccion[i] = 'No aplica'}
+  else if ( as.numeric(df_analisis_EMA_2014$niv_insth_NA_replaced[i]) > as.numeric(df_analisis_EMA_2014$niv_instm_NA_replaced[i]) ) {nivel_instruccion[i] = 'Hombre mayor nivel de instrucción'}
+  else if ( as.numeric(df_analisis_EMA_2014$niv_instm_NA_replaced[i]) > as.numeric(df_analisis_EMA_2014$niv_insth_NA_replaced[i]) ) {nivel_instruccion[i] = 'Mujer mayor nivel de instrucción'}
+  else if ( as.numeric(df_analisis_EMA_2014$niv_insth_NA_replaced[i]) == as.numeric(df_analisis_EMA_2014$niv_instm_NA_replaced[i]) ) {nivel_instruccion[i] = 'Igual nivel de instrucción'}
+  
+}
+
+df_analisis_EMA_2014$nivel_instruccion <- nivel_instruccion
+```
+
+
+```{r include=FALSE}
+# Diferencia de edad
+
+#df_analisis_EMA_2014 %>% 
+#  filter(edad_hom != 999 & edad_muj != 999) %>%
+#  mutate(diferencia_edad = abs(edad_hom - edad_muj))
+
+```
+
+
+```{r include=FALSE}
+R_matrimonios_2014 <- dim(df_analisis_EMA_2014)[1]
+diferencia_edad_categoria <- rep(0, R_matrimonios_2014)
+
+
+for (i in 1:R_matrimonios_2014) {
+  
+  if (df_analisis_EMA_2014$edad_hom[i] == df_analisis_EMA_2014$edad_muj[i] ) {diferencia_edad_categoria[i] = 'Misma edad'}
+  else if (df_analisis_EMA_2014$edad_hom[i] > df_analisis_EMA_2014$edad_muj[i] ) {diferencia_edad_categoria[i] = 'Hombre es mayor'}
+  else if(df_analisis_EMA_2014$edad_muj[i] > df_analisis_EMA_2014$edad_hom[i] ) {diferencia_edad_categoria[i] = 'Mujer es mayor'}
+  
+}
+
+df_analisis_EMA_2014$diferencia_edad_categoria <- diferencia_edad_categoria
+```
+
+
+```{r include=FALSE}
+R_matrimonios_2014 <- dim(df_analisis_EMA_2014)[1]
+etnia_pareja <- rep(0, R_matrimonios_2014)
+
+for (i in 1:R_matrimonios_2014) {
+  if(df_analisis_EMA_2014$p_etnica_hom[i] == df_analisis_EMA_2014$p_etnica_muj[i]) {etnia_pareja[i] = 'Misma etnia'}
+  else {etnia_pareja[i] = 'Diferentes etnias'}
+}
+
+df_analisis_EMA_2014$etnia_pareja <- etnia_pareja
+```
+
+
+
+
+
 
 ```{r}
-# VALIDACION 1
+# Validación
 
 dim(df_M2014_EDV_2014)[1]
 dim(df_M2014_EDV_2015)[1]
@@ -311,11 +552,65 @@ summary(df_analisis_EMA_2014$anio_divorcio_factor)
 
 ```
 
+```{r}
+# VALIDACIÓN: MARGEN DE EMPAREJADOS
+
+(19/46)*100 # 2014
+(246/328)*100 # 2015
+(502/637)*100 # 2016
+(818/1021)*100 # 2017
+(854/1024)*100 # 2018
+(910/1093)*100 # 2019
+
+# Los valores no emparejados corresponden a matrimonios del 2014 cuyas fechas de nacimiento presentaban NAs, por lo tanto no pudieron emparejarse.
+
+```
+
+
+```{r}
+# VALIDACION
+
+# PORCENTAJES ORIGINAL
+
+(46/4149)*100
+(328/4149)*100
+(637/4149)*100
+(1021/4149)*100
+(1024/4149)*100
+(1093/4149)*100
+
+print("-----")
+
+# PORCENTAJES CODIGO UNICO DE LA FORMA fech_insc, fech_nacm, fech_nacm
+
+(19/3349)*100
+(246/3349)*100
+(502/3349)*100
+(818/3349)*100
+(854/3349)*100
+(910/3349)*100
+
+print("-----")
+
+# PORCENTAJES CODIGO UNICO DE LA FORMA fech_nacm, fech_nacm
+
+(23/3605)*100
+(257/3605)*100
+(543/3605)*100
+(876/3605)*100
+(924/3605)*100
+(982/3605)*100
+
+
+```
+
+ 
+
 
 ```{r}
 # VALIDACION 3
 
-df_analisis_EMA_2014 %>% filter(anio_divorcio_factor == 2014)
+#df_analisis_EMA_2014 %>% filter(anio_divorcio_factor == 2014)
 
 #View(df_analisis_EMA_2014 %>% filter(anio_divorcio_factor == 2014))
 
@@ -360,21 +655,41 @@ sum(is.na(df_analisis_EMA_2014$ID_EMA_2014))
 
 #df_analisis_EMA_2014$ID_EMA_2014[duplicated(df_analisis_EMA_2014$ID_EMA_2014)]
 
-sum(is.na(df_analisis_EMA_2014$ID_EMA_2014[duplicated(df_analisis_EMA_2014$ID_EMA_2014)]))
+#sum(is.na(df_analisis_EMA_2014$ID_EMA_2014[duplicated(df_analisis_EMA_2014$ID_EMA_2014)]))
 
 ```
 
 ```{r}
 # VALIDACION 7
 
-df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014) | duplicated(df_analisis_EMA_2014$ID_EMA_2014, fromLast = TRUE), ]
+# df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014) | duplicated(df_analisis_EMA_2014$ID_EMA_2014, fromLast = TRUE), ]
 
-df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014), ]
+df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014), ] %>% select(ID_EMA_2014, evento_divorcio, anio_divorcio_factor) %>% filter(evento_divorcio == 1)
 
-df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014, fromLast = TRUE), ]
+# 35 códigos duplicados. Algunos tienen DIVORCIO, VERIFICAR!
+
+#df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014, fromLast = TRUE), ]
+
+# 201402181971120419681220: Son 2 matrimonios diferentes. Mantener evento_divorcio = 1 en ambos.
+
+# 201402141988030119921004: Matrimonio registrado 2 veces en EMA 2014. Omitir una de las filas duplicada.
+
+# 201402141991102219951221: Matrimonio registrado 2 veces en EMA 2014. Omitir una de las filas duplicadas.
 
 ```
 
+
+
+```{r}
+df_analisis_EMA_2014 <- df_analisis_EMA_2014[!(df_analisis_EMA_2014$ID_EMA_2014 == '201402141988030119921004' & df_analisis_EMA_2014$hijos_rec == 99),]
+
+df_analisis_EMA_2014 <- df_analisis_EMA_2014[!(df_analisis_EMA_2014$ID_EMA_2014 == '201402141991102219951221' & df_analisis_EMA_2014$hijos_rec == 99),]
+
+```
+
+```{r}
+df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014), ] %>% select(ID_EMA_2014, evento_divorcio, anio_divorcio_factor) %>% filter(evento_divorcio == 1)
+```
 
 
 
@@ -399,27 +714,53 @@ df_merge_M2014_D2019 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2019, by = c('I
 
 ### Estimador de Kaplan Meier 
 
+Para fines de visualización, todas las escalas comienzan de tal forma que permitan observar a detalle los valores estimados (Usualmente de 90% a 100%). En realidad, la escala que debería utilizarse es de 0% a 100%, pero esto no permitiría observar las estimaciones en este caso y bajo el tiempo de estudio de este análisis.
+
+
 
 ```{r}
-modelo1_KM <- survfit(Surv( df_analisis_EMA_2014$duracion_matrimonio , df_analisis_EMA_2014$evento_divorcio ) ~ 1 )
+modelo1_KM <- survfit(Surv(time = df_analisis_EMA_2014$duracion_matrimonio, event = df_analisis_EMA_2014$evento_divorcio, type = 'right') ~ 1)
 modelo1_KM
 ```
 
 ```{r}
 summary(modelo1_KM)
+
+# Hubieron divorcios cuya fecha de divorcio y fecha de inscripción del divorcio eran de diferentes. Por tal motivo estos valores difieren a los de inscripciones de divorcio por año. 
 ```
 
 
 ```{r}
-autoplot(modelo1_KM, conf.int = FALSE) + ylab('S(t)') + ggtitle('Curva de Supervivencia de KM Estimada')
+autoplot(modelo1_KM, conf.int = FALSE) +
+  labs(title = "Gráfica de supervivencia de Kaplan-Meier para los matrimonios \n", caption = "\n\n Fuente: Bases de datos de Matrimonios y Divorcios de 2014 a 2019 - INEC") +
+  xlab('Tiempo (años)') + 
+  ylab('Supervivencia estimada') +
+  theme_classic() +
+  theme(plot.title = element_text(colour = "grey20")) +
+  theme(plot.caption = element_text(colour = "grey30")) +
+  theme(axis.title.x = element_text(colour = "grey30"),axis.title.y = element_text(colour = "grey30")) +
+  theme(line = element_blank()) +
+  theme(panel.grid.major = element_line(color = "gray90", size = 0.5, linetype = 1)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 5), labels = scales::percent, limits = c(0.94,1)) 
 ```
 
 
+La duración 0 es para los parejas que se casaron en 2014 y se divorciaron en ese mismo año.
+
+El gráfico de Kaplan Meier se interpreta de la siguiente forma. Para el año 2014 hubieron  En el año 2014, el 99.8% de los matrimonios continúan. Para el 2015, el 99.2% de los matrimonios sobrevivieron. Para el 2016, sobrevive el 97.7% de los matrimonios. Para el 2017, el 96.3% de los matrimonios continúan. Para el 2018, el 94.9% de los matrimonios sobreviven. Finalmente, para el año 2019, el 94.4% de los matrimonios sobreviven.
+
+En otras palabras, el 94.9% de los matrimonios de 4 años sobrevive. 
+
+
+
+
 ```{r}
-modelo2_KM <- survfit(Surv( (df_analisis_EMA_2014 %>% filter(hijos_rec != 99))$duracion_matrimonio , (df_analisis_EMA_2014 %>% filter(hijos_rec != 99))$evento_divorcio ) ~ (df_analisis_EMA_2014 %>% filter(hijos_rec != 99))$hijos_rec )
+modelo2_KM <- survfit(Surv(time = (df_analisis_EMA_2014 %>% filter(hijos_rec_categoria != 'No aplica'))$duracion_matrimonio, event = (df_analisis_EMA_2014 %>% filter(hijos_rec_categoria != 'No aplica') )$evento_divorcio) ~ (df_analisis_EMA_2014 %>% filter(hijos_rec_categoria != 'No aplica'))$hijos_rec_categoria)
+
 modelo2_KM
-```
 
+```
 
 
 
@@ -428,44 +769,66 @@ summary(modelo2_KM)
 ```
 
 
+
+
+
+
+
 ```{r}
-autoplot(modelo2_KM, conf.int = FALSE) + ylab('S(t)') + ggtitle('Curva de Supervivencia de KM Estimada')
+autoplot(modelo2_KM, conf.int = FALSE) + 
+  labs(title = "Gráfica de supervivencia de Kaplan-Meier", caption = "\n\n Fuente: Bases de datos de Matrimonios y Divorcios de 2014 a 2019 - INEC", color = 'Hijos reconocidos') + 
+  xlab('\n Tiempo (años)') + 
+  ylab('Supervivencia estimada \n') +
+  theme_classic() +
+  theme(plot.title = element_text(colour = "grey20")) +
+  theme(plot.caption = element_text(colour = "grey30")) +
+  theme(axis.title.x = element_text(colour = "grey30"),axis.title.y = element_text(colour = "grey30")) +
+  theme(line = element_blank()) +
+  theme(panel.grid.major = element_line(color = "gray90", size = 0.5, linetype = 1)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey80")) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 9), labels = scales::percent, limits = c(0.92,1)) 
 ```
 
+Con esta estimación, podemos observar que los matrimonios que tuvieron 0 hijos reconocidos al casarse, fueron los que menor probabilidad de supervivencia tuvieron. Además, podemos ver la tendencia de que entre más hijos tenía la pareja, menos probable era que se divorcien.
+
+En otras palabras, los matrimonios con al menos 1 hijo reconocido o más, sobrevivieron por más tiempo que los matrimonios con 0 hijos reconocidos.
 
 
+```{r eval=FALSE, include=FALSE}
+# Por capitulación de bienes
+# mcap_bie: Matrimonio con capitulación de bienes
+# 1: Si
+# 2: No
+# 9: Ignorado
 
-
-
-```{r}
 modelo3_KM <- survfit(Surv( (df_analisis_EMA_2014 %>% filter(mcap_bie != 9))$duracion_matrimonio , (df_analisis_EMA_2014 %>% filter(mcap_bie != 9))$evento_divorcio ) ~ (df_analisis_EMA_2014 %>% filter(mcap_bie != 9))$mcap_bie )
 modelo3_KM
 ```
 
-
-```{r}
+```{r eval=FALSE, include=FALSE}
 summary(modelo3_KM)
 ```
 
-
-
-```{r}
-autoplot(modelo3_KM, conf.int = FALSE) + ylab('S(t)') + ggtitle('Curva de Supervivencia de KM Estimada')
+```{r eval=FALSE, include=FALSE}
+autoplot(modelo3_KM, conf.int = FALSE) + 
+  labs(title = "Gráfica de supervivencia de Kaplan-Meier", caption = "\n\n Fuente: Bases de datos de Matrimonios y Divorcios de 2014 a 2019 - INEC", color = 'Capitulación de bienes') + 
+  xlab('\n Tiempo (años)') + 
+  ylab('Supervivencia estimada \n') +
+  theme_classic() +
+  theme(plot.title = element_text(colour = "grey20")) +
+  theme(plot.caption = element_text(colour = "grey30")) +
+  theme(axis.title.x = element_text(colour = "grey30"),axis.title.y = element_text(colour = "grey30")) +
+  theme(line = element_blank()) +
+  theme(panel.grid.major = element_line(color = "gray90", size = 0.5, linetype = 1)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey80")) +
+  scale_color_hue(labels = c('Si','No')) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 5), labels = scales::percent, limits = c(0.9,1)) 
 ```
 
 
 
-```{r}
-R_divorcios_2014 <- dim(df_analisis_EMA_2014)[1]
-nacionalidad_pareja <- rep(0, R_divorcios_2014)
-
-for (i in 1:R_divorcios_2014) {
-  if (df_analisis_EMA_2014$nac_hom[i] == df_analisis_EMA_2014$nac_muj[i]) {nacionalidad_pareja[i] = 'Misma nacionalidad'}
-  else {nacionalidad_pareja[i] = 'Diferentes nacionalidades'}
-}
-
-df_analisis_EMA_2014$nacionalidad_pareja <- nacionalidad_pareja
-```
 
 
 
@@ -479,9 +842,262 @@ summary(modelo4_KM)
 ```
 
 
-```{r}
-autoplot(modelo4_KM, conf.int = FALSE) + ylab('S(t)') + ggtitle('Curva de Supervivencia de KM Estimada')
+```{r warning=FALSE}
+autoplot(modelo4_KM, conf.int = FALSE) + 
+  labs(title = "Gráfica de supervivencia de Kaplan-Meier", caption = "\n\n Fuente: Bases de datos de Matrimonios y Divorcios de 2014 a 2019 - INEC") +
+  xlab('\n Tiempo (años)') + 
+  ylab('Supervivencia estimada \n') +
+  theme_classic() +
+  theme(plot.title = element_text(colour = "grey20")) +
+  theme(plot.caption = element_text(colour = "grey30")) +
+  theme(axis.title.x = element_text(colour = "grey30"),axis.title.y = element_text(colour = "grey30")) +
+  theme(legend.title = element_blank()) +
+  theme(line = element_blank()) +
+  theme(panel.grid.major = element_line(color = "gray90", size = 0.5, linetype = 1)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey80")) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 6), labels = scales::percent, limits = c(0.90,1)) 
 ```
+
+En este caso, podemos ver que los matrimonios de diferentes nacionalidades tienen menos probabilidad de supervivencia en todos los años analizados. A partir del año 1, la diferencia en la probabilidad de supervivencia es más marcada y va aumentando progresivamente. Adicionalmente, cabe resaltar que dentro de los matrimonios en el año 2014, `r (summary(factor(df_analisis_EMA_2014$nacionalidad_pareja)))` 1163 fueron matrimonios de parejas con diferentes nacionalidades y 59152 matrimonios fueron con parejas de misma nacionalidad.
+
+
+
+
+
+
+```{r eval=FALSE, include=FALSE}
+modelo5_KM <- survfit(Surv( (df_analisis_EMA_2014 %>% filter(nivel_instruccion != 'No aplica'))$duracion_matrimonio , (df_analisis_EMA_2014 %>% filter(nivel_instruccion != 'No aplica'))$evento_divorcio ) ~ (df_analisis_EMA_2014 %>% filter(nivel_instruccion != 'No aplica'))$nivel_instruccion )
+modelo5_KM
+```
+
+
+```{r eval=FALSE, include=FALSE}
+summary(modelo5_KM)
+```
+
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+autoplot(modelo5_KM, conf.int = FALSE) + 
+  labs(title = "Gráfica de supervivencia de Kaplan-Meier", caption = "\n\n Fuente: Bases de datos de Matrimonios y Divorcios de 2014 a 2019 - INEC") +
+  xlab('\n Tiempo (años)') + 
+  ylab('Supervivencia estimada \n') +
+  theme_classic() +
+  theme(plot.title = element_text(colour = "grey20")) +
+  theme(plot.caption = element_text(colour = "grey30")) +
+  theme(axis.title.x = element_text(colour = "grey30"),axis.title.y = element_text(colour = "grey30")) +
+  theme(legend.title = element_blank()) +
+  theme(line = element_blank()) +
+  theme(panel.grid.major = element_line(color = "gray90", size = 0.5, linetype = 1)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 5), labels = scales::percent, limits = c(0.94,1)) 
+```
+
+
+
+
+
+
+
+
+
+```{r eval=FALSE, include=FALSE}
+modelo6_KM <- survfit(Surv( df_analisis_EMA_2014$duracion_matrimonio , df_analisis_EMA_2014$evento_divorcio ) ~ df_analisis_EMA_2014$diferencia_edad_categoria )
+modelo6_KM
+```
+
+```{r eval=FALSE, include=FALSE}
+summary(modelo6_KM)
+```
+
+```{r eval=FALSE, include=FALSE}
+autoplot(modelo6_KM, conf.int = FALSE) +
+  labs(title = "Gráfica de supervivencia de Kaplan-Meier", caption = "\n\n Fuente: Bases de datos de Matrimonios y Divorcios de 2014 a 2019 - INEC") +
+  xlab('\n Tiempo (años)') + 
+  ylab('Supervivencia estimada \n') +
+  theme_classic() + 
+  theme(plot.title = element_text(colour = "grey20")) +
+  theme(plot.caption = element_text(colour = "grey30")) +
+  theme(axis.title.x = element_text(colour = "grey30"),axis.title.y = element_text(colour = "grey30")) +
+  theme(legend.title = element_blank()) +
+  theme(line = element_blank()) +
+  theme(panel.grid.major = element_line(color = "gray90", size = 0.5, linetype = 1)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey80")) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 5), labels = scales::percent, limits = c(0.94,1)) 
+```
+
+
+
+
+
+
+
+```{r eval=FALSE, include=FALSE}
+modelo7_KM <- survfit(Surv( df_analisis_EMA_2014$duracion_matrimonio , df_analisis_EMA_2014$evento_divorcio ) ~ df_analisis_EMA_2014$etnia_pareja )
+modelo7_KM
+```
+
+```{r eval=FALSE, include=FALSE}
+summary(modelo7_KM)
+```
+
+```{r eval=FALSE, include=FALSE}
+autoplot(modelo7_KM, conf.int = FALSE) + 
+  xlab('\n Tiempo (años)') + 
+  ylab('Supervivencia estimada \n') +
+  labs(title = "Gráfica de supervivencia de Kaplan-Meier", caption = "\n\n Fuente: Bases de datos de Matrimonios y Divorcios de 2014 a 2019 - INEC") +
+  theme_classic() + 
+  theme(plot.title = element_text(colour = "grey20")) +
+  theme(plot.caption = element_text(colour = "grey30")) +
+  theme(axis.title.x = element_text(colour = "grey30"),axis.title.y = element_text(colour = "grey30")) +
+  theme(legend.title = element_blank()) +
+  theme(line = element_blank()) +
+  theme(panel.grid.major = element_line(color = "gray90", size = 0.5, linetype = 1)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey80")) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 5), labels = scales::percent, limits = c(0.94,1)) 
+  
+```
+
+
+```{r}
+modelo8_KM <- survfit(Surv( (df_analisis_EMA_2014 %>% filter(est_civih != 9))$duracion_matrimonio , (df_analisis_EMA_2014 %>% filter(est_civih != 9))$evento_divorcio ) ~ (df_analisis_EMA_2014 %>% filter(est_civih != 9))$est_civih )
+
+modelo9_KM <- survfit(Surv( (df_analisis_EMA_2014 %>% filter(est_civim != 9))$duracion_matrimonio , (df_analisis_EMA_2014 %>% filter(est_civim != 9))$evento_divorcio ) ~ (df_analisis_EMA_2014 %>% filter(est_civim != 9))$est_civim )
+
+```
+
+
+
+
+
+```{r fig.height=6, fig.width=12, message=FALSE, warning=FALSE}
+grid.arrange(
+  
+  autoplot(modelo8_KM, conf.int = FALSE) + 
+  ylab('S(t)') + 
+  ggtitle('Estado civil anterior del novio') + 
+  theme_classic() +
+  xlab('Tiempo (años)') + 
+  ylab('\n Supervivencia estimada') +
+  theme(plot.title = element_text(colour = "grey20")) +
+  theme(axis.title.x = element_text(colour = "grey30"),axis.title.y = element_text(colour = "grey30")) +
+  theme(legend.title = element_blank()) +
+  theme(line = element_blank()) +
+  theme(panel.grid.major = element_line(color = "grey90", size = 0.5, linetype = 1)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey80")) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 5), labels = scales::percent, limits = c(0.9,1)) +
+  scale_color_manual(labels = c('Soltero','Divorciado','Viudo'), values = c('#00BA38','#F8766D','#619CFF') )
+  
+  ,
+  
+  autoplot(modelo9_KM, conf.int = FALSE) + 
+  ylab('S(t)') + 
+  ggtitle('Estado civil anterior de la novia') + 
+  theme_classic() +
+  xlab('Tiempo (años)') + 
+  ylab('\n Supervivencia estimada') +
+  theme(plot.title = element_text(colour = "grey20")) +
+  theme(axis.title.x = element_text(colour = "grey30"),axis.title.y = element_text(colour = "grey30")) +
+  theme(legend.title = element_blank()) +
+  theme(line = element_blank()) +
+  theme(panel.grid.major = element_line(color = "grey90", size = 0.5, linetype = 1)) +
+  theme(panel.border = element_rect(colour = "black", fill=NA, size=0.5)) +
+  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey80")) +
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 5), labels = scales::percent, limits = c(0.9,1)) +
+  scale_color_manual(labels = c('Soltera','Divorciada','Viuda'), values = c('#00BA38','#F8766D','#619CFF') )
+  
+  ,
+  ncol = 2
+  ,
+  top = textGrob("Gráficas de supervivencia de Kaplan-Meier \n", gp=gpar(fontsize=14,col="grey20",font=1))
+  ,
+  bottom= textGrob("\n Fuente: Bases de datos de Matrimonios y Divorcios de 2014 a 2019 - INEC", gp = gpar(fontsize=10,col="grey30",font=1))
+  
+)
+```
+
+
+#### Conclusiones
+
+Para poder hacer inferencia sobre las probabilidades de supervivencia, es necesario utilizar una prueba de hipótesis de Log-rank u otros modelos estadísticos como la regresión de Cox. La prueba de Log-rank compara las probabilidades de supervivencia entre dos grupos. Para hacer generalizaciones para la población, sería necesario ejecutar pruebas de hipótesis.
+
+
+
+
+```{r}
+## --------------------------------------------------------------------------- ##
+## ---------------------------- Log-rank test -------------------------------- ##
+## --------------------------------------------------------------------------- ##
+
+# Correspondiente al Modelo4_KM
+
+survdiff(Surv( df_analisis_EMA_2014$duracion_matrimonio , df_analisis_EMA_2014$evento_divorcio ) ~ df_analisis_EMA_2014$nacionalidad_pareja, rho = 0 ) # rho = 0 para ejecutar la prueba de log-rank o Mantel Haenszel
+
+# Se obtiene p = 0.001. Por lo tanto, existe evidencia de que existe una diferencia en supervivencia entre los matrimonios de diferente y misma nacionalidad.
+
+```
+
+```{r eval=FALSE, include=FALSE}
+# Validación
+ggsurvplot( survfit(Surv( df_analisis_EMA_2014$duracion_matrimonio , df_analisis_EMA_2014$evento_divorcio ) ~ df_analisis_EMA_2014$nacionalidad_pareja, data = df_analisis_EMA_2014 ) , conf.int = TRUE, pval = TRUE )
+```
+
+
+
+Para más información y para obtener resultados de pruebas de hipótesis de Log-rank o resultados de una regresión de Cox, puedes revisar el código en nuestro repositorio de GitHub.
+
+
+
+### Notas metodológicas importantes
+
+(1) Para construir el identificador o código único para emparejar los matrimonios con los divorcios, se utilizó la fecha del matrimonio, fecha de nacimiento del contrayente y fecha de nacimiento de la contrayente (en la base de datos de matrimonios del 2014). Para crear el identificador en las bases de datos de divorcio de 2014 a 2019, se utilizaron las variables de la fecha del matrimonio, fecha de nacimiento del divorciado y fecha de nacimiento de la divorciada.
+
+(2) No se consideró el año 2020 dado que, debido a la pandemia, los matrimonios y divorcios disminuyeron drásticamente en comparación con años anteriores. 
+
+(3) Existieron divorcios que no fueron emparejados dado que no existían en la base de matrimonios del 2014 (a pesar de que los divorcios fueron filtrados considerando que el año de matrimonio sea 2014). Además, no se garantiza un emparejamiento total dado que las variables para crear el código único de matrimonio utilizadas (fechas de nacimiento) podrían estar sujetas a errores de tipeo o presentar datos faltantes en algunos casos.
+
+
+(4) Para fines de visualización, todas las escalas de los gráficos de Kaplan Meier comienzan de tal forma que permitan observar a detalle los valores estimados (Usualmente de 90% a 100%). En realidad, la escala que debería utilizarse es de 0% a 100%. Pero en este caso, si se utilizara la escala de 0% a 100%, esto no permitiría observar las estimaciones con claridad.
+
+
+(5) Para poder hacer inferencia sobre las probabilidades de supervivencia, es necesario utilizar pruebas de hipótesis, tales como la prueba de Log-rank y otros modelos estadísticos utilizados en el análisis de supervivencia, tales como la regresión de Cox.
+
+
+
+
+### Referencias
+
+
+ARRIBALZAGA, EDUARDO B. (2007). Interpretación de las curvas de supervivencia. Revista chilena de cirugía, 59(1), 75-83. https://dx.doi.org/10.4067/S0718-40262007000100013
+
+
+Clark, T., Bradburn, M., Love, S. et al. Survival Analysis Part I: Basic concepts and first analyses. Br J Cancer 89, 232–238 (2003). https://doi.org/10.1038/sj.bjc.6601118
+
+
+Bewick, V., Cheek, L., & Ball, J. (2004). Statistics review 12: survival analysis. Critical care (London, England), 8(5), 389–394. https://doi.org/10.1186/cc2955
+
+
+Instituto Nacional de Estadística y Censos INEC. (2014). 'Estadística de Matrimonios y Divorcios 2014' [bases de datos]
+
+Instituto Nacional de Estadística y Censos INEC. (2015). 'Estadística de Matrimonios y Divorcios 2015' [bases de datos]
+
+Instituto Nacional de Estadística y Censos INEC. (2016). 'Estadística de Matrimonios y Divorcios 2016' [bases de datos]
+
+Instituto Nacional de Estadística y Censos INEC. (2017). 'Estadística de Matrimonios y Divorcios 2017' [bases de datos]
+
+Instituto Nacional de Estadística y Censos INEC. (2018). 'Registro Estadístico de Matrimonios y Divorcios 2018' [bases de datos]
+
+Instituto Nacional de Estadística y Censos INEC. (2019). 'Registro Estadístico de Matrimonios y Divorcios 2019' [bases de datos]
+
+Instituto Nacional de Estadística y Censos INEC. (2020). 'Registro Estadístico de Matrimonios y Divorcios 2020' [bases de datos]
+
+
+
+
+
 
 
 
