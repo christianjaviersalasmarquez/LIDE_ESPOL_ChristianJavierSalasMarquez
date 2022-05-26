@@ -23,7 +23,7 @@ if(!require(grid)) install.packages("grid", repos = "http://cran.us.r-project.or
 
 ```{r include=FALSE}
 ###############################################################
-####               Descarga de los datos                   ####
+####         Importación de las bases de datos             ####
 ###############################################################
 
 # URL
