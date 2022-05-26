@@ -22,7 +22,6 @@ if(!require(hexbin)) install.packages("hexbin", repos = "http://cran.us.r-projec
 if(!require(ggpointdensity)) install.packages("ggpointdensity", repos = "http://cran.us.r-project.org")
 if(!require(RColorBrewer)) install.packages("RColorBrewer", repos = "http://cran.us.r-project.org")
 if(!require(survminer)) install.packages("survminer", repos = "http://cran.us.r-project.org")
-
 ```
 
 
@@ -526,7 +525,7 @@ df_analisis_EMA_2014$etnia_pareja <- etnia_pareja
 
 
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 # Validación
 
 dim(df_M2014_EDV_2014)[1]
@@ -545,14 +544,14 @@ sum(is.na(df_analisis_EMA_2014$ID_EMA_2014))
 ```
 
 
-```{r}
-# VALIDACION 2
+```{r eval=FALSE, include=FALSE}
+# VALIDACION 
 
 summary(df_analisis_EMA_2014$anio_divorcio_factor)
 
 ```
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 # VALIDACIÓN: MARGEN DE EMPAREJADOS
 
 (19/46)*100 # 2014
@@ -562,12 +561,12 @@ summary(df_analisis_EMA_2014$anio_divorcio_factor)
 (854/1024)*100 # 2018
 (910/1093)*100 # 2019
 
-# Los valores no emparejados corresponden a matrimonios del 2014 cuyas fechas de nacimiento presentaban NAs, por lo tanto no pudieron emparejarse.
+# Algunos de los valores no emparejados corresponden a matrimonios del 2014 cuyas fechas de nacimiento presentaban NAs, por lo tanto no pudieron emparejarse.
 
 ```
 
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 # VALIDACION
 
 # PORCENTAJES ORIGINAL
@@ -607,8 +606,8 @@ print("-----")
  
 
 
-```{r}
-# VALIDACION 3
+```{r eval=FALSE, include=FALSE}
+# VALIDACION 
 
 #df_analisis_EMA_2014 %>% filter(anio_divorcio_factor == 2014)
 
@@ -616,7 +615,7 @@ print("-----")
 
 ```
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 # VALIDACION 4
 
 n_distinct(df_analisis_EMA_2014$ID_EMA_2014)
@@ -635,8 +634,8 @@ n_distinct(df_M2014_EDV_2019$ID_EMA_2014)
 
 ```
 
-```{r}
-# VALIDACION 5
+```{r eval=FALSE, include=FALSE}
+# VALIDACION 
 
 dim(df_analisis_EMA_2014)[1]
 
@@ -650,8 +649,8 @@ sum(is.na(df_analisis_EMA_2014$ID_EMA_2014))
 
 ```
 
-```{r}
-# VALIDACION 6
+```{r eval=FALSE, include=FALSE}
+# VALIDACION 
 
 #df_analisis_EMA_2014$ID_EMA_2014[duplicated(df_analisis_EMA_2014$ID_EMA_2014)]
 
@@ -659,8 +658,8 @@ sum(is.na(df_analisis_EMA_2014$ID_EMA_2014))
 
 ```
 
-```{r}
-# VALIDACION 7
+```{r eval=FALSE, include=FALSE}
+# VALIDACION 
 
 # df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014) | duplicated(df_analisis_EMA_2014$ID_EMA_2014, fromLast = TRUE), ]
 
@@ -680,20 +679,22 @@ df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014), ] %>% select
 
 
 
-```{r}
+```{r include=FALSE}
 df_analisis_EMA_2014 <- df_analisis_EMA_2014[!(df_analisis_EMA_2014$ID_EMA_2014 == '201402141988030119921004' & df_analisis_EMA_2014$hijos_rec == 99),]
 
 df_analisis_EMA_2014 <- df_analisis_EMA_2014[!(df_analisis_EMA_2014$ID_EMA_2014 == '201402141991102219951221' & df_analisis_EMA_2014$hijos_rec == 99),]
 
 ```
 
-```{r}
+```{r eval=FALSE, include=FALSE}
+# Validación
+
 df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014), ] %>% select(ID_EMA_2014, evento_divorcio, anio_divorcio_factor) %>% filter(evento_divorcio == 1)
 ```
 
 
 
-```{r}
+```{r include=FALSE}
 df_merge_M2014_D2014 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2014, by = c('ID_EMA_2014'))
 
 df_merge_M2014_D2015 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2015, by = c('ID_EMA_2014'))
