@@ -27,7 +27,7 @@ if(!require(grid)) install.packages("grid", repos = "http://cran.us.r-project.or
 ###############################################################
 
 # URL
-url <- "https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/raw/main/Base%20EUT%202012.zip"
+url <- "https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/raw/main/Articulo2_LIDE/Databases/Base%20EUT%202012.zip"
 
 # Se crea un directorio temporal
 td <- tempdir()
@@ -44,9 +44,9 @@ unzip(tf, files=EUT2012.f.name, exdir=td, overwrite=TRUE)
 EUT2012.f.path <- file.path(td, EUT2012.f.name)
 uso_del_tiempo_2012 <- read_sav(EUT2012.f.path)
 data_UT2012 <- data.frame(uso_del_tiempo_2012)
-educacion_actfisica_tics_2020 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/202012_multibdd_educaci%C3%B3n_actfisica_tics.csv", header = FALSE)
-personas_2020 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/202012_multibdd_personas.csv", header = FALSE)
-personas_2019 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/201912_multibdd_personas.sav.csv", header = FALSE)
+educacion_actfisica_tics_2020 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/Articulo2_LIDE/Databases/202012_multibdd_educaci%C3%B3n_actfisica_tics.csv", header = FALSE)
+personas_2020 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/Articulo2_LIDE/Databases/202012_multibdd_personas.csv", header = FALSE)
+personas_2019 <- read.csv2("https://raw.githubusercontent.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/main/Articulo2_LIDE/Databases/201912_multibdd_personas.sav.csv", header = FALSE)
 
 # La función header_true() convierte la primera fila como encabezado del data frame (En este caso, la primera fila contiene los nombres de las variables)
 header_true <- function(df) {
