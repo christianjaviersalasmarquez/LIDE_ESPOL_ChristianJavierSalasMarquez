@@ -22,6 +22,8 @@ if(!require(hexbin)) install.packages("hexbin", repos = "http://cran.us.r-projec
 if(!require(ggpointdensity)) install.packages("ggpointdensity", repos = "http://cran.us.r-project.org")
 if(!require(RColorBrewer)) install.packages("RColorBrewer", repos = "http://cran.us.r-project.org")
 if(!require(survminer)) install.packages("survminer", repos = "http://cran.us.r-project.org")
+if(!require(gridExtra)) install.packages("gridExtra", repos = "http://cran.us.r-project.org")
+if(!require(grid)) install.packages("grid", repos = "http://cran.us.r-project.org")
 ```
 
 
@@ -88,9 +90,7 @@ Para investigar la situación de los matrimonios y divorcios en el Ecuador, en e
 Para realizar un análisis de supervivencia en este contexto, es necesario disponer de la duración del matrimonio y una variable que indique si el divorcio ocurrió o no. Para lograrlo, construimos un identificador de código único para cada matrimonio, para posteriormente emparejar la base de datos de matrimonios del 2014 con los matrimonios que acabaron en divorcio que están presentes en las bases de datos de divorcios del 2014 al 2019. El identificador está basado en la fecha de matrimonio, la fecha de nacimiento del esposo y la fecha de nacimiento de la esposa.
 
 
-Para realizar este análisis de supervivencia, consideramos la base de datos de matrimonios del 2014 junto a las bases de datos de divorcios de los años 2014, 2015, 2016, 2017, 2018 y 2019. 
-
-El estimador de Kaplan Meier es un modelo estadístico utilizado para estimar la probabilidad de supervivencia en el tiempo. 
+Para ejecutar este análisis de supervivencia, consideramos la base de datos de matrimonios del 2014 junto a las bases de datos de divorcios de los años 2014, 2015, 2016, 2017, 2018 y 2019. Por otro lado, es importante definir que el _estimador de Kaplan Meier_ es un modelo estadístico utilizado para estimar la probabilidad de supervivencia en el tiempo. 
 
 ### Resumen descriptivo
 
@@ -482,12 +482,12 @@ df_analisis_EMA_2014$nivel_instruccion <- nivel_instruccion
 
 
 ```{r include=FALSE}
+# VALIDACIÓN
 # Diferencia de edad
 
 #df_analisis_EMA_2014 %>% 
 #  filter(edad_hom != 999 & edad_muj != 999) %>%
 #  mutate(diferencia_edad = abs(edad_hom - edad_muj))
-
 ```
 
 
@@ -526,7 +526,7 @@ df_analisis_EMA_2014$etnia_pareja <- etnia_pareja
 
 
 ```{r eval=FALSE, include=FALSE}
-# Validación
+# VALIDACIÓN
 
 dim(df_M2014_EDV_2014)[1]
 dim(df_M2014_EDV_2015)[1]
@@ -545,7 +545,7 @@ sum(is.na(df_analisis_EMA_2014$ID_EMA_2014))
 
 
 ```{r eval=FALSE, include=FALSE}
-# VALIDACION 
+# VALIDACIÓN 
 
 summary(df_analisis_EMA_2014$anio_divorcio_factor)
 
@@ -562,12 +562,11 @@ summary(df_analisis_EMA_2014$anio_divorcio_factor)
 (910/1093)*100 # 2019
 
 # Algunos de los valores no emparejados corresponden a matrimonios del 2014 cuyas fechas de nacimiento presentaban NAs, por lo tanto no pudieron emparejarse.
-
 ```
 
 
 ```{r eval=FALSE, include=FALSE}
-# VALIDACION
+# VALIDACIÓN
 
 # PORCENTAJES ORIGINAL
 
@@ -600,14 +599,11 @@ print("-----")
 (924/3605)*100
 (982/3605)*100
 
-
 ```
 
  
-
-
 ```{r eval=FALSE, include=FALSE}
-# VALIDACION 
+# VALIDACIÓN 
 
 #df_analisis_EMA_2014 %>% filter(anio_divorcio_factor == 2014)
 
@@ -616,7 +612,7 @@ print("-----")
 ```
 
 ```{r eval=FALSE, include=FALSE}
-# VALIDACION 4
+# VALIDACIÓN 
 
 n_distinct(df_analisis_EMA_2014$ID_EMA_2014)
 
@@ -635,7 +631,7 @@ n_distinct(df_M2014_EDV_2019$ID_EMA_2014)
 ```
 
 ```{r eval=FALSE, include=FALSE}
-# VALIDACION 
+# VALIDACIÓN 
 
 dim(df_analisis_EMA_2014)[1]
 
@@ -650,7 +646,7 @@ sum(is.na(df_analisis_EMA_2014$ID_EMA_2014))
 ```
 
 ```{r eval=FALSE, include=FALSE}
-# VALIDACION 
+# VALIDACIÓN 
 
 #df_analisis_EMA_2014$ID_EMA_2014[duplicated(df_analisis_EMA_2014$ID_EMA_2014)]
 
@@ -659,7 +655,7 @@ sum(is.na(df_analisis_EMA_2014$ID_EMA_2014))
 ```
 
 ```{r eval=FALSE, include=FALSE}
-# VALIDACION 
+# VALIDACIÓN 
 
 # df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014) | duplicated(df_analisis_EMA_2014$ID_EMA_2014, fromLast = TRUE), ]
 
@@ -678,8 +674,9 @@ df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014), ] %>% select
 ```
 
 
-
 ```{r include=FALSE}
+# VALIDACIÓN
+
 df_analisis_EMA_2014 <- df_analisis_EMA_2014[!(df_analisis_EMA_2014$ID_EMA_2014 == '201402141988030119921004' & df_analisis_EMA_2014$hijos_rec == 99),]
 
 df_analisis_EMA_2014 <- df_analisis_EMA_2014[!(df_analisis_EMA_2014$ID_EMA_2014 == '201402141991102219951221' & df_analisis_EMA_2014$hijos_rec == 99),]
@@ -687,11 +684,10 @@ df_analisis_EMA_2014 <- df_analisis_EMA_2014[!(df_analisis_EMA_2014$ID_EMA_2014 
 ```
 
 ```{r eval=FALSE, include=FALSE}
-# Validación
+# VALIDACIÓN
 
 df_analisis_EMA_2014[ duplicated(df_analisis_EMA_2014$ID_EMA_2014), ] %>% select(ID_EMA_2014, evento_divorcio, anio_divorcio_factor) %>% filter(evento_divorcio == 1)
 ```
-
 
 
 ```{r include=FALSE}
@@ -706,10 +702,7 @@ df_merge_M2014_D2017 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2017, by = c('I
 df_merge_M2014_D2018 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2018, by = c('ID_EMA_2014'))
 
 df_merge_M2014_D2019 <- merge(df_analisis_EMA_2014, df_M2014_EDV_2019, by = c('ID_EMA_2014'))
-
 ```
-
-
 
 
 
@@ -719,19 +712,19 @@ Para fines de visualización, todas las escalas comienzan de tal forma que permi
 
 
 
-```{r}
+```{r include=FALSE}
 modelo1_KM <- survfit(Surv(time = df_analisis_EMA_2014$duracion_matrimonio, event = df_analisis_EMA_2014$evento_divorcio, type = 'right') ~ 1)
 modelo1_KM
 ```
 
-```{r}
+```{r include=FALSE}
 summary(modelo1_KM)
 
-# Hubieron divorcios cuya fecha de divorcio y fecha de inscripción del divorcio eran de diferentes. Por tal motivo estos valores difieren a los de inscripciones de divorcio por año. 
+# Existieron divorcios cuya fecha de divorcio y fecha de inscripción del divorcio eran de diferentes. Por tal motivo estos valores difieren a los de inscripciones de divorcio por año. 
 ```
 
 
-```{r}
+```{r echo=FALSE}
 autoplot(modelo1_KM, conf.int = FALSE) +
   labs(title = "Gráfica de supervivencia de Kaplan-Meier para los matrimonios \n", caption = "\n\n Fuente: Bases de datos de Matrimonios y Divorcios de 2014 a 2019 - INEC") +
   xlab('Tiempo (años)') + 
@@ -747,16 +740,11 @@ autoplot(modelo1_KM, conf.int = FALSE) +
 ```
 
 
-La duración 0 es para los parejas que se casaron en 2014 y se divorciaron en ese mismo año.
-
-El gráfico de Kaplan Meier se interpreta de la siguiente forma. Para el año 2014 hubieron  En el año 2014, el 99.8% de los matrimonios continúan. Para el 2015, el 99.2% de los matrimonios sobrevivieron. Para el 2016, sobrevive el 97.7% de los matrimonios. Para el 2017, el 96.3% de los matrimonios continúan. Para el 2018, el 94.9% de los matrimonios sobreviven. Finalmente, para el año 2019, el 94.4% de los matrimonios sobreviven.
-
-En otras palabras, el 94.9% de los matrimonios de 4 años sobrevive. 
+En esta primera visualización, se presenta el gráfico de Kaplan Meier para todos los matrimonios. La gráfica de Kaplan Meier se interpreta de la siguiente forma: En el año 2014, el 99.8% de los matrimonios continúan. Para el 2015, el 99.2% de los matrimonios sobrevivieron. Para el 2016, sobrevive el 97.7% de los matrimonios. Para el 2017, el 96.3% de los matrimonios continúan. Para el 2018, el 94.9% de los matrimonios sobreviven. Finalmente, para el año 2019, el 94.4% de los matrimonios sobreviven. En otras palabras, el 94.9% de los matrimonios de 4 años sobrevive. Cabe recalcar que la duración 0 es para los parejas que se casaron en 2014 y se divorciaron en ese mismo año.
 
 
 
-
-```{r}
+```{r include=FALSE}
 modelo2_KM <- survfit(Surv(time = (df_analisis_EMA_2014 %>% filter(hijos_rec_categoria != 'No aplica'))$duracion_matrimonio, event = (df_analisis_EMA_2014 %>% filter(hijos_rec_categoria != 'No aplica') )$evento_divorcio) ~ (df_analisis_EMA_2014 %>% filter(hijos_rec_categoria != 'No aplica'))$hijos_rec_categoria)
 
 modelo2_KM
@@ -765,7 +753,7 @@ modelo2_KM
 
 
 
-```{r}
+```{r include=FALSE}
 summary(modelo2_KM)
 ```
 
@@ -775,7 +763,7 @@ summary(modelo2_KM)
 
 
 
-```{r}
+```{r echo=FALSE}
 autoplot(modelo2_KM, conf.int = FALSE) + 
   labs(title = "Gráfica de supervivencia de Kaplan-Meier", caption = "\n\n Fuente: Bases de datos de Matrimonios y Divorcios de 2014 a 2019 - INEC", color = 'Hijos reconocidos') + 
   xlab('\n Tiempo (años)') + 
@@ -791,9 +779,8 @@ autoplot(modelo2_KM, conf.int = FALSE) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 9), labels = scales::percent, limits = c(0.92,1)) 
 ```
 
-Con esta estimación, podemos observar que los matrimonios que tuvieron 0 hijos reconocidos al casarse, fueron los que menor probabilidad de supervivencia tuvieron. Además, podemos ver la tendencia de que entre más hijos tenía la pareja, menos probable era que se divorcien.
+La gráfica mostrada anteriormente corresponde a la estimación de Kaplan Meier considerando los hijos reconocidos del matrimonio (al momento del registro) como categorías. Con esta estimación, podemos observar que los matrimonios que tuvieron 0 hijos reconocidos al casarse, fueron los que menor probabilidad de supervivencia tuvieron. Además, podemos ver la tendencia de que entre más hijos tenía la pareja, menos probable era que se divorcien. En otras palabras, los matrimonios con al menos 1 hijo reconocido o más, sobrevivieron por más tiempo que los matrimonios con 0 hijos reconocidos. Por ejemplo, el 97.6% de los matrimonios de 5 años con 2 hijos reconocidos al momento del matrimonio sobreviven; el  95% de los matrimonios de 5 años con 1 hijo reconocido sobreviven; y el 93.6% de los matrimonios de 5 años con 0 hijos al momento del matrimonio sobreviven.
 
-En otras palabras, los matrimonios con al menos 1 hijo reconocido o más, sobrevivieron por más tiempo que los matrimonios con 0 hijos reconocidos.
 
 
 ```{r eval=FALSE, include=FALSE}
@@ -833,17 +820,17 @@ autoplot(modelo3_KM, conf.int = FALSE) +
 
 
 
-```{r}
+```{r include=FALSE}
 modelo4_KM <- survfit(Surv( df_analisis_EMA_2014$duracion_matrimonio , df_analisis_EMA_2014$evento_divorcio ) ~ df_analisis_EMA_2014$nacionalidad_pareja )
 modelo4_KM
 ```
 
-```{r}
+```{r include=FALSE}
 summary(modelo4_KM)
 ```
 
 
-```{r warning=FALSE}
+```{r echo=FALSE, warning=FALSE}
 autoplot(modelo4_KM, conf.int = FALSE) + 
   labs(title = "Gráfica de supervivencia de Kaplan-Meier", caption = "\n\n Fuente: Bases de datos de Matrimonios y Divorcios de 2014 a 2019 - INEC") +
   xlab('\n Tiempo (años)') + 
@@ -860,9 +847,9 @@ autoplot(modelo4_KM, conf.int = FALSE) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 6), labels = scales::percent, limits = c(0.90,1)) 
 ```
 
-En este caso, podemos ver que los matrimonios de diferentes nacionalidades tienen menos probabilidad de supervivencia en todos los años analizados. A partir del año 1, la diferencia en la probabilidad de supervivencia es más marcada y va aumentando progresivamente. Adicionalmente, cabe resaltar que dentro de los matrimonios en el año 2014, `r (summary(factor(df_analisis_EMA_2014$nacionalidad_pareja)))` 1163 fueron matrimonios de parejas con diferentes nacionalidades y 59152 matrimonios fueron con parejas de misma nacionalidad.
+En este caso, podemos ver que los matrimonios de diferentes nacionalidades tienen menos probabilidad de supervivencia en todos los años analizados. A partir del año 1, la diferencia en la probabilidad de supervivencia es más marcada y va aumentando progresivamente. En particular, el 94.5% de los matrimonios de 5 años con contrayentes que tienen la misma nacionalidad sobreviven, y el 92.3% de matrimonios de 5 años con contrayentes de diferentes nacionalidades sobreviven.
 
-
+Por otro lado, cabe resaltar que dentro de los matrimonios en el año 2014, `r (summary(factor(df_analisis_EMA_2014$nacionalidad_pareja)))` 1163 fueron matrimonios de parejas con diferentes nacionalidades y 59152 matrimonios fueron con parejas de misma nacionalidad.
 
 
 
@@ -896,12 +883,6 @@ autoplot(modelo5_KM, conf.int = FALSE) +
 
 
 
-
-
-
-
-
-
 ```{r eval=FALSE, include=FALSE}
 modelo6_KM <- survfit(Surv( df_analisis_EMA_2014$duracion_matrimonio , df_analisis_EMA_2014$evento_divorcio ) ~ df_analisis_EMA_2014$diferencia_edad_categoria )
 modelo6_KM
@@ -927,11 +908,6 @@ autoplot(modelo6_KM, conf.int = FALSE) +
   theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey80")) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 5), labels = scales::percent, limits = c(0.94,1)) 
 ```
-
-
-
-
-
 
 
 ```{r eval=FALSE, include=FALSE}
@@ -962,18 +938,19 @@ autoplot(modelo7_KM, conf.int = FALSE) +
 ```
 
 
-```{r}
+```{r include=FALSE}
 modelo8_KM <- survfit(Surv( (df_analisis_EMA_2014 %>% filter(est_civih != 9))$duracion_matrimonio , (df_analisis_EMA_2014 %>% filter(est_civih != 9))$evento_divorcio ) ~ (df_analisis_EMA_2014 %>% filter(est_civih != 9))$est_civih )
 
 modelo9_KM <- survfit(Surv( (df_analisis_EMA_2014 %>% filter(est_civim != 9))$duracion_matrimonio , (df_analisis_EMA_2014 %>% filter(est_civim != 9))$evento_divorcio ) ~ (df_analisis_EMA_2014 %>% filter(est_civim != 9))$est_civim )
 
 ```
 
+```{r include=FALSE}
+summary(modelo8_KM)
+summary(modelo9_KM)
+```
 
-
-
-
-```{r fig.height=6, fig.width=12, message=FALSE, warning=FALSE}
+```{r echo=FALSE, fig.height=6, fig.width=12, message=FALSE, warning=FALSE}
 grid.arrange(
   
   autoplot(modelo8_KM, conf.int = FALSE) + 
@@ -1021,24 +998,36 @@ grid.arrange(
 ```
 
 
-#### Conclusiones
+Finalmente, en esta última visualización, se comparan las gráficas de Kaplan Meier de los matrimonios considerando por grupos de _Estado Civil Anterior del Novio_ y _Estado civil anterior de la novia_. Podemos observar que tanto para las estimaciones de Kaplan Meier para el estado civil anterior del novio como para el estado civil anterior de la novia, se tiene que los matrimonos que menos sobrevivieron fueron los que el novio ya era divorciado y la novia ya era divorciada. 
 
-Para poder hacer inferencia sobre las probabilidades de supervivencia, es necesario utilizar una prueba de hipótesis de Log-rank u otros modelos estadísticos como la regresión de Cox. La prueba de Log-rank compara las probabilidades de supervivencia entre dos grupos. Para hacer generalizaciones para la población, sería necesario ejecutar pruebas de hipótesis.
-
-
+Para el primer gráfico, el 94.8% de matrimonios de 5 años en donde el estado civil anterior del novio fue de _Soltero_ sobreviven, mientras que el 91.6% de los matrimonios de 5 años en donde el estado civil anterior del novio fue de _Divorciado_ sobreviven. Análogamente, para el segundo gráfico, el 94.7% de los matrimonios de 5 años en donde el estado civil anterior de la novia fue de _Soltera_ sobreviven, mientras que el 90.9% de los matrimonios de 5 años en donde el estado civil anterior de la novia fue de _Divorciada_ sobreviven. 
 
 
-```{r}
+
+### Conclusiones
+
+En conclusión, el modelo de Kaplan Meier permitió estimar la probabilidad de supervivencia en el tiempo de los matrimonios considerando como intervalo de tiempo los años transcurridos desde 2014 a 2019. Cabe recalcar que, para poder hacer inferencia sobre las probabilidades de supervivencia, es necesario utilizar una prueba de hipótesis de Log-rank u otros modelos estadísticos como la regresión de Cox. La prueba de Log-rank compara las probabilidades de supervivencia entre dos grupos. Es importante especificar que para hacer generalizaciones para toda la población, sería necesario ejecutar pruebas de hipótesis y hacer un ajuste con los modelos mencionados.
+
+Entre los principales resultados obtenidos tenemos:
+
+* Los matrimonios con 0 hijos reconocidos al momento de casarse, fueron los que menor probabilidad de supervivencia tuvieron. Además, existe una tendencia de que mientras más hijos tenía la pareja de esposos, mayor era la probabilidad de supervivencia. En otras palabras, los matrimonios con al menos 1 hijo reconocido o más, sobrevivieron por más tiempo que los matrimonios con 0 hijos reconocidos.
+
+* Los matrimonios de esposos de diferentes nacionalidades tienen menor probabilidad de supervivencia en todos los años analizados comparado con los matrimonios de esposos de misma nacionalidad. Sin embargo, para verificar si la diferencia es significativa o no, es necesario realizar pruebas de hipótesis.
+
+* Los matrimonos en donde el estado civil anterior del novio y de la novia eran de _Divorciado_ y _Divorciada_, respectivamente, fueron los que menos sobrevivieron, comparado con los matrimonios en donde el estado civil anterior del novio y de la novia eran de _Soltero_ y _Soltera_, respectivamente.
+
+
+```{r include=FALSE}
 ## --------------------------------------------------------------------------- ##
 ## ---------------------------- Log-rank test -------------------------------- ##
 ## --------------------------------------------------------------------------- ##
 
 # Correspondiente al Modelo4_KM
+# Nivel de significancia considerado: 0.05
 
 survdiff(Surv( df_analisis_EMA_2014$duracion_matrimonio , df_analisis_EMA_2014$evento_divorcio ) ~ df_analisis_EMA_2014$nacionalidad_pareja, rho = 0 ) # rho = 0 para ejecutar la prueba de log-rank o Mantel Haenszel
 
-# Se obtiene p = 0.001. Por lo tanto, existe evidencia de que existe una diferencia en supervivencia entre los matrimonios de diferente y misma nacionalidad.
-
+# Se obtiene un valor p = 0.001 menor al nivel de significancia de 0.05. Por lo tanto, existe evidencia estadística para rechazar la hipótesis nula. Entonces, concluimos que existe una diferencia estadísticamente significativa en la supervivencia en los matrimonios de los grupos de diferente nacionalidad y misma nacionalidad.
 ```
 
 ```{r eval=FALSE, include=FALSE}
@@ -1048,7 +1037,7 @@ ggsurvplot( survfit(Surv( df_analisis_EMA_2014$duracion_matrimonio , df_analisis
 
 
 
-Para más información y para obtener resultados de pruebas de hipótesis de Log-rank o resultados de una regresión de Cox, puedes revisar el código en nuestro repositorio de GitHub.
+Para más información y para obtener resultados de una prueba de hipótesis de Log-rank, puedes revisar el código en nuestro repositorio de [GitHub](https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Articulo3_LIDE/Draft_Articulo3_LIDE_REMD.Rmd) .
 
 
 
@@ -1072,46 +1061,25 @@ Para más información y para obtener resultados de pruebas de hipótesis de Log
 ### Referencias
 
 
-ARRIBALZAGA, EDUARDO B. (2007). Interpretación de las curvas de supervivencia. Revista chilena de cirugía, 59(1), 75-83. https://dx.doi.org/10.4067/S0718-40262007000100013
-
-
 Clark, T., Bradburn, M., Love, S. et al. Survival Analysis Part I: Basic concepts and first analyses. Br J Cancer 89, 232–238 (2003). https://doi.org/10.1038/sj.bjc.6601118
-
 
 Bewick, V., Cheek, L., & Ball, J. (2004). Statistics review 12: survival analysis. Critical care (London, England), 8(5), 389–394. https://doi.org/10.1186/cc2955
 
+Gutiérrez Burbano, Álvaro Marcelo (2017). Análisis de supervivencia de matrimonios del Ecuador en base a los datos publicados por el INEC desde 1997 hasta 2015. [Trabajo Fin de Máster]. Recuperado de: https://eprints.ucm.es/id/eprint/43956/
 
-Instituto Nacional de Estadística y Censos INEC. (2014). 'Estadística de Matrimonios y Divorcios 2014' [bases de datos]
+Instituto Nacional de Estadística y Censos INEC. (2014). 'Estadística de Matrimonios y Divorcios 2014' [Base de datos]. Recuperado de: https://www.ecuadorencifras.gob.ec//estadistica-de-matrimonios-y-divorcios-2014/
 
-Instituto Nacional de Estadística y Censos INEC. (2015). 'Estadística de Matrimonios y Divorcios 2015' [bases de datos]
+Instituto Nacional de Estadística y Censos INEC. (2015). 'Estadística de Matrimonios y Divorcios 2015' [Base de datos]. Recuperado de: https://www.ecuadorencifras.gob.ec/matrimonios-y-divorcios-2015/
 
-Instituto Nacional de Estadística y Censos INEC. (2016). 'Estadística de Matrimonios y Divorcios 2016' [bases de datos]
+Instituto Nacional de Estadística y Censos INEC. (2016). 'Estadística de Matrimonios y Divorcios 2016' [Base de datos]. Recuperado de: https://www.ecuadorencifras.gob.ec/estadistica-de-matrimonios-y-divorcios-2016/
 
-Instituto Nacional de Estadística y Censos INEC. (2017). 'Estadística de Matrimonios y Divorcios 2017' [bases de datos]
+Instituto Nacional de Estadística y Censos INEC. (2017). 'Estadística de Matrimonios y Divorcios 2017' [Base de datos]. Recuperado de: https://www.ecuadorencifras.gob.ec/estadistica-de-matrimonios-y-divorcios-2017/
 
-Instituto Nacional de Estadística y Censos INEC. (2018). 'Registro Estadístico de Matrimonios y Divorcios 2018' [bases de datos]
+Instituto Nacional de Estadística y Censos INEC. (2018). 'Registro Estadístico de Matrimonios y Divorcios 2018' [Base de datos]. Recuperado de: https://www.ecuadorencifras.gob.ec/matrimonios-y-divorcios-2018/
 
-Instituto Nacional de Estadística y Censos INEC. (2019). 'Registro Estadístico de Matrimonios y Divorcios 2019' [bases de datos]
+Instituto Nacional de Estadística y Censos INEC. (2019). 'Registro Estadístico de Matrimonios y Divorcios 2019' [Base de datos]. Recuperado de: https://www.ecuadorencifras.gob.ec/matrimonios-y-divorcios-2019/
 
-Instituto Nacional de Estadística y Censos INEC. (2020). 'Registro Estadístico de Matrimonios y Divorcios 2020' [bases de datos]
+Instituto Nacional de Estadística y Censos INEC. (2020a). 'Registro Estadístico de Matrimonios y Divorcios 2020' [Base de datos]. Recuperado de: https://www.ecuadorencifras.gob.ec/matrimonios-y-divorcios-2020/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Instituto Nacional de Estadística y Censos INEC. (2020b). Boletín Técnico N°01-2020-REMD. Registro Estadístico de Matrimonios y Divorcios, 2019. Ecuador. Recuperado de: https://www.ecuadorencifras.gob.ec/documentos/web-inec/Poblacion_y_Demografia/Matrimonios_Divorcios/2019/Boletin_tecnico_MYD_2019.pdf
 
