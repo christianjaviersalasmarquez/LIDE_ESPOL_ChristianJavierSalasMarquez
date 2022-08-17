@@ -23,7 +23,6 @@ if(!require(foreign)) install.packages("foreign", repos = "http://cran.us.r-proj
 if(!require(survey)) install.packages("survey", repos = "http://cran.us.r-project.org")
 if(!require(srvyr)) install.packages("srvyr", repos = "http://cran.us.r-project.org")
 if(!require(survey)) install.packages("survey", repos = "http://cran.us.r-project.org") 
-
 ```
 
 ```{r include=FALSE}
@@ -61,16 +60,13 @@ data_personas2019 <- read_csv2("https://raw.githubusercontent.com/christianjavie
 ### Introducción
 
 
-En Ecuador y gran parte del mundo existe la generalización de que las mujeres dedican mucho más tiempo a la cocina que los hombres. Para analizar qué ocurre con estas cifras en nuestro país, podemos utilizar las bases de datos del Instituto Nacional de Estadística y Censos INEC para contabilizar el tiempo que los hombres y las mujeres dedican a diversas actividades, tales como el tiempo dedicado a cocinar o preparar alimentos. En este artículo, vamos a comparar cómo ha cambiado el tiempo semanal promedio dedicado a cocinar o preparar alimentos desde el 2012 al 2019, realizando los cálculos por categorías sociodemográficas de interés. Consideramos el año 2019 dado que fue el último año antes de la pandemia.
+En Ecuador y gran parte del mundo existe la generalización de que las mujeres dedican mucho más tiempo a la cocina que los hombres. Para analizar qué ocurre con estas cifras en nuestro país, podemos utilizar las bases de datos del Instituto Nacional de Estadística y Censos (INEC) para contabilizar el tiempo que los hombres y las mujeres dedican a diversas actividades, tales como el tiempo dedicado a cocinar o preparar alimentos (INEC, 2013). En este artículo, vamos a comparar cómo ha cambiado el tiempo semanal promedio dedicado a cocinar o preparar alimentos desde el 2012 al 2019, realizando los cálculos por categorías sociodemográficas de interés. Consideramos el año 2019 dado que fue el último año antes de la pandemia.
 
+Antes de comenzar, es necesario definir que, _el trabajo no remunerado_ es un trabajo por el cual no se recibe ningún ingreso a cambio (INEC, 2021). El trabajo no remunerado es una de las métricas estudiadas por el INEC. Por otro lado, para entender el contexto de la temática de este artículo, revisemos algunos hechos y cifras existentes. De acuerdo con el INEC, las encuestas de uso del tiempo proporcionan una forma de medir cómo distribuyen el tiempo los hombres y las mujeres (INEC, 2013). Además, el trabajo doméstico y en particular las horas dedicadas a la cocina, se consideran como una forma de trabajo no remunerado. Por estos motivos, consideramos que es importante analizar el promedio de horas semanales destinado a cocinar o preparar alimentos.
 
-Antes de comenzar, es necesario definir que, el trabajo no remunerado es un trabajo por el cual no se recibe ningún ingreso a cambio. Por otro lado, para entender el contexto de la temática de este artículo, revisemos algunos hechos y cifras existentes. De acuerdo con el INEC, las encuestas de uso del tiempo proporcionan una forma de medir cómo distribuyen el tiempo los hombres y las mujeres. Además, el trabajo doméstico y en particular las horas dedicadas a la cocina, se consideran como una forma de trabajo no remunerado. Por estos motivos, consideramos que es importante analizar el promedio de horas semanales destinado a cocinar o preparar alimentos.
+Según el INEC, los ecuatorianos dedican aproximadamente 12 mil millones de horas de trabajo no remunerado en los hogares. En particular, el 76.8% de las horas de trabajo no remunerado fueron efectuadas por las mujeres y el 23.2% de estas horas fueron efectuadas por los hombres (INEC, 2020b). Por otro lado, de acuerdo con un artículo del 2020 del Centro Latinoamericano para el Desarrollo Rural (RIMISP), en Ecuador las mujeres destinan 3 veces más tiempo al trabajo no remunerado que los hombres. Esto se basa en las cifras del INEC que indican que las mujeres dedican 31 horas semanales al trabajo doméstico a diferencia de los hombres que destinan 11.3 horas semanales (RIMISP, 2020).
 
-
-El trabajo no remunerado es una de las métricas estudiadas por el Instituto Nacional de Estadística y Censos. Según el INEC, los ecuatorianos dedican aproximadamente 12 mil millones de horas de trabajo no remunerado en los hogares. En particular, el 76.8% de las horas de trabajo no remunerado fueron efectuadas por las mujeres y el 23.2% de estas horas fueron efectuadas por los hombres. Según el Centro Latinoamericano para el Desarrollo Rural RIMISP en su artículo del 6 de marzo del 2020, en Ecuador las mujeres destinan 3 veces más tiempo al trabajo no remunerado que los hombres. Esto se basa en las cifras del INEC que indican que las mujeres dedican 31 horas semanales al trabajo doméstico a diferencia de los hombres que destinan 11.3 horas semanales. 
-
-
-Para ejecutar el análisis, utilizamos dos encuestas realizadas por el INEC, la Encuesta Específica de Uso del Tiempo EUT 2012 y la sección de uso del tiempo de la Encuesta Multipropósito 2019. En estas encuestas, se hicieron preguntas para poder identificar la cantidad de horas semanales dedicadas a alguna actividad en específica. Ambas encuestas son representativas a nivel nacional. En este artículo, calculamos los promedios ponderados de horas semanales dedicadas a cocinar o preparar alimentos, separando los cálculos por las variables categóricas de sexo, provincia y grupo de edad, o alguna combinación de éstas.
+Entonces, para ejecutar el análisis, utilizamos dos encuestas realizadas por el INEC, la Encuesta Específica de Uso del Tiempo EUT 2012 y la sección de uso del tiempo de la Encuesta Multipropósito 2019. En estas encuestas, se hicieron preguntas para poder identificar la cantidad de horas semanales dedicadas a alguna actividad en específica. Ambas encuestas son representativas a nivel nacional. En este artículo, calculamos los promedios ponderados de horas semanales dedicadas a cocinar o preparar alimentos, separando los cálculos por las variables categóricas de sexo, provincia y grupo de edad, o alguna combinación de éstas.
 
 
 ```{r include=FALSE}
@@ -93,6 +89,7 @@ UT15_UT2012 <- data_UT2012 %>%
          id_upm = id_upm, # Unidad primaria de muestreo
          fexp = fexp) %>% # Factores de expansión
   as_data_frame()
+
 ```
 
 ```{r include=FALSE}
@@ -155,6 +152,7 @@ df_info_personas2019 <- data.frame(id_per = data_personas2019$id_per,
 df_analisis_UT2019 <- merge(df_info_personas2019, 
                             data_UT2019, 
                             by = "id_per")
+
 ```
 
 ```{r include=FALSE}
@@ -462,8 +460,8 @@ ggplot( df_t_cocina_UT2012_plot1 , aes(x = sexo , y = media, fill = sexo )) +
   theme(axis.text.y = element_blank()) +
   theme(axis.ticks.y = element_blank()) +
   theme(axis.line = element_line(colour = 'grey60')) +
-  theme(legend.position='none') 
-,
+  theme(legend.position='none'),
+
 ggplot( df_t_cocina_UT2019_plot1 , aes(x = sexo , y = media, fill = sexo )) + 
   geom_bar(stat = 'identity', width = 0.5, position = 'dodge') + 
   geom_errorbar(aes(ymin = media - 1.96*media_se, ymax = media + 1.96*media_se), width = 0.2) +
@@ -482,21 +480,21 @@ ggplot( df_t_cocina_UT2019_plot1 , aes(x = sexo , y = media, fill = sexo )) +
   theme(axis.ticks.y = element_blank()) +
   theme(axis.line = element_line(colour = 'grey60')) +
   theme(legend.position= c(0.84,0.95)) +
-  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey30"))
-,
-ncol=2
-,
-top = textGrob("Tiempo semanal promedio en cocinar o preparar alimentos (por sexo) en 2012 y 2019 (horas) \n", gp=gpar(fontsize=14,col="grey20",font=1))
-,
-bottom= textGrob("\n Nota: Promedio de horas semanales", gp = gpar(fontsize=10,col="grey30",font=1),x = 0.116)
-)
+  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey30")),
+
+ncol=2,
+
+top = textGrob("Tiempo semanal promedio en cocinar o preparar alimentos (por sexo) en 2012 y 2019 (horas) \n", gp=gpar(fontsize=14,col="grey20",font=1)),
+
+bottom= textGrob("\n Nota: Promedio de horas semanales", gp = gpar(fontsize=10,col="grey30",font=1),x = 0.116))
+
 ```
 
 En esta primera visualización, podemos ver dos gráficos que muestran el tiempo semanal promedio en cocinar o preparar alimentos por sexo. El gráfico de la izquierda es para el año 2012 y el de la derecha para el año 2019. Para el resto de las visualizaciones de este artículo, se cumple el mismo orden.
 
 En el 2012, podemos observar que, en promedio, las mujeres dedicaron 6.24 horas semanales en cocinar o preparar alimentos, mientras que los hombres solo dedicaron 0.63 horas semanales. Por otro lado, para el año 2019 tenemos que, las mujeres destinaron en promedio 6.43 horas semanales en cocinar o preparar alimentos, mientras que los hombres dedicaron esta vez 1.59 horas semanales.
 
-Es decir, para el año 2019, observamos un ligero aumento del promedio de horas semanales que las mujeres dedican a cocinar o preparar alimentos y en el caso de los hombres, se observa un aumento del promedio de horas semanales dedicados a la cocina.
+Es decir, para el año 2019, observamos que se mantiene el promedio de horas semanales que las mujeres dedican a cocinar o preparar alimentos. En el caso de los hombres, se observa un aumento del promedio de horas semanales dedicados a la cocina.
 
 Con respecto a las diferencias por cada año, para el 2012, existe una diferencia de `r (6.24 - 0.63)` horas. En el año 2019, esta diferencia se reduce a `r (6.43 - 1.59)` horas.
 
@@ -521,8 +519,8 @@ ggplot( df_t_cocina_UT2012_plot3 %>% filter(edad_rango != 'Edad entre 0 y 11 añ
   theme(axis.title.y = element_blank()) +
   theme(axis.ticks.y = element_blank()) +
   theme(axis.line = element_line(colour = 'grey60')) +
-  theme(legend.position='none')
-,
+  theme(legend.position='none'),
+
 ggplot( df_t_cocina_UT2019_plot3 , aes(x = media , y = edad_rango , fill = sexo )) + 
   geom_bar(stat = 'identity', position = 'dodge') + 
   geom_errorbar(aes(xmin = media - 1.96*media_se, xmax = media + 1.96*media_se), position = position_dodge(0.9), width = 0.2) +
@@ -540,16 +538,15 @@ ggplot( df_t_cocina_UT2019_plot3 , aes(x = media , y = edad_rango , fill = sexo 
   theme(axis.title.y = element_blank()) +
   theme(axis.ticks.y = element_blank()) +
   theme(axis.line = element_line(colour = 'grey60')) +
-  
   theme(legend.position= c(0.8,1)) +
-  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey30"))
-,
-ncol=2
-,
-top = textGrob("Tiempo semanal promedio en cocinar o preparar alimentos (por grupo de edad y por sexo) 2012 vs 2019 (horas) \n", gp=gpar(fontsize=14,col="grey20",font=1))
-,
-bottom= textGrob("\n Nota: Promedio de horas semanales", gp = gpar(fontsize=10,col="grey30",font=1),x = 0.218)
-)
+  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey30")),
+
+ncol=2,
+
+top = textGrob("Tiempo semanal promedio en cocinar o preparar alimentos (por grupo de edad y por sexo) 2012 vs 2019 (horas) \n", gp=gpar(fontsize=14,col="grey20",font=1)),
+
+bottom= textGrob("\n Nota: Promedio de horas semanales", gp = gpar(fontsize=10,col="grey30",font=1),x = 0.218))
+
 ```
 
 
@@ -585,8 +582,8 @@ ggplot( df_t_cocina_UT2012_plot5 %>% filter(prov == 'Pichincha' | prov == 'Guaya
   theme(axis.text.y = element_blank()) +
   theme(axis.ticks.y = element_blank()) +
   theme(axis.line = element_line(colour = 'grey60')) +
-  theme(legend.position='none') 
-,
+  theme(legend.position='none'),
+
 ggplot( df_t_cocina_UT2019_plot5 %>% filter(prov == 'Pichincha' | prov == 'Guayas' | prov == 'Azuay') , aes(x = prov  , y = media , fill = sexo )) + 
   geom_bar(stat = 'identity', position = 'dodge') + 
   geom_errorbar(aes(ymin = media - 1.96*media_se, ymax = media + 1.96*media_se), position = position_dodge(0.9), width = 0.2) +
@@ -605,15 +602,14 @@ ggplot( df_t_cocina_UT2019_plot5 %>% filter(prov == 'Pichincha' | prov == 'Guaya
   theme(axis.ticks.y = element_blank()) +
   theme(axis.line = element_line(colour = 'grey60')) +
   theme(legend.position= c(0.87,1)) +
-  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey30"))
+  theme(legend.background = element_rect(fill="white", size=0.5, linetype="solid", colour ="grey30")),
 
-,
-ncol=2
-,
-top = textGrob("Tiempo semanal en cocinar o preparar alimentos, por provincia, por sexo 2012 vs 2019 (horas) \n", gp=gpar(fontsize=14,col="grey20",font=1))
-,
-bottom= textGrob("\n Nota: Promedio de horas semanales", gp = gpar(fontsize=10,col="grey30",font=1),x = 0.118)
-)
+ncol=2,
+
+top = textGrob("Tiempo semanal en cocinar o preparar alimentos, por provincia, por sexo 2012 vs 2019 (horas) \n", gp=gpar(fontsize=14,col="grey20",font=1)),
+
+bottom= textGrob("\n Nota: Promedio de horas semanales", gp = gpar(fontsize=10,col="grey30",font=1),x = 0.118))
+
 ```
 
 En esta ultima visualización, se muestran los resultados para las provincias de Azuay, Guayas y Pichincha.
@@ -632,7 +628,7 @@ En conclusión, uno de los principales resultados de este análisis es que exist
 
 Es importante aclarar que no sabemos cuáles son las causas que podrían haber generado esta tendencia. Sin embargo, podemos mencionar posibles razones: una posibilidad podría ser que los hombres y las mujeres se reparten de diferente forma las tareas del hogar.
 
-En el siguiente repositorio de GitHub [GitHub](https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Draft_Articulo1_LIDE_UT.Rmd), podrás revisar el código, reproducir el análisis y encontrar cálculos que pueden generar gráficos adicionales.
+En el siguiente repositorio de [GitHub](https://github.com/christianjaviersalasmarquez/LIDE_ESPOL_Christian_Salas/blob/main/Draft_Articulo1_LIDE_UT.Rmd), podrás revisar el código, reproducir el análisis y encontrar los cálculos que generan los gráficos presentados.
 
 
 ### Notas metodológicas importantes
@@ -642,21 +638,25 @@ En el siguiente repositorio de GitHub [GitHub](https://github.com/christianjavie
 
 ### Referencias
 
-Instituto Nacional de Estadística y Censos INEC. (2013). "Metodología de la Encuesta Específica de Uso del Tiempo - 2012." Ecuador, Noviembre 2013. Recuperado de: https://www.ecuadorencifras.gob.ec//documentos/web-inec/Uso_Tiempo/Metodologia_EUT_2012.pdf
 
-Instituto Nacional de Estadística y Censos INEC. (2012). "Encuesta específica de uso del tiempo EUT 2012" Ecuador, Noviembre 2012. Recuperado de: https://www.ecuadorencifras.gob.ec//documentos/web-inec/Uso_Tiempo/Formulario_2012.pdf
+Instituto Nacional de Estadística y Censos [INEC]. (2012a). _Encuesta específica de uso del tiempo EUT 2012_ [Base de datos]. Ecuador. Recuperado de: https://www.ecuadorencifras.gob.ec/uso-del-tiempo-2/
 
-Instituto Nacional de Estadística y Censos INEC. (2012). "Encuesta específica de uso del tiempo EUT 2012" [base de datos]. Ecuador. Recuperado de: https://www.ecuadorencifras.gob.ec/uso-del-tiempo-2/#:~:text=Uso%20del%20Tiempo%20%E2%80%93%202012,y%20formulaci%C3%B3n%20de%20pol%C3%ADticas%20p%C3%BAblicas.
+Instituto Nacional de Estadística y Censos [INEC]. (2012b). _Encuesta específica de uso del tiempo EUT 2012_ [Formulario]. Ecuador, Noviembre 2012. Recuperado de: https://www.ecuadorencifras.gob.ec//documentos/web-inec/Uso_Tiempo/Formulario_2012.pdf
 
-Instituto Nacional de Estadística y Censos INEC. (2019). "Encuesta Nacional Multipropósito de Hogares (Seguimiento al Plan Nacional de Desarrollo)-2019" [base de datos]
+Instituto Nacional de Estadística y Censos [INEC]. (2013). _Metodología de la Encuesta Específica de Uso del Tiempo - 2012._ Ecuador, Noviembre 2013. Recuperado de: https://www.ecuadorencifras.gob.ec//documentos/web-inec/Uso_Tiempo/Metodologia_EUT_2012.pdf
 
-Instituto Nacional de Estadística y Censos INEC. (2019). "Encuesta Nacional Multipropósito de Hogares-Diciembre-2019" Recuperado de: https://www.ecuadorencifras.gob.ec/documentos/web-inec/Multiproposito/2019/201912_Formulario_Multiproposito.pdf
+Instituto Nacional de Estadística y Censos [INEC]. (2019a). _Encuesta Nacional Multipropósito de Hogares 2019_ [Base de datos]. Ecuador. Recuperado de: https://www.ecuadorencifras.gob.ec/encuesta-nacional-multiproposito-de-hogares-2019/
 
-Instituto Nacional de Estadística y Censos INEC. (2020). "Documento metodológico de la Encuesta Nacional Multipropósito de Hogares (Seguimiento al Plan Nacional de Desarrollo)-2019" Ecuador, 2020. Recuperado de: https://www.ecuadorencifras.gob.ec/documentos/web-inec/Multiproposito/2019/201912_Metodologia_Multiproposito.pdf 
+Instituto Nacional de Estadística y Censos [INEC]. (2019b). _Encuesta Nacional Multipropósito de Hogares-Diciembre-2019_ [Formulario]. Ecuador. Recuperado de: https://www.ecuadorencifras.gob.ec/documentos/web-inec/Multiproposito/2019/201912_Formulario_Multiproposito.pdf
 
-Instituto Nacional de Estadística y Censos INEC. (2020). "Guia para el usuario de base de datos. Encuesta Nacional Multipropósito de Hogares (Seguimiento al Plan Nacional de Desarrollo)" Ecuador, junio 2020. Recuperado de: https://www.ecuadorencifras.gob.ec/documentos/web-inec/Multiproposito/2019/201912_%20Guia%20de%20usuario%20BDD_Multiproposito.pdf 
+Centro Latinoamericano para el Desarrollo Rural [RIMISP]. (2020). _Ecuador: las mujeres dedican 3 veces más tiempo al trabajo no remunerado_. Recuperado de: https://www.rimisp.org/noticia/ecuador-las-mujeres-dedican-3-veces-mas-tiempo-al-trabajo-no-remunerado/
 
-Instituto Nacional de Estadística y Censos INEC. (2020). "El INEC también genera estadísticas de trabajo no remunerado". Recuperado de: https://www.ecuadorencifras.gob.ec/el-inec-tambien-genera-estadisticas-de-trabajo-no-remunerado/
+Instituto Nacional de Estadística y Censos [INEC]. (2020a). _Documento metodológico de la Encuesta Nacional Multipropósito de Hogares (Seguimiento al Plan Nacional de Desarrollo)-2019_ Ecuador, 2020. Recuperado de: https://www.ecuadorencifras.gob.ec/documentos/web-inec/Multiproposito/2019/201912_Metodologia_Multiproposito.pdf 
 
-Centro Latinoamericano para el Desarrollo Rural RIMISP. (2020). "Ecuador: las mujeres dedican 3 veces más tiempo al trabajo no remunerado". Recuperado de: https://www.rimisp.org/noticia/ecuador-las-mujeres-dedican-3-veces-mas-tiempo-al-trabajo-no-remunerado/
+Instituto Nacional de Estadística y Censos [INEC]. (2020b). _El INEC también genera estadísticas de trabajo no remunerado_. Recuperado de: https://www.ecuadorencifras.gob.ec/el-inec-tambien-genera-estadisticas-de-trabajo-no-remunerado/
+
+Instituto Nacional de Estadística y Censos [INEC]. (2020c). _Guia para el usuario de base de datos. Encuesta Nacional Multipropósito de Hogares (Seguimiento al Plan Nacional de Desarrollo)_ Ecuador, junio 2020. Recuperado de: https://www.ecuadorencifras.gob.ec/documentos/web-inec/Multiproposito/2019/201912_%20Guia%20de%20usuario%20BDD_Multiproposito.pdf 
+
+Instituto Nacional de Estadística y Censos [INEC]. (2021). _Metodología de la Encuesta Nacional de Empleo, Desempleo y Subempleo ENEMDU 2021 - 2024_ Recuperado de: https://www.ecuadorencifras.gob.ec/documentos/web-inec/EMPLEO/2022/junio%1F_2022/202206_Metodologia_ENEMDU.pdf
+
 
